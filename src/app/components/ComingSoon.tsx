@@ -83,18 +83,18 @@ export default function ComingSoon() {
                 <div className="p-6 sm:p-8 md:p-12 md:py-24 rounded-3xl text-center
                    max-w-3xl animate-fadeIn">
                     <h1 className={`${dancingScript.className} text-3xl sm:text-4xl md:text-9xl font-extrabold text-white mb-4 md:mb-6 tracking-wide`}>
-                        Coming <span className="text-amber-700">Soon</span>
+                        Coming <span className="text-[#3e000c]">Soon</span>
                     </h1>
 
                     <p className="text-sm sm:text-base md:text-lg text-gray-200 leading-relaxed">
                         Your dream fashion rental platform is almost here!
-                        Rent <span className="font-semibold text-amber-700">wedding dresses</span>,
-                        stylish <span className="font-semibold text-amber-700">shoes</span>,
-                        and elegant <span className="font-semibold text-amber-700">jewelry</span> — all at your fingertips.
+                        Rent <span className="font-semibold text-[#3e000c]">wedding dresses</span>,
+                        stylish <span className="font-semibold text-[#3e000c]">shoes</span>,
+                        and elegant <span className="font-semibold text-[#3e000c]">jewelry</span> — all at your fingertips.
                     </p>
 
                     <p className="mt-4 md:mt-6 text-gray-300 font-medium text-lg md:text-xl">
-                        Launching soon on <span className="font-bold text-amber-800">VASTRAHIRE</span> ✨
+                        Launching soon on <span className="font-bold text-[#3e000c]">VASTRAHIRE</span> ✨
                     </p>
 
                     <div className="mt-6">
@@ -106,13 +106,13 @@ export default function ComingSoon() {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     className="flex-1 px-4 py-3 rounded-xl border border-gray-300 bg-white/90 
-                             focus:ring-2 focus:ring-amber-400 outline-none text-gray-900"
+                             focus:ring-2 focus:ring-[#3e000c] outline-none text-gray-900"
                                     required
                                 />
                                 <button
                                     type="submit"
-                                    className="px-6 py-3 rounded-xl bg-amber-900 text-white font-semibold shadow-lg 
-                             hover:bg-amber-700 transition-transform hover:scale-105"
+                                    className="px-6 py-3 rounded-xl bg-[#3e000c] text-[#ffecd1] font-semibold shadow-lg 
+                             hover:bg-[#3e000c] hover:text-[#3e000c] transition-transform hover:scale-105 cursor-pointer"
                                 >
                                     Notify Me
                                 </button>
