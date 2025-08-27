@@ -52,7 +52,7 @@ export default function CustomerSignupPage() {
                 <input
                   id="firstName"
                   placeholder="John"
-                  className="h-12 w-full px-3 rounded-md border-2 border-gray-300 bg-white focus:border-[#3d000c] outline-none transition-colors"
+                  className="h-12 w-full px-3 text-gray-700 rounded-md border-2 border-gray-300 bg-white focus:border-[#3d000c] outline-none transition-colors"
                 />
               </div>
               <div className="space-y-2">
@@ -62,7 +62,7 @@ export default function CustomerSignupPage() {
                 <input
                   id="lastName"
                   placeholder="Doe"
-                  className="h-12 w-full px-3 rounded-md border-2 border-gray-300 bg-white focus:border-[#3d000c] outline-none transition-colors"
+                  className="h-12 w-full px-3 text-gray-700 rounded-md border-2 border-gray-300 bg-white focus:border-[#3d000c] outline-none transition-colors"
                 />
               </div>
             </div>
@@ -74,7 +74,7 @@ export default function CustomerSignupPage() {
                 id="email"
                 type="email"
                 placeholder="your.email@example.com"
-                className="h-12 w-full px-3 rounded-md border-2 border-gray-300 bg-white focus:border-[#3d000c] outline-none transition-colors"
+                className="h-12 w-full px-3 text-gray-700 rounded-md border-2 border-gray-300 bg-white focus:border-[#3d000c] outline-none transition-colors"
               />
             </div>
             <div className="space-y-2">
@@ -85,7 +85,7 @@ export default function CustomerSignupPage() {
                 id="password"
                 type="password"
                 placeholder="Create a strong password"
-                className="h-12 w-full px-3 rounded-md border-2 border-gray-300 bg-white focus:border-[#3d000c] outline-none transition-colors"
+                className="h-12 w-full px-3 text-gray-700 rounded-md border-2 border-gray-300 bg-white focus:border-[#3d000c] outline-none transition-colors"
               />
             </div>
             <div className="space-y-2">
@@ -96,7 +96,7 @@ export default function CustomerSignupPage() {
                 id="confirmPassword"
                 type="password"
                 placeholder="Confirm your password"
-                className="h-12 w-full px-3 rounded-md border-2 border-gray-300 bg-white focus:border-[#3d000c] outline-none transition-colors"
+                className="h-12 w-full px-3 text-gray-700 rounded-md border-2 border-gray-300 bg-white focus:border-[#3d000c] outline-none transition-colors"
               />
             </div>
           </div>
@@ -133,7 +133,7 @@ export default function CustomerSignupPage() {
 
           {/* Google Button */}
           <button
-            className="w-full h-12 rounded-md border-2 border-gray-300 hover:bg-pink-50 transition-colors flex items-center justify-center gap-2 bg-transparent"
+            className="w-full h-12 rounded-md border-2 text-gray-700 border-gray-300 hover:bg-pink-50 transition-colors flex items-center justify-center gap-2 bg-transparent"
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24">
               <path
