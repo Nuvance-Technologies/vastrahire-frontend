@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { Calendar, CreditCard, Download, Edit, History, MapPin, Settings, Bell, TrendingUp, Star, Image } from "lucide-react"
+import { Calendar, CreditCard, Download, Edit, History, MapPin, Settings, Bell, TrendingUp, Star } from "lucide-react"
+import Image from "next/image"
 import { DashboardHeader } from "@/app/components/Dashboard-header"
 import { Header } from "@/app/components/Header"
 import { DashboardNav } from "@/app/components/Dashboard-nav"
