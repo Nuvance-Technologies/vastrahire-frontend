@@ -8,7 +8,7 @@ const products = {
     id: 1,
     name: "Elegant Evening Gown",
     brand: "Versace",
-    price: "$45/day",
+    price: "$45",
     originalPrice: "$2,500",
     rating: 4.8,
     reviews: 124,

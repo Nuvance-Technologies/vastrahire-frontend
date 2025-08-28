@@ -5,12 +5,14 @@ import { HowItWorks } from "./How-it-works"
 import { BecomeLender } from "./Become-lender"
 import { ShopsGrid } from "./Shops-grid"
 import { IndividualRenters } from "./Individual-renters"
+import MovingAnnouncement from "./Moving-announcement"
 
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
       <AnnouncementBar />
       <Header />
+      <MovingAnnouncement />
       <main>
         <HeroCarousel />
         <HowItWorks />

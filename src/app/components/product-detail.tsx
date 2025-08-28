@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { Star, Heart, Share2, ShoppingBag, Ruler, Truck, Shield, RotateCcw, X } from "lucide-react"
+import { Star, Heart, Share2, ShoppingBag, Ruler, Truck, Shield, RotateCcw, X, ShoppingCart } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 
@@ -162,7 +162,6 @@ export function ProductDetail({ product }: ProductDetailProps) {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Product Images */}
           <div className="space-y-4">
             <div className="aspect-[4/5] overflow-hidden rounded-lg border border-gray-200">
               <Image
@@ -208,8 +207,8 @@ export function ProductDetail({ product }: ProductDetailProps) {
                     <Star
                       key={i}
                       className={`h-4 w-4 ${i < Math.floor(product.rating)
-                          ? "fill-yellow-500 text-yellow-500"
-                          : "text-gray-300"
+                        ? "fill-yellow-500 text-yellow-500"
+                        : "text-gray-300"
                         }`}
                     />
                   ))}
@@ -221,14 +220,20 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
               {/* Price */}
               <div className="flex items-center gap-4">
-                <span className="text-3xl font-bold text-[#3d000c]">
-                  {product.price}
+                <span className="text-2xl font-bold flex text-[#3d000c]">
+                  <p className="text-gray-600">Rented Price:&nbsp;</p> {product.price}/day
                 </span>
                 <span className="text-lg text-gray-400 line-through">
                   {product.originalPrice}
                 </span>
                 <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
                   {product.availability}
+                </span>
+              </div>
+              {/* Price */}
+              <div className="flex items-center gap-4">
+                <span className="text-xl flex font-bold text-[#3d000c]">
+                  <p className="text-gray-600">Retail price:&nbsp;</p>{product.price}
                 </span>
               </div>
             </div>
@@ -254,8 +259,8 @@ export function ProductDetail({ product }: ProductDetailProps) {
                     key={size}
                     onClick={() => setSelectedSize(size)}
                     className={`px-4 py-2 border rounded-md transition-colors ${selectedSize === size
-                        ? "border-[#3d000c] bg-[#3d000c] text-white"
-                        : "border-gray-200 hover:border-[#3d000c] text-black"
+                      ? "border-[#3d000c] bg-[#3d000c] text-white"
+                      : "border-gray-200 hover:border-[#3d000c] text-black"
                       }`}
                   >
                     {size}
@@ -334,8 +339,8 @@ export function ProductDetail({ product }: ProductDetailProps) {
                   Add to Wishlist
                 </button>
                 <button className="flex-1 py-3 border border-gray-200 rounded-lg font-semibold hover:bg-gray-100 flex items-center justify-center gap-2">
-                  <Share2 className="h-5 w-5" />
-                  Share
+                  <ShoppingCart className="h-5 w-5" />
+                  Add to Cart
                 </button>
               </div>
             </div>
@@ -347,13 +352,6 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 <div>
                   <p className="font-medium text-sm">Free Delivery</p>
                   <p className="text-xs text-gray-500">On orders over $100</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <Shield className="h-5 w-5 text-indigo-600" />
-                <div>
-                  <p className="font-medium text-sm">Damage Protection</p>
-                  <p className="text-xs text-gray-500">Covered by insurance</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -524,8 +522,8 @@ export function ProductDetail({ product }: ProductDetailProps) {
                   key={reason}
                   onClick={() => setFeedbackReason(reason)}
                   className={`w-full text-left p-3 rounded-lg border transition-colors ${feedbackReason === reason
-                      ? "border-indigo-500 bg-indigo-50 text-indigo-600"
-                      : "border-gray-200 hover:border-indigo-300"
+                    ? "border-indigo-500 bg-indigo-50 text-indigo-600"
+                    : "border-gray-200 hover:border-indigo-300"
                     }`}
                 >
                   {reason}

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 const renters = [
   {
@@ -7,9 +8,9 @@ const renters = [
     avatar: "/professional-woman-smiling-portrait.png",
     location: "New York, NY",
     items: [
-      { name: "Chanel Bag", price: "$45/day", image: "/luxury-quilted-handbag.png" },
-      { name: "Gucci Dress", price: "$35/day", image: "/elegant-dress.png" },
-      { name: "Louboutin Heels", price: "$25/day", image: "/placeholder.svg" },
+      { name: "Chanel Bag", price: "$45", image: "/luxury-quilted-handbag.png" },
+      { name: "Gucci Dress", price: "$35", image: "/elegant-dress.png" },
+      { name: "Louboutin Heels", price: "$25", image: "/placeholder.svg" },
     ],
     rating: 4.9,
     reviews: 127,
@@ -62,21 +63,23 @@ export function IndividualRenters() {
               key={renter.id}
               className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow p-6 flex flex-col items-center"
             >
-              <h3 className="font-semibold text-gray-900 text-lg">{renter.name}</h3>
-              <p className="text-sm text-gray-500 mb-4">{renter.location}</p>
-
               <Image
                 src={renter.items[0]?.image || "/placeholder.svg"}
                 alt={renter.items[0]?.name || "Featured item"}
-                className="w-full h-48 object-cover rounded-lg mb-4"
+                className="w-full h-72 object-cover rounded-lg mb-4"
                 width={384}
                 height={384}
               />
+              <p className="text-gray-700 font-bold py-3">
+                By: {renter.name}
+              </p>
 
               {/* View Profile Button */}
-              <button className="mt-auto w-full py-2 px-4 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 text-sm font-medium transition">
-                View Profile
-              </button>
+              <a href= "/rentersProfile">
+                <button className="mt-auto w-full py-2 px-4 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 text-sm font-medium transition">
+                  View Profile
+                </button>
+              </a>
             </div>
           ))}
         </div>

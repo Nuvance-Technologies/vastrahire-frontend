@@ -29,6 +29,21 @@ export function Header() {
       document.removeEventListener("mousedown", handleClickOutside)
     }
   }, [])
+  const [searchOpen, setSearchOpen] = useState(false)
+  const overlayRef = useRef<HTMLDivElement>(null)
+
+  // Close search overlay when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (overlayRef.current && !overlayRef.current.contains(event.target as Node)) {
+        setSearchOpen(false)
+      }
+    }
+    if (searchOpen) {
+      document.addEventListener("mousedown", handleClickOutside)
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [searchOpen])
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
@@ -47,7 +62,7 @@ export function Header() {
             <button
               onClick={() => {
                 setIsOpen(!isOpen)
-                setIsOpen1(false) // close Sign Up if open
+                setIsOpen1(false)
               }}
               className="flex items-center px-3 py-2 bg-[#3d000c] text-white rounded-md hover:bg-[#87001b] gap-1"
             >
@@ -62,21 +77,28 @@ export function Header() {
             )}
           </div>
 
+          <div className="relative">
+            <a href="/customer/signup" className="flex items-center px-3 py-2 bg-[#3d000c] text-white rounded-md hover:bg-[#87001b] gap-1">
+              <button>
+                Sign Up
+              </button>
+            </a>
+          </div>
           <div className="relative" ref={signupRef}>
             <button
               onClick={() => {
                 setIsOpen1(!isOpen1)
-                setIsOpen(false) // close Login if open
+                setIsOpen(false)
               }}
               className="flex items-center px-3 py-2 bg-[#3d000c] text-white rounded-md hover:bg-[#87001b] gap-1"
             >
-              Sign Up
+              Register
               <ChevronDown className="h-3 w-3" />
             </button>
             {isOpen1 && (
               <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg py-1 z-50">
-                <Link href="/customer/signup" className="block px-4 py-2 text-gray-500 hover:bg-gray-100">New Customer? Sign Up</Link>
-                <Link href="/lender/signup" className="block px-4 py-2 text-gray-500 hover:bg-gray-100">Become a Lender</Link>
+                <Link href="/lender/signup/shop" className="block px-4 py-2 text-gray-500 hover:bg-gray-100">Register as a Shop</Link>
+                <Link href="/lender/signup/individual" className="block px-4 py-2 text-gray-500 hover:bg-gray-100">Register as an Individual Lender</Link>
               </div>
             )}
           </div>
@@ -121,8 +143,9 @@ export function Header() {
               <a href="/category/kids" className="text-gray-700 hover:text-[#3d000c] transition">Kids</a>
               <a href="/category/shoes" className="text-gray-700 hover:text-[#3d000c] transition">Shoes</a>
               <a href="/category/jewellery" className="text-gray-700 hover:text-[#3d000c] transition">Jewellery</a>
-              <a href="#" className="text-gray-200 px-3 py-1 rounded-xl bg-[#3d000c] hover:text-[#9f0020] transition">
-                Unlock your earning
+              <a href="/category/bags" className="text-gray-700 hover:text-[#3d000c] transition">Bags</a>
+              <a href="#" className="text-gray-200 px-3 py-1 rounded-xl bg-[#3d000c] transition">
+                Unlock your earning through us
               </a>
             </div>
             <div className="flex items-center space-x-4">
@@ -132,7 +155,47 @@ export function Header() {
                   type="text"
                   placeholder="Search items..."
                   className="pl-10 w-64 h-10 border rounded-md text-gray-700 border-gray-300 focus:ring-2 focus:ring-[#3d000c] focus:outline-none"
+                  onFocus={() => setSearchOpen(true)}
                 />
+                {searchOpen && (
+                  <div className="fixed top-1/4 w-full inset-0 bg-white z-[9999] flex flex-col p-6" ref={overlayRef}>
+                    {/* Close button */}
+                    <button
+                      className="self-end p-2 text-gray-500 hover:text-gray-800"
+                      onClick={() => setSearchOpen(false)}
+                    >
+                      <X className="h-6 w-6" />
+                    </button>
+
+                    {/* Circular Suggestions */}
+                    <div className="mt-8 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-6 max-w-8xl mx-auto">
+                      {[
+                        { name: "Gown", img: "/elegant-black-gown.png" },
+                        { name: "Handbag", img: "/luxury-quilted-handbag.png" },
+                        { name: "Shoes", img: "/shoes.png" },
+                        { name: "Jewelry", img: "/jewelry.png" },
+                        { name: "Saree", img: "/saree.png" },
+                        { name: "Blazer", img: "/blazer.png" },
+                        { name: "Watch", img: "/watch.png" },
+                        { name: "Kids Wear", img: "/kids.png" },
+                        { name: "Heels", img: "/heels.png" },
+                        { name: "Accessories", img: "/accessories.png" },
+                      ].map((item, i) => (
+                        <div key={i} className="flex flex-col items-center text-center">
+                          <Image
+                            src={item.img}
+                            alt={item.name}
+                            className="w-20 h-20 object-cover rounded-full border shadow-sm hover:scale-105 transition"
+                            width={80}
+                            height={80}
+                          />
+                          <p className="mt-2 text-sm font-medium text-gray-700">{item.name}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
               </div>
 
               {/* Profile */}
@@ -157,32 +220,68 @@ export function Header() {
               <a href="/category/kids" className="text-gray-700 hover:text-[#3d000c]">Kids</a>
               <a href="/category/shoes" className="text-gray-700 hover:text-[#3d000c]">Shoes</a>
               <a href="/category/jewellery" className="text-gray-700 hover:text-[#3d000c]">Jewellery</a>
+              <a href="/category/bags" className="text-gray-700 hover:text-[#3d000c]">Bags</a>
               <a href="#" className="text-gray-200 px-3 py-2 rounded-xl bg-[#3d000c] hover:text-[#9f0020]">Unlock your earning</a>
             </div>
 
-            {/* Search in mobile */}
-            <div className="relative mt-3">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <input
-                type="text"
-                placeholder="Search..."
-                className="pl-10 w-full h-10 border rounded-md text-gray-700 border-gray-300 focus:ring-2 focus:ring-[#3d000c] focus:outline-none"
-              />
-            </div>
+
           </div>
         )}
       </nav>
 
-      {/* Announcement Bar */}
-      <div className="bg-[#3d000c59] border-t border-gray-200 overflow-hidden">
-        <div className="animate-marquee whitespace-nowrap py-2 flex">
-          <span className="text-sm font-medium text-gray-700 mx-8">🎉 50% OFF on Designer Dresses - Limited Time!</span>
-          <span className="text-sm font-medium text-gray-700 mx-8">✨ New Arrivals: Premium Jewelry Collection</span>
-          <span className="text-sm font-medium text-gray-700 mx-8">👗 Rent 3 Items, Get 1 FREE - Use Code: RENT3GET1</span>
-          <span className="text-sm font-medium text-gray-700 mx-8">🚚 Free Delivery on Orders Above $100</span>
-          <span className="text-sm font-medium text-gray-700 mx-8">💎 Exclusive: Luxury Handbags Now Available</span>
-        </div>
+      {/* Search in mobile */}
+      <div className="relative md:hidden">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+        <input
+          type="text"
+          placeholder="Search..."
+          className="pl-10 w-full h-10 border rounded-md text-gray-700 border-gray-300 focus:ring-2 focus:ring-[#3d000c] focus:outline-none"
+          onFocus={() => setSearchOpen(true)}   // 👈 opens overlay in mobile
+        />
+        {searchOpen && (
+          <div
+            className="relative top-[26%] inset-0 bg-white z-[9999] flex flex-col p-6 overflow-y-auto"
+            ref={overlayRef}
+          >
+
+            <button
+              className="self-end p-2 text-gray-500 hover:text-gray-800"
+              onClick={() => setSearchOpen(false)}
+            >
+              <X className="h-6 w-6" />
+            </button>
+
+            {/* Circular Suggestions */}
+            <div className="mt-8 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-6 max-w-6xl mx-auto">
+              {[
+                { name: "Gown", img: "/elegant-black-gown.png" },
+                { name: "Handbag", img: "/luxury-quilted-handbag.png" },
+                { name: "Shoes", img: "/shoes.png" },
+                { name: "Jewelry", img: "/jewelry.png" },
+                { name: "Saree", img: "/saree.png" },
+                { name: "Blazer", img: "/blazer.png" },
+                { name: "Watch", img: "/watch.png" },
+                { name: "Kids Wear", img: "/kids.png" },
+                { name: "Heels", img: "/heels.png" },
+                { name: "Accessories", img: "/accessories.png" },
+              ].map((item, i) => (
+                <div key={i} className="flex flex-col items-center text-center">
+                  <Image
+                    src={item.img}
+                    alt={item.name}
+                    className="w-20 h-20 object-cover rounded-full border shadow-sm hover:scale-105 transition"
+                    width={80}
+                    height={80}
+                  />
+                  <p className="mt-2 text-sm font-medium text-gray-700">{item.name}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
       </div>
+
     </header>
   )
 }
