@@ -8,7 +8,6 @@ import Link from "next/link"
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 
-// Reusable Dropdown Component
 function AnimatedDropdown({
     id,
     label,
@@ -75,14 +74,13 @@ const products = [
     { id: 3, name: "Lavender Saree with Lace", image: "/ethnic3.png", discount: "55% OFF" },
     { id: 3, name: "Lavender Saree with Lace", image: "/ethnic3.png", discount: "55% OFF" },
     { id: 3, name: "Lavender Saree with Lace", image: "/ethnic3.png", discount: "55% OFF" },
-    { id: 3, name: "Lavender Saree with Lace", image: "/ethnic3.png", discount: "55% OFF" },
 ]
 
 export default function ClothingPage() {
     const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
     const [sortOpen, setSortOpen] = useState(false)
     const [selectedSort, setSelectedSort] = useState("Relevance")
-    const [activeCategory, setActiveCategory] = useState("BAG'S COLLECTION")
+    const [activeCategory, setActiveCategory] = useState("WATCHES COLLECTION")
 
     return (
         <div className="min-h-screen bg-white">
@@ -96,12 +94,12 @@ export default function ClothingPage() {
                 <div className="max-w-8xl mx-auto px-6 bg-[#3d000c68] flex items-center space-x-6 overflow-x-auto h-12">
                      <p className="text-sm bg-gray-800 font-bold text-gray-50 py-1 px-2 rounded-xl hover:text-black"> Categories </p>
                     {[
-                        "School bags",
-                        "Wedding purses",
-                        "Micro Bags",
-                        "Pouches",
-                        "Saddle bags",
-                        "Shoulder bags",
+                        "Smart Watches",
+                        "Leather strap",
+                        "Analog watches",
+                        "Smart bands",
+                        "Luxury watches",
+                        "Hybrid watches",
                     ].map((cat) => (
                         <button
                             key={cat}

@@ -68,6 +68,13 @@ const products = [
   { id: 1, name: "Pink & Orange Embroidered Suit", image: "/ethnic1.png", discount: "55% OFF" },
   { id: 2, name: "Lime Green Kurta Set", image: "/ethnic2.png", discount: "55% OFF" },
   { id: 3, name: "Lavender Saree with Lace", image: "/ethnic3.png", discount: "55% OFF" },
+  { id: 3, name: "Lavender Saree with Lace", image: "/ethnic3.png", discount: "55% OFF" },
+  { id: 3, name: "Lavender Saree with Lace", image: "/ethnic3.png", discount: "55% OFF" },
+  { id: 3, name: "Lavender Saree with Lace", image: "/ethnic3.png", discount: "55% OFF" },
+  { id: 3, name: "Lavender Saree with Lace", image: "/ethnic3.png", discount: "55% OFF" },
+  { id: 3, name: "Lavender Saree with Lace", image: "/ethnic3.png", discount: "55% OFF" },
+  { id: 3, name: "Lavender Saree with Lace", image: "/ethnic3.png", discount: "55% OFF" },
+  { id: 3, name: "Lavender Saree with Lace", image: "/ethnic3.png", discount: "55% OFF" },
 ]
 
 export default function ClothingPage() {
@@ -101,7 +108,7 @@ export default function ClothingPage() {
               key={cat}
               onClick={() => setActiveCategory(cat)} // 👈 update heading
               className={`text-sm font-bold py-1 px-2 rounded-xl transition ${activeCategory === cat
-                  ? "bg-gray-800 text-gray-50"
+                  ? "text-gray-700"
                   : "text-gray-700 hover:text-black"
                 }`}
             >

@@ -144,6 +144,7 @@ export function Header() {
               <a href="/category/shoes" className="text-gray-700 hover:text-[#3d000c] transition">Shoes</a>
               <a href="/category/jewellery" className="text-gray-700 hover:text-[#3d000c] transition">Jewellery</a>
               <a href="/category/bags" className="text-gray-700 hover:text-[#3d000c] transition">Bags</a>
+              <a href="/category/watches" className="text-gray-700 hover:text-[#3d000c] transition">Watches</a>
               <a href="#" className="text-gray-200 px-3 py-1 rounded-xl bg-[#3d000c] transition">
                 Unlock your earning through us
               </a>
@@ -167,7 +168,7 @@ export function Header() {
                       <X className="h-6 w-6" />
                     </button>
 
-                    {/* Circular Suggestions */}
+
                     <div className="mt-8 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-6 max-w-8xl mx-auto">
                       {[
                         { name: "Gown", img: "/elegant-black-gown.png" },
@@ -221,6 +222,7 @@ export function Header() {
               <a href="/category/shoes" className="text-gray-700 hover:text-[#3d000c]">Shoes</a>
               <a href="/category/jewellery" className="text-gray-700 hover:text-[#3d000c]">Jewellery</a>
               <a href="/category/bags" className="text-gray-700 hover:text-[#3d000c]">Bags</a>
+              <a href="/category/watches" className="text-gray-700 hover:text-[#3d000c]">Watches</a>
               <a href="#" className="text-gray-200 px-3 py-2 rounded-xl bg-[#3d000c] hover:text-[#9f0020]">Unlock your earning</a>
             </div>
 
