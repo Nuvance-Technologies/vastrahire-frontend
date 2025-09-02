@@ -183,14 +183,14 @@ export default function ContactPage() {
             <div className="p-6 bg-gray-50 rounded-lg shadow-sm">
               <h3 className="text-base font-semibold">Prefer a different channel?</h3>
               <div className="mt-4 space-y-3 text-sm">
-                <a href="mailto:support@rentstyle.example" className="flex items-center gap-3 hover:text-[#690216] transition">
+                <Link href="mailto:support@rentstyle.example" className="flex items-center gap-3 hover:text-[#690216] transition">
                   <Mail className="h-4 w-4 text-[#690216]" />
                   support@rentstyle.example
-                </a>
-                <a href="tel:+11234567890" className="flex items-center gap-3 hover:text-[#690216] transition">
+                </Link>
+                <Link href="tel:+11234567890" className="flex items-center gap-3 hover:text-[#690216] transition">
                   <Phone className="h-4 w-4 text-[#690216]" />
                   +1 (123) 456-7890
-                </a>
+                </Link>
                 <Link href="#contact-form" className="flex items-center gap-3 hover:text-[#690216] transition">
                   <MessageSquare className="h-4 w-4 text-[#690216]" />
                   Live chat (during business hours)

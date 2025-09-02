@@ -45,9 +45,44 @@ export function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [searchOpen])
 
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
       <div className="flex items-center justify-between md:justify-center px-4 sm:px-6 lg:px-8 py-4">
+        <div className="absolute left-5" ref={dropdownRef}>
+          <button
+            onClick={() => setShowDropdown((prev) => !prev)}
+            className="px-4 py-2 flex items-center bg-[#3d000c] text-white rounded-xl"
+          >
+            More
+          </button>
+
+          {showDropdown && (
+            <div className="absolute mt-2 w-32 bg-white text-[#3d000c] shadow-lg rounded">
+              <ul className="py-2">
+                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Option 1</li>
+                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Option 2</li>
+                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Option 3</li>
+              </ul>
+            </div>
+          )}
+        </div>
         <Link href="/">
           <Image
             src="/vastrahire2.png"
@@ -78,11 +113,11 @@ export function Header() {
           </div>
 
           <div className="relative">
-            <a href="/customer/signup" className="flex items-center px-3 py-2 bg-[#3d000c] text-white rounded-md hover:bg-[#87001b] gap-1">
+            <Link href="/customer/signup" className="flex items-center px-3 py-2 bg-[#3d000c] text-white rounded-md hover:bg-[#87001b] gap-1">
               <button>
                 Sign Up
               </button>
-            </a>
+            </Link>
           </div>
           <div className="relative" ref={signupRef}>
             <button
@@ -133,21 +168,23 @@ export function Header() {
         </div>
       </div>
 
-      {/* Navigation */}
       <nav className="border-t border-gray-200">
         <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="hidden md:flex items-center justify-between h-16">
             <div className="flex space-x-6">
-              <a href="/category/women" className="text-gray-700 hover:text-[#3d000c] transition">Women</a>
-              <a href="/category/men" className="text-gray-700 hover:text-[#3d000c] transition">Men</a>
-              <a href="/category/kids" className="text-gray-700 hover:text-[#3d000c] transition">Kids</a>
-              <a href="/category/shoes" className="text-gray-700 hover:text-[#3d000c] transition">Shoes</a>
-              <a href="/category/jewellery" className="text-gray-700 hover:text-[#3d000c] transition">Jewellery</a>
-              <a href="/category/bags" className="text-gray-700 hover:text-[#3d000c] transition">Bags</a>
-              <a href="/category/watches" className="text-gray-700 hover:text-[#3d000c] transition">Watches</a>
-              <a href="#" className="text-gray-200 px-3 py-1 rounded-xl bg-[#3d000c] transition">
+              <Link href="/category/women" className="text-gray-700 hover:text-[#3d000c] transition">Women</Link>
+              <Link href="/category/men" className="text-gray-700 hover:text-[#3d000c] transition">Men</Link>
+              <Link href="/category/kids" className="text-gray-700 hover:text-[#3d000c] transition">Kids</Link>
+              <Link href="/category/shoes" className="text-gray-700 hover:text-[#3d000c] transition">Shoes</Link>
+              <Link href="/category/jewellery" className="text-gray-700 hover:text-[#3d000c] transition">Jewellery</Link>
+              <Link href="/category/bags" className="text-gray-700 hover:text-[#3d000c] transition">Bags</Link>
+              <Link href="/category/watches" className="text-gray-700 hover:text-[#3d000c] transition">Watches</Link>
+              <Link href="/branded" className="text-[#3d000c] font-semibold px-3 py-1 rounded-xl bg-[#ffecd1] transition">
+                Explore Brands
+              </Link>
+              <Link href="#" className="text-gray-200 px-3 py-1 rounded-xl bg-[#3d000c] transition">
                 Unlock your earning through us
-              </a>
+              </Link>
             </div>
             <div className="flex items-center space-x-4">
               <div className="relative hidden lg:block">
@@ -204,10 +241,11 @@ export function Header() {
                 <User className="h-4 w-4 mr-1" />
                 Profile
               </button>
-
-              <button>
-                <ShoppingCart className="text-gray-800 h-6 w-6" />
-              </button>
+              <Link href="/cart">
+                <button>
+                  <ShoppingCart className="text-gray-800 h-6 w-6" />
+                </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -216,14 +254,14 @@ export function Header() {
         {mobileMenu && (
           <div className="md:hidden px-4 pb-4 space-y-3">
             <div className="flex flex-col space-y-2">
-              <a href="/category/women" className="text-gray-700 hover:text-[#3d000c]">Women</a>
-              <a href="/category/men" className="text-gray-700 hover:text-[#3d000c]">Men</a>
-              <a href="/category/kids" className="text-gray-700 hover:text-[#3d000c]">Kids</a>
-              <a href="/category/shoes" className="text-gray-700 hover:text-[#3d000c]">Shoes</a>
-              <a href="/category/jewellery" className="text-gray-700 hover:text-[#3d000c]">Jewellery</a>
-              <a href="/category/bags" className="text-gray-700 hover:text-[#3d000c]">Bags</a>
-              <a href="/category/watches" className="text-gray-700 hover:text-[#3d000c]">Watches</a>
-              <a href="#" className="text-gray-200 px-3 py-2 rounded-xl bg-[#3d000c] hover:text-[#9f0020]">Unlock your earning</a>
+              <Link href="/category/women" className="text-gray-700 hover:text-[#3d000c]">Women</Link>
+              <Link href="/category/men" className="text-gray-700 hover:text-[#3d000c]">Men</Link>
+              <Link href="/category/kids" className="text-gray-700 hover:text-[#3d000c]">Kids</Link>
+              <Link href="/category/shoes" className="text-gray-700 hover:text-[#3d000c]">Shoes</Link>
+              <Link href="/category/jewellery" className="text-gray-700 hover:text-[#3d000c]">Jewellery</Link>
+              <Link href="/category/bags" className="text-gray-700 hover:text-[#3d000c]">Bags</Link>
+              <Link href="/category/watches" className="text-gray-700 hover:text-[#3d000c]">Watches</Link>
+              <Link href="#" className="text-gray-200 px-3 py-2 rounded-xl bg-[#3d000c] hover:text-[#9f0020]">Unlock your earning</Link>
             </div>
 
 

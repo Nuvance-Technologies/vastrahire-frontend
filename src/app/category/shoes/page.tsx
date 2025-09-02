@@ -7,6 +7,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import { BecomeLender } from "@/app/components/Become-lender"
 
 function AnimatedDropdown({
   id,
@@ -107,18 +108,17 @@ export default function ClothingPage() {
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`text-sm font-bold py-1 px-3 rounded-xl transition ${
-                activeCategory === cat
+              className={`text-sm font-bold py-1 px-3 rounded-xl transition ${activeCategory === cat
                   ? "bg-black text-white"
                   : "text-gray-700 hover:text-black"
-              }`}
+                }`}
             >
               {cat}
             </button>
           ))}
         </div>
       </div>
-
+      <BecomeLender />
       <main className="max-w-7xl mx-auto px-4 py-8">
         {/* ✅ Dynamic Heading */}
         <h1 className="text-xl mb-6 font-bold text-gray-800">

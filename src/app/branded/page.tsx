@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react"
 import { Header } from "../components/Header"
 import { AnnouncementBar } from "../components/Announcement-bar"
+import Link from "next/link"
 
 type Product = {
     id: string | number
@@ -98,7 +99,6 @@ function SectionHeader() {
     return (
         <>
             <header className="mb-6 md:mb-8">
-
                 <h1 className="text-2xl md:text-3xl text-gray-800 font-semibold tracking-tight">Branded Items</h1>
                 <p className="mt-2 text-sm md:text-base text-gray-600 max-w-prose">
                     Explore rentals from top brands. Filter by brand to find the exact gear you need—cameras, drones, laptops,
@@ -146,12 +146,6 @@ function BrandFilter({
         <div className="relative">
             <div className="flex items-center justify-between">
                 <h2 className="text-sm font-medium text-gray-800">Brands</h2>
-                <button
-                    className="text-xs text-gray-500 underline underline-offset-4 hover:text-gray-800"
-                    onClick={() => onChange("All")}
-                >
-                    Reset
-                </button>
             </div>
             <div className="mt-3 overflow-x-auto">
                 <div className="flex gap-2 min-w-max">
@@ -168,7 +162,7 @@ function BrandFilter({
 function ProductCard({ item }: { item: Product }) {
     const src = item.imageSrc || "/branded-product-image.png"
     return (
-        <a
+        <Link
             href={item.href || "#"}
             className="group block overflow-hidden rounded-lg border bg-white text-gray-900 hover:shadow-md transition-shadow"
         >
@@ -201,7 +195,7 @@ function ProductCard({ item }: { item: Product }) {
                     {item.location && <span className="truncate">• {item.location}</span>}
                 </div>
             </div>
-        </a>
+        </Link>
     )
 }
 

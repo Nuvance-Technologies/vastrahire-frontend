@@ -6,14 +6,14 @@ import Image from "next/image"
 
 const shops = [
   { id: 1, name: "Batra's Brother", image: "/luxury-boutique-storefront.png", items: 156, rating: 4.9, category: "Cloths" },
-  { id: 2, name: "Ramesh Collection", image: "/modern-urban-fashion-store.png", items: 89, rating: 4.7, category: "Men" },
+  { id: 2, name: "Ramesh Collection", image: "/modern-urban-fashion-store.png", items: 89, rating: 4.7, category: "Accessories" },
   { id: 3, name: "Vintage Treasures", image: "/vintage-clothing-store.png", items: 234, rating: 4.8, category: "Cloths" },
-  { id: 4, name: "Vijay Cutpiece", image: "/elegant-formal-wear.png", items: 67, rating: 4.9, category: "Kids" },
+  { id: 4, name: "Vijay Cutpiece", image: "/elegant-formal-wear.png", items: 67, rating: 4.9, category: "Jewellery" },
   { id: 5, name: "Accessory Haven", image: "/placeholder.png", items: 312, rating: 4.6, category: "Bags" },
   { id: 6, name: "Eco Fashion", image: "/sustainable-eco-fashion.png", items: 98, rating: 4.8, category: "Shoes" },
 ]
 
-const categories = ["All", "Cloths", "Bags", "Shoes", "Men", "Kids"]
+const categories = ["All", "Cloths", "Bags", "Shoes", "Jewellery", "Accessories"]
 
 export function ShopsGrid() {
   const [activeCategory, setActiveCategory] = useState("All")
@@ -48,7 +48,7 @@ export function ShopsGrid() {
               onClick={() => setActiveCategory(cat)}
               className={`px-4 py-2 rounded-full border text-sm font-medium transition ${
                 activeCategory === cat
-                  ? "bg-black text-white border-black"
+                  ? "bg-[#3d000c] text-white border-[#3d000c]"
                   : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
               }`}
             >

@@ -135,7 +135,7 @@ export default function ReviewForm({ onAdd }: { onAdd: (r: Review) => void }) {
             multiple
             accept="image/*,video/*"
             onChange={(e) => setFiles(e.target.files)}
-            className="block w-full text-sm text-gray-600 file:mr-4 file:rounded-md file:border-0 file:bg-emerald-50 file:px-3 file:py-2 file:text-emerald-700 hover:file:bg-emerald-100"
+            className="block w-full text-sm text-gray-600 file:mr-4 file:rounded-md file:border-0 file:bg-[#3d000c62] file:px-3 file:py-2 file:text-emerald-700 hover:file:bg-[#3d000c65]"
           />
           {!!files?.length && <p className="text-xs text-gray-500">{files.length} file(s) selected</p>}
         </div>
@@ -144,7 +144,7 @@ export default function ReviewForm({ onAdd }: { onAdd: (r: Review) => void }) {
           <button
             type="submit"
             disabled={submitting || !text.trim()}
-            className="rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-60 transition-colors"
+            className="rounded-md bg-[#3d000c] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[#87001b] focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-60 transition-colors"
           >
             {submitting ? "Submitting..." : "Post review"}
           </button>

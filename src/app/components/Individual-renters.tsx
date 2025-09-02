@@ -75,11 +75,11 @@ export function IndividualRenters() {
               </p>
 
               {/* View Profile Button */}
-              <a href= "/rentersProfile">
+              <Link href= "/rentersProfile">
                 <button className="mt-auto w-full py-2 px-4 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 text-sm font-medium transition">
                   View Profile
                 </button>
-              </a>
+              </Link>
             </div>
           ))}
         </div>
