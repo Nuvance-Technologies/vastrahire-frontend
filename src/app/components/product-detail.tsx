@@ -1,10 +1,11 @@
+
 "use client"
-
 import { useState, useRef, useEffect } from "react"
-import { Star, Heart, Share2, ShoppingBag, Ruler, Truck, Shield, RotateCcw, X, ShoppingCart } from "lucide-react"
+import { Star, Heart, Share2, ShoppingCart, ShoppingBag, Ruler, Truck, Shield, RotateCcw, X } from "lucide-react"
 import Link from "next/link"
-import Image from "next/image"
-
+import ReviewCard, { type Review as ReviewModel } from "../components/reviews/review-card"
+import Image from 'next/image'
+import ReviewForm from "../components/reviews/review-form"
 interface Product {
   id: number
   name: string
@@ -28,7 +29,6 @@ interface Product {
   availability: string
   category: string
 }
-
 interface ProductDetailProps {
   product: Product
 }
@@ -40,11 +40,13 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const [rentalDays, setRentalDays] = useState(3)
   const [showFeedbackModal, setShowFeedbackModal] = useState(false)
   const [feedbackReason, setFeedbackReason] = useState("")
+  const [feedbackComments, setFeedbackComments] = useState("")
   const [swipeStartX, setSwipeStartX] = useState(0)
   const [swipeStartY, setSwipeStartY] = useState(0)
   const [isSwipeActive, setIsSwipeActive] = useState(false)
+  const [activeTab, setActiveTab] = useState<"details" | "reviews" | "care">("details")
+  const [reviews, setReviews] = useState<ReviewModel[]>([])
   const productRef = useRef<HTMLDivElement>(null)
-
   const totalPrice = Number.parseInt(product.price.replace(/[^0-9]/g, "")) * rentalDays
 
   useEffect(() => {
@@ -53,20 +55,17 @@ export function ProductDetail({ product }: ProductDetailProps) {
       setSwipeStartY(e.touches[0].clientY)
       setIsSwipeActive(true)
     }
-
     const handleTouchMove = (e: TouchEvent) => {
       if (!isSwipeActive) return
-
       const currentX = e.touches[0].clientX
       const currentY = e.touches[0].clientY
       const diffX = swipeStartX - currentX
       const diffY = swipeStartY - currentY
-
       if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
         e.preventDefault()
       }
-    }
 
+    }
     const handleTouchEnd = (e: TouchEvent) => {
       if (!isSwipeActive) return
 
@@ -80,46 +79,37 @@ export function ProductDetail({ product }: ProductDetailProps) {
           setShowFeedbackModal(true)
         }
       }
-
       setIsSwipeActive(false)
     }
-
     const handleMouseDown = (e: MouseEvent) => {
       setSwipeStartX(e.clientX)
       setSwipeStartY(e.clientY)
       setIsSwipeActive(true)
     }
-
     const handleMouseMove = (e: MouseEvent) => {
       if (!isSwipeActive) return
     }
 
     const handleMouseUp = (e: MouseEvent) => {
       if (!isSwipeActive) return
-
       const diffX = swipeStartX - e.clientX
       const diffY = swipeStartY - e.clientY
-
       if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 100) {
         if (diffX > 0) {
           setShowFeedbackModal(true)
         }
       }
-
       setIsSwipeActive(false)
     }
-
     const productElement = productRef.current
     if (productElement) {
       productElement.addEventListener("touchstart", handleTouchStart, { passive: false })
       productElement.addEventListener("touchmove", handleTouchMove, { passive: false })
       productElement.addEventListener("touchend", handleTouchEnd)
-
       productElement.addEventListener("mousedown", handleMouseDown)
       productElement.addEventListener("mousemove", handleMouseMove)
       productElement.addEventListener("mouseup", handleMouseUp)
     }
-
     return () => {
       if (productElement) {
         productElement.removeEventListener("touchstart", handleTouchStart)
@@ -131,22 +121,40 @@ export function ProductDetail({ product }: ProductDetailProps) {
       }
     }
   }, [swipeStartX, swipeStartY, isSwipeActive])
+  useEffect(() => {
+    try {
+      const raw = typeof window !== "undefined" ? window.localStorage.getItem(`reviews:product:${product.id}`) : null
+      if (raw) setReviews(JSON.parse(raw) as ReviewModel[])
+    } catch { }
+  }, [product.id])
+
+  useEffect(() => {
+    if (reviews.length === 0) {
+      setActiveTab("reviews")
+    }
+  }, [reviews.length])
+  useEffect(() => {
+    try {
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem(`reviews:product:${product.id}`, JSON.stringify(reviews))
+      }
+    } catch { }
+  }, [reviews, product.id])
 
   const handleFeedbackSubmit = () => {
-    if (feedbackReason.trim()) {
-      console.log("Feedback submitted:", {
+    if ((feedbackReason || feedbackComments).trim()) {
+      console.log("[v0] Feedback submitted:", {
         productId: product.id,
-        reason: feedbackReason,
+        reason: feedbackReason || null,
+        comments: feedbackComments || null,
         timestamp: new Date().toISOString(),
       })
-
       setShowFeedbackModal(false)
       setFeedbackReason("")
-
+      setFeedbackComments("")
       alert("Thank you for your feedback! We'll use this to improve our recommendations.")
     }
   }
-
   return (
     <>
       <main
@@ -214,7 +222,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                   ))}
                 </div>
                 <span className="text-sm text-gray-500 ml-1">
-                  {product.rating} ({product.reviews} reviews)
+                  {product.rating} ({(reviews?.length ?? 0) || product.reviews} reviews)
                 </span>
               </div>
 
@@ -376,75 +384,133 @@ export function ProductDetail({ product }: ProductDetailProps) {
         <div className="mt-16">
           <div className="border-b border-gray-200">
             <div className="flex space-x-8">
-              <button className="py-4 px-1 border-b-2 border-indigo-600 text-indigo-600 font-medium">
+              <button
+                onClick={() => setActiveTab("details")}
+                className={`py-4 px-1 border-b-2 ${activeTab === "details"} border-transparent text-gray-500 hover:text-gray-900`}
+              >
                 Details
               </button>
-              <button className="py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-900">
-                Reviews ({product.reviews})
+              <button
+                onClick={() => setActiveTab("reviews")}
+                className={`py-4 px-1 border-b-2 ${activeTab === "reviews"} border-transparent text-gray-500 hover:text-gray-900`}
+              >
+                Reviews ({(reviews?.length ?? 0) || product.reviews})
               </button>
-              <button className="py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-900">
+              <button
+                onClick={() => setActiveTab("care")}
+                className={`py-4 px-1 border-b-2 ${activeTab === "care"} border-transparent text-gray-500 hover:text-gray-900`}
+              >
                 Care Instructions
               </button>
             </div>
           </div>
 
           <div className="py-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-4">
-                  Product Details
-                </h3>
-                <dl className="space-y-3">
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500">Material</dt>
-                    <dd className="text-sm text-gray-900">
-                      {product.details.material}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500">
-                      Embroidery
-                    </dt>
-                    <dd className="text-sm text-gray-900">
-                      {product.details.embroidery}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500">
-                      Care Instructions
-                    </dt>
-                    <dd className="text-sm text-gray-900">
-                      {product.details.care}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500">Origin</dt>
-                    <dd className="text-sm text-gray-900">
-                      {product.details.origin}
-                    </dd>
-                  </div>
-                </dl>
+            {activeTab === "details" && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-4">
+                    Product Details
+                  </h3>
+                  <dl className="space-y-3">
+                    <div>
+                      <dt className="text-sm font-medium text-gray-500">Material</dt>
+                      <dd className="text-sm text-gray-900">
+                        {product.details.material}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-sm font-medium text-gray-500">
+                        Embroidery
+                      </dt>
+                      <dd className="text-sm text-gray-900">
+                        {product.details.embroidery}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-sm font-medium text-gray-500">
+                        Care Instructions
+                      </dt>
+                      <dd className="text-sm text-gray-900">
+                        {product.details.care}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-sm font-medium text-gray-500">Origin</dt>
+                      <dd className="text-sm text-gray-900">
+                        {product.details.origin}
+                      </dd>
+                    </div>
+                  </dl>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-4">
+                    Styling Information
+                  </h3>
+                  <dl className="space-y-3">
+                    <div>
+                      <dt className="text-sm font-medium text-gray-500">Season</dt>
+                      <dd className="text-sm text-gray-900">
+                        {product.details.season}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-sm font-medium text-gray-500">Best For</dt>
+                      <dd className="text-sm text-gray-900">
+                        {product.details.occasion}
+                      </dd>
+                    </div>
+                  </dl>
+                </div>
               </div>
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-4">
-                  Styling Information
-                </h3>
-                <dl className="space-y-3">
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500">Season</dt>
-                    <dd className="text-sm text-gray-900">
-                      {product.details.season}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500">Best For</dt>
-                    <dd className="text-sm text-gray-900">
-                      {product.details.occasion}
-                    </dd>
-                  </div>
-                </dl>
+            )}
+            {activeTab === "reviews" && (
+              <div className="grid gap-8 md:grid-cols-2">
+                <section aria-label="Reviews" className="order-2 md:order-1 grid gap-4">
+                  {reviews.length === 0 ? (
+                    <div className="rounded-lg border border-dashed border-border bg-card p-6 text-center text-sm text-muted-foreground">
+                      No reviews yet. Be the first to write one!
+                    </div>
+                  ) : (
+                    <div className="grid gap-4">
+                      {reviews.map((r) => (
+                        <ReviewCard key={r.id} review={r} />
+                      ))}
+                    </div>
+                  )}
+                </section>
+              <div className="order-1 md:order-2">
+                  <ReviewForm
+                    onAdd={(r) => {
+                      console.log("[v0] Review added:", r)
+                      setReviews((prev) => [r, ...prev])
+                    }}
+                  />
+                </div>
               </div>
-            </div>
+            )}
+            {activeTab === "care" && (
+              <div className="grid gap-6 md:grid-cols-2">
+                <div className="rounded-lg border border-gray-600 bg-card p-6">
+                  <h3 className="font-semibold text-gray-800 mb-4">Care Instructions</h3>
+                  <ul className="list-disc pl-5 space-y-2 text-sm text-gray-700">
+                    <li>{product.details.care}</li>
+                    <li>Store in a cool, dry place away from direct sunlight.</li>
+                    <li>Avoid contact with sharp objects and abrasive surfaces.</li>
+                    <li>Use a garment bag during transport to prevent damage.</li>
+                  </ul>
+                </div>
+                <div className="rounded-lg border border-gray-600 bg-card p-6">
+                  <h3 className="font-semibold text-gray-800 mb-4">Rental Tips</h3>
+                  <ul className="list-disc pl-5 space-y-2 text-sm text-gray-700">
+                    <li>Try on your selected size as soon as you receive the item.</li>
+                    <li>Contact support immediately if sizing isn’t right—we’ll help.</li>
+                    <li>Use included care instructions to keep the item pristine.</li>
+                    <li>Return on time to avoid late fees and help the next renter.</li>
+                  </ul>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -533,10 +599,8 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
             <textarea
               placeholder="Additional comments (optional)"
-              value={
-                feedbackReason.includes("Not my style") ? feedbackReason : ""
-              }
-              onChange={(e) => setFeedbackReason(e.target.value)}
+              value={feedbackComments}
+              onChange={(e) => setFeedbackComments(e.target.value)}
               className="w-full p-3 border border-gray-200 rounded-lg bg-white text-gray-900 placeholder:text-gray-400 resize-none"
               rows={3}
             />

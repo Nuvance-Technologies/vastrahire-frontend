@@ -5,7 +5,7 @@ export function BecomeLender() {
     return (
         <section className="py-16 bg-gray-50">
             <div className="flex items-center justify-center my-10">
-                <h1 className="text-5xl font-bold text-gray-900">
+                <h1 className="md:text-5xl text-4xl font-bold text-gray-900">
                     Become a Lender
                 </h1>
             </div>

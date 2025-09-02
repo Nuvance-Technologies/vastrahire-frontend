@@ -8,7 +8,6 @@ import Link from "next/link"
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 
-// Reusable Dropdown Component
 function AnimatedDropdown({
   id,
   label,
@@ -63,51 +62,56 @@ function AnimatedDropdown({
   )
 }
 
-// Product Data
+// ✅ Product Data with categories
 const products = [
-  { id: 1, name: "Pink & Orange Embroidered Suit", image: "/ethnic1.png", discount: "55% OFF" },
-  { id: 2, name: "Lime Green Kurta Set", image: "/ethnic2.png", discount: "55% OFF" },
-  { id: 3, name: "Lavender Saree with Lace", image: "/ethnic3.png", discount: "55% OFF" },
-  { id: 3, name: "Lavender Saree with Lace", image: "/ethnic3.png", discount: "55% OFF" },
-  { id: 3, name: "Lavender Saree with Lace", image: "/ethnic3.png", discount: "55% OFF" },
-  { id: 3, name: "Lavender Saree with Lace", image: "/ethnic3.png", discount: "55% OFF" },
-  { id: 3, name: "Lavender Saree with Lace", image: "/ethnic3.png", discount: "55% OFF" },
-  { id: 3, name: "Lavender Saree with Lace", image: "/ethnic3.png", discount: "55% OFF" },
-  { id: 3, name: "Lavender Saree with Lace", image: "/ethnic3.png", discount: "55% OFF" },
-  { id: 3, name: "Lavender Saree with Lace", image: "/ethnic3.png", discount: "55% OFF" },
+  { id: 1, name: "Pink & Orange Embroidered Suit", image: "/ethnic1.png", discount: "55% OFF", category: "Smart Watches" },
+  { id: 2, name: "Lime Green Kurta Set", image: "/ethnic2.png", discount: "55% OFF", category: "Leather strap" },
+  { id: 3, name: "Lavender Saree with Lace", image: "/ethnic3.png", discount: "55% OFF", category: "Analog watches" },
+  { id: 4, name: "Golden Ethnic Set", image: "/ethnic1.png", discount: "45% OFF", category: "Luxury watches" },
+  { id: 5, name: "Designer Saree", image: "/ethnic2.png", discount: "30% OFF", category: "Smart bands" },
+  { id: 6, name: "Traditional Lehenga", image: "/ethnic3.png", discount: "60% OFF", category: "Hybrid watches" },
+]
+
+// ✅ Categories
+const categories = [
+  "All",
+  "Lehengas",
+  "Sarees",
+  "Indo Western",
+  "Salwar Kameez",
+  "Ethnic Wear",
+  "Branded",
 ]
 
 export default function ClothingPage() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [sortOpen, setSortOpen] = useState(false)
   const [selectedSort, setSelectedSort] = useState("Relevance")
-  const [activeCategory, setActiveCategory] = useState("WOMEN'S COLLECTION")
+  const [activeCategory, setActiveCategory] = useState("All")
+
+  // ✅ Filtered products
+  const filteredProducts =
+    activeCategory === "All"
+      ? products
+      : products.filter((p) => p.category === activeCategory)
 
   return (
     <div className="min-h-screen bg-white">
       <AnnouncementBar />
       <Header />
 
-      {/* Top Navigation */}
-      <div className="border-b">
-
-        <div className="max-w-8xl mx-auto px-6 bg-[#3d000c68] flex items-center space-x-6 overflow-x-auto h-12">
-          <p className="text-sm bg-gray-800 font-bold text-gray-50 py-1 px-2 rounded-xl hover:text-black"> Categories </p>
-          {[
-            "School bags",
-            "Wedding purses",
-            "Micro Bags",
-            "Pouches",
-            "Saddle bags",
-            "Shoulder bags",
-          ].map((cat) => (
+      {/* ✅ Sticky Top Navigation with Categories */}
+      <div className="border-b sticky top-0 bg-white z-20">
+        <div className="max-w-8xl mx-auto px-6 bg-[#3d000c68] flex items-center space-x-4 overflow-x-auto h-12">
+          {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`text-sm font-bold py-1 px-2 rounded-xl transition ${activeCategory === cat
-                ? "text-gray-700"
-                : "text-gray-700 hover:text-black"
-                }`}
+              className={`text-sm font-bold py-1 px-3 rounded-xl transition ${
+                activeCategory === cat
+                  ? "bg-black text-white"
+                  : "text-gray-700 hover:text-black"
+              }`}
             >
               {cat}
             </button>
@@ -115,101 +119,99 @@ export default function ClothingPage() {
         </div>
       </div>
 
-      <div className="flex">
-        <div className="flex justify-center">
-          <h1 className="text-xl relative top-10 left-5 text-gray-800 font-bold tracking-wide">
-            {activeCategory}
-          </h1>
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        {/* ✅ Dynamic Heading */}
+        <h1 className="text-xl mb-6 font-bold text-gray-800">
+          {activeCategory === "All" ? "All Products" : activeCategory}
+        </h1>
+
+        {/* Filters (Dropdowns) */}
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8 font-bold">
+          <AnimatedDropdown id="cat" label="Categories" options={["Sarees", "Lehengas", "Indo Western", "Salwar Kameez"]} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} />
+          <AnimatedDropdown id="col" label="Colour" options={["Red", "Wine", "Peach", "Cream", "Dark"]} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} />
+          <AnimatedDropdown id="dis" label="Discount" options={["0% and above", "10% and above", "20% and above", "30% and above", "40% and above"]} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} />
+          <AnimatedDropdown id="fab" label="Fabric" options={["Silk", "Cotton", "Linen", "Georgette", "Chiffon"]} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} />
+          <AnimatedDropdown id="pat" label="Pattern" options={["Embroidered", "Floral", "Geometric", "Abstract"]} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} />
+          <AnimatedDropdown id="occ" label="Occasion" options={["Festival wear", "Party wear", "Casual wear", "Formal wear", "Ethnic wear"]} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} />
+          <AnimatedDropdown id="siz" label="Size" options={["Small", "Medium", "Large", "X-Large", "XX-Large"]} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} />
+          <AnimatedDropdown id="pri" label="Price" options={["0-500", "500-1000", "1000-1500", "1500-2000", "2000+"]} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} />
         </div>
-        <main className="max-w-7xl mx-auto px-4 py-8">
-          <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8 font-bold">
-            <AnimatedDropdown id="cat" label="Categories" options={["Sarees", "Lehengas", "Indo Western", "Salwar Kameez"]} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} />
-            <AnimatedDropdown id="col" label="Colour" options={["Red", "Wine", "Peach", "Cream", "Dark"]} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} />
-            <AnimatedDropdown id="dis" label="Discount" options={["0% and above", "10% and above", "20% and above", "30% and above", "40% and above"]} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} />
-            <AnimatedDropdown id="fab" label="Fabric" options={["Silk", "Cotton", "Linen", "Georgette", "Chiffon"]} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} />
-            <AnimatedDropdown id="pat" label="Pattern" options={["Embroidered", "Floral", "Geometric", "Abstract"]} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} />
-            <AnimatedDropdown id="occ" label="Occasion" options={["Festival wear", "Party wear", "Casual wear", "Formal wear", "Ethnic wear"]} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} />
-            <AnimatedDropdown id="siz" label="Size" options={["Small", "Medium", "Large", "X-Large", "XX-Large"]} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} />
-            <AnimatedDropdown id="pri" label="Price" options={["0-500", "500-1000", "1000-1500", "1500-2000", "2000+"]} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} />
+
+        {/* Sub Heading + Sort Dropdown */}
+        <div className="flex items-center justify-between border-b pb-3 mb-6">
+          <p className="text-sm text-gray-700 font-medium">
+            {activeCategory === "All" ? "ALL" : activeCategory.toUpperCase()} | {filteredProducts.length} STYLES FOUND
+          </p>
+
+          {/* Sort */}
+          <div className="relative">
+            <button
+              onClick={() => setSortOpen(!sortOpen)}
+              className="flex items-center space-x-1 text-sm font-medium text-gray-700 border px-3 py-2 rounded-md shadow-sm hover:bg-gray-50 transition"
+            >
+              <span>Sort By: {selectedSort}</span>
+              <ChevronDown className={`h-4 w-4 transition-transform ${sortOpen ? "rotate-180" : ""}`} />
+            </button>
+
+            <AnimatePresence>
+              {sortOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-10 overflow-hidden"
+                >
+                  {["Newest", "Price: Low to High", "Price: High to Low"].map((option) => (
+                    <button
+                      key={option}
+                      onClick={() => {
+                        setSelectedSort(option)
+                        setSortOpen(false)
+                      }}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
+        </div>
 
-          {/* Sub Heading with Sort Dropdown */}
-          <div className="flex items-center justify-between border-b pb-3 mb-6">
-            <p className="text-sm text-gray-700 font-medium">
-              CLOTHING | 14192 STYLES FOUND | VIEW 201
-            </p>
-
-            {/* Sort Dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => setSortOpen(!sortOpen)}
-                className="flex items-center space-x-1 text-sm font-medium text-gray-700 border px-3 py-2 rounded-md shadow-sm hover:bg-gray-50 transition"
-              >
-                <span>Sort By: {selectedSort}</span>
-                <ChevronDown className={`h-4 w-4 transition-transform ${sortOpen ? "rotate-180" : ""}`} />
-              </button>
-
-              <AnimatePresence>
-                {sortOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -6 }}
-                    transition={{ duration: 0.2 }}
-                    className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-10 overflow-hidden"
-                  >
-                    {["Newest", "Price: Low to High", "Price: High to Low"].map((option) => (
-                      <button
-                        key={option}
-                        onClick={() => {
-                          setSelectedSort(option)
-                          setSortOpen(false)
-                        }}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
-                      >
-                        {option}
-                      </button>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {products.map((product) => (
-              <Link key={product.id} href={`/product/${product.id}`}>
-                <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
-                  <div className="aspect-[4/5] overflow-hidden">
-                    <Image
-                      src={product.image || "/placeholder.svg"}
-                      alt={product.name}
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                      width={400}
-                      height={500}
-                    />
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2">{product.name}</h3>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1">
-                        <span className="text-yellow-500">★★★★★</span>
-                      </div>
-                    </div>
+        {/* ✅ Products Grid (filtered) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredProducts.map((product) => (
+            <Link key={product.id} href={`/product/${product.id}`}>
+              <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
+                <div className="aspect-[4/5] overflow-hidden">
+                  <Image
+                    src={product.image || "/placeholder.svg"}
+                    alt={product.name}
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                    width={400}
+                    height={500}
+                  />
+                </div>
+                <div className="p-4">
+                  <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2">{product.name}</h3>
+                  <div className="flex items-center justify-between">
+                    <span className="text-red-600 text-sm font-bold">{product.discount}</span>
                   </div>
                 </div>
-              </Link>
-            ))}
-          </div>
+              </div>
+            </Link>
+          ))}
+        </div>
 
-          {/* Load More */}
-          <div className="text-center mt-12">
-            <button className="px-8 py-3 bg-red-700 text-white rounded-lg hover:bg-red-800 transition-colors">
-              Load More Products
-            </button>
-          </div>
-        </main>
-      </div>
+        {/* Load More */}
+        <div className="text-center mt-12">
+          <button className="px-8 py-3 bg-red-700 text-white rounded-lg hover:bg-red-800 transition-colors">
+            Load More Products
+          </button>
+        </div>
+      </main>
     </div>
   )
 }

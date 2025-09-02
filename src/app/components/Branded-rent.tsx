@@ -109,13 +109,13 @@ function StarRating({ value }: { value: number }) {
 
 export default function BrandedRentSection() {
   return (
-    <section aria-labelledby="branded-rent-heading" className="py-12 bg-gray-50 md:py-16 flex justify-center">
+    <section aria-labelledby="branded-rent-heading" className="py-12 px-3 bg-gray-50 md:py-16 flex justify-center">
       <div className="container max-w-6xl">
         <header className="mb-8 md:mb-10 text-gray-700">
-          <h2 id="branded-rent-heading" className="text-2xl md:text-3xl font-semibold">
+          <h2 id="branded-rent-heading" className="text-2xl md:text-start text-center md:text-3xl font-semibold">
             Rent from Top Brands
           </h2>
-          <p className="text-gray-500 mt-2 max-w-prose">
+          <p className="text-gray-500 mt-2 md:text-start text-center  max-w-prose">
             Curated picks from trusted brands. Quality gear, flexible terms.
           </p>
         </header>
