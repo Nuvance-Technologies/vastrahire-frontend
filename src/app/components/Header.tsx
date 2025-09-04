@@ -32,7 +32,6 @@ export function Header() {
   const [searchOpen, setSearchOpen] = useState(false)
   const overlayRef = useRef<HTMLDivElement>(null)
 
-  // Close search overlay when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (overlayRef.current && !overlayRef.current.contains(event.target as Node)) {
@@ -68,18 +67,17 @@ export function Header() {
         <div className="absolute left-5" ref={dropdownRef}>
           <button
             onClick={() => setShowDropdown((prev) => !prev)}
-            className="px-4 py-2 flex items-center bg-[#3d000c] text-white rounded-xl"
+            className="px-4 py-2 md:flex hidden items-center bg-[#3d000c] text-white rounded-xl"
           >
             More
           </button>
 
           {showDropdown && (
-            <div className="absolute mt-2 w-32 bg-white text-[#3d000c] shadow-lg rounded">
-              <ul className="py-2">
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Option 1</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Option 2</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Option 3</li>
-              </ul>
+            <div className="absolute md:inline hidden mt-2 w-32 bg-white text-[#3d000c] shadow-lg rounded">
+              <div className="py-2 flex flex-col">
+                <Link href="/policies/wear-and-care" className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Wear & Care Policy</Link>
+                <Link href="/about" className="px-4 py-2 hover:bg-gray-100 cursor-pointer">About us</Link>
+              </div>
             </div>
           )}
         </div>
@@ -180,9 +178,9 @@ export function Header() {
               <Link href="/category/bags" className="text-gray-700 hover:text-[#3d000c] transition">Bags</Link>
               <Link href="/category/watches" className="text-gray-700 hover:text-[#3d000c] transition">Watches</Link>
               <Link href="/branded" className="text-[#3d000c] font-semibold px-3 py-1 rounded-xl bg-[#ffecd1] transition">
-                Explore Brands
+                Explore Top Brands
               </Link>
-              <Link href="#" className="text-gray-200 px-3 py-1 rounded-xl bg-[#3d000c] transition">
+              <Link href="/earn-through-us" className="text-gray-200 px-3 py-1 rounded-xl bg-[#3d000c] transition">
                 Unlock your earning through us
               </Link>
             </div>
@@ -261,12 +259,32 @@ export function Header() {
               <Link href="/category/jewellery" className="text-gray-700 hover:text-[#3d000c]">Jewellery</Link>
               <Link href="/category/bags" className="text-gray-700 hover:text-[#3d000c]">Bags</Link>
               <Link href="/category/watches" className="text-gray-700 hover:text-[#3d000c]">Watches</Link>
-              <Link href="#" className="text-gray-200 px-3 py-2 rounded-xl bg-[#3d000c] hover:text-[#9f0020]">Unlock your earning</Link>
+              <Link href="/earn-through-us" className="text-gray-700 hover:text-[#3d000c]">Unlock Your earning through us</Link>
+              <Link href="/category/branded" className="text-gray-700 hover:text-[#3d000c]">Explore top brands</Link>
+
+              {/* More Button for mobile */}
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setShowDropdown(!showDropdown)}
+                  className="flex items-center px-3 py-2 bg-[#3d000c] text-white rounded-md hover:bg-[#87001b]"
+                >
+                  More
+                </button>
+                {showDropdown && (
+                  <div className="absolute mt-2 w-32 bg-white text-[#3d000c] shadow-lg rounded">
+                    <ul className="py-2">
+                      <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Option 1</li>
+                      <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Option 2</li>
+                      <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Option 3</li>
+                    </ul>
+                  </div>
+                )}
+              </div>
             </div>
-
-
           </div>
         )}
+
+
       </nav>
 
       {/* Search in mobile */}

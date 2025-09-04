@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { useEffect, useMemo, useState } from "react"
 
 type CartItem = {
@@ -81,10 +82,12 @@ export default function CartPage() {
                 >
                   <div className="flex items-center gap-4">
                     <div className="h-20 w-20 rounded-lg overflow-hidden bg-slate-100 shrink-0">
-                      <img
+                      <Image
                         src={it.image || "/placeholder.svg?height=120&width=120&query=cart%20item"}
                         alt={it.name}
                         className="h-full w-full object-cover"
+                        width={80}
+                        height={80}
                       />
                     </div>
                     <div className="flex-1 min-w-0">

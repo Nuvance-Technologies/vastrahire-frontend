@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 type MediaItem = { type: string; dataUrl: string }
 
 export type Review = {
@@ -57,10 +59,12 @@ export default function ReviewCard({ review }: { review: Review }) {
                   src={m.dataUrl}
                 />
               ) : (
-                <img
+                <Image
                   alt={`Review media ${idx + 1}`}
                   className="h-32 w-full object-cover transition-transform group-hover:scale-105"
                   src={m.dataUrl || "/placeholder.svg"}
+                  width={160}
+                  height={128}
                 />
               )}
             </div>

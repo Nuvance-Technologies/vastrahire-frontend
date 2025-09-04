@@ -75,7 +75,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
       const diffY = swipeStartY - endY
 
       if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 100) {
-        if (diffX > 0) {
+        if (diffX < 0) {
           setShowFeedbackModal(true)
         }
       }
@@ -95,7 +95,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
       const diffX = swipeStartX - e.clientX
       const diffY = swipeStartY - e.clientY
       if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 100) {
-        if (diffX > 0) {
+        if (diffX < 0) {
           setShowFeedbackModal(true)
         }
       }
@@ -162,9 +162,9 @@ export function ProductDetail({ product }: ProductDetailProps) {
         className="mx-auto px-4 sm:px-6 lg:px-8 py-8 select-none bg-gray-50"
       >
         {/* Tip Banner */}
-        <div className="mb-4 p-3 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-lg border border-gray-200">
+        <div className="mb-4 md:hidden p-3 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-lg border border-gray-200">
           <p className="text-sm text-gray-700 text-center">
-            💡 <strong>Tip:</strong> Swipe left on the product if you're not
+            💡 <strong>Tip:</strong> Swipe right on the product if you're not
             satisfied to give us feedback
           </p>
         </div>
@@ -208,7 +208,6 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 {product.name}
               </h1>
 
-              {/* Rating */}
               <div className="flex items-center gap-4 mb-4">
                 <div className="flex items-center gap-1">
                   {[...Array(5)].map((_, i) => (
@@ -479,7 +478,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                     </div>
                   )}
                 </section>
-              <div className="order-1 md:order-2">
+                <div className="order-1 md:order-2">
                   <ReviewForm
                     onAdd={(r) => {
                       console.log("[v0] Review added:", r)
@@ -601,8 +600,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
               placeholder="Additional comments (optional)"
               value={feedbackComments}
               onChange={(e) => setFeedbackComments(e.target.value)}
-              className="w-full p-3 border border-gray-200 rounded-lg bg-white text-gray-900 placeholder:text-gray-400 resize-none"
-              rows={3}
+              className="w-full p-3 border h-20 border-gray-200 rounded-lg bg-white text-gray-900 placeholder:text-gray-400 resize-none"
             />
 
             <div className="flex gap-3 mt-6">

@@ -17,6 +17,7 @@ import {
 } from "lucide-react"
 import { DashboardHeader } from "@/app/components/Dashboard-header"
 import { Header } from "@/app/components/Header"
+import Image from "next/image"
 
 export default function ProductManagement() {
     // Mock data for products with more detailed information
@@ -215,10 +216,12 @@ export default function ProductManagement() {
                     {products.map((product) => (
                         <div key={product.id} className="bg-white rounded-xl shadow overflow-hidden">
                             <div className="relative">
-                                <img
+                                <Image
                                     src={product.image || "/placeholder.svg"}
                                     alt={product.name}
                                     className="w-full h-48 object-cover"
+                                    width={400}
+                                    height={300}
                                 />
                                 <div className="absolute top-4 right-4">
                                     <span

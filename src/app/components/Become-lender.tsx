@@ -29,10 +29,6 @@ export function BecomeLender() {
                             </li>
                             <li className="flex items-center text-gray-800">
                                 <div className="w-2 h-2 bg-[#3b000c] rounded-full mr-3"></div>
-                                Free professional photography
-                            </li>
-                            <li className="flex items-center text-gray-800">
-                                <div className="w-2 h-2 bg-[#3b000c] rounded-full mr-3"></div>
                                 Insurance coverage included
                             </li>
                         </ul>

@@ -119,7 +119,7 @@ export default function LenderDashboard() {
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                     {/* Sidebar */}
                     <div className="lg:col-span-1 space-y-4">
-                        <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white p-6 rounded-xl sticky top-4">
+                        <div className="bg-[#3d000c8e] text-[#ffecd1] p-6 rounded-xl sticky top-4">
                             <div className="flex items-center gap-3 mb-4">
                                 <Image src={lenderProfile.avatar} alt={lenderProfile.name} className="h-12 w-12 rounded-full border-2 border-white/20" width={48} height={48} />
                                 <div>
@@ -193,7 +193,7 @@ export default function LenderDashboard() {
                             <h2 className="text-lg font-semibold text-gray-800 mb-4">My Products</h2>
                             {lenderProducts.map((p) => (
                                 <div key={p.id} className="flex items-center gap-4 border rounded-lg p-4 mb-3 hover:shadow">
-                                    <img src={p.image} alt={p.name} className="h-16 w-16 object-cover rounded-lg" />
+                                    <Image src={p.image} alt={p.name} className="h-16 w-16 object-cover rounded-lg" width={64} height={64} />
                                     <div className="flex-1">
                                         <h3 className="font-semibold text-gray-800">{p.name}</h3>
                                         <p className="text-sm text-gray-500">{p.category} • {p.dailyRate}/day</p>

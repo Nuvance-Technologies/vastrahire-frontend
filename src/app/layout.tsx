@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Vastrahire",
   description: "Rent your dream outfit",
+  icons: {
+    icon: "/vastrahire.jpg",
+  },
 };
 
 export default function RootLayout({

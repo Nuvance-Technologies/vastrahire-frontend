@@ -46,8 +46,8 @@ export function DashboardNav({ userType }: DashboardNavProps) {
                         <div
                             className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors
                 ${isActive
-                                    ? "bg-blue-600 text-white"
-                                    : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"}`}
+                                    ? "bg-[#3d000c] text-white"
+                                    : "text-gray-700 hover:bg-[#6f0218] hover:text-white"}`}
                         >
                             <Icon className="h-4 w-4" />
                             {item.title}

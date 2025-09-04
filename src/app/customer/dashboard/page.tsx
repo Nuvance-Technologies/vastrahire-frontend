@@ -1,13 +1,14 @@
 "use client"
 
 import { useState } from "react"
-import { Calendar, CreditCard, Download, Edit, History, MapPin, Settings, Bell, TrendingUp, Star } from "lucide-react"
+import { Calendar, CreditCard, Download, Edit, X, History, MapPin, Settings, Bell, TrendingUp, Star } from "lucide-react"
 import Image from "next/image"
 import { DashboardHeader } from "@/app/components/Dashboard-header"
 import { Header } from "@/app/components/Header"
 import { DashboardNav } from "@/app/components/Dashboard-nav"
 
 export default function CustomerDashboard() {
+    const [selectedRental, setSelectedRental] = useState<any | null>(null)
 
     const rentalHistory = [
         {
@@ -104,7 +105,7 @@ export default function CustomerDashboard() {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Sidebar */}
                     <div className="lg:col-span-1">
-                        <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-xl p-6 sticky top-4">
+                        <div className="bg-[#3d000c8e] text-[#ffecd1] rounded-xl p-6 sticky top-4">
                             <div className="flex flex-col items-center gap-3 mb-6">
                                 <Image src={userProfile.avatar} alt={userProfile.name} className="h-32 w-32 rounded-full border-2 border-white/20" width={128} height={128} />
                                 <div>
@@ -112,13 +113,12 @@ export default function CustomerDashboard() {
                                     <p className="text-white/70 text-sm">Member since {userProfile.memberSince}</p>
                                 </div>
                             </div>
-                            <DashboardNav userType="customer" />
+                            <DashboardNav userType="customer"  />
                         </div>
                     </div>
 
                     {/* Main Content */}
                     <div className="lg:col-span-2 space-y-6">
-                        {/* Rentals */}
                         <div className="bg-white rounded-xl shadow p-6">
                             <div className="flex items-center justify-between mb-4">
                                 <div>
@@ -131,42 +131,128 @@ export default function CustomerDashboard() {
                             </div>
 
                             <div className="space-y-4">
-                                {rentalHistory.map((rental, index) => (
+                                {rentalHistory.map((rental) => (
                                     <div
                                         key={rental.id}
-                                        className="flex items-center gap-4 p-4 border rounded-lg hover:shadow-md transition-all duration-300 group"
+                                        className="flex items-center gap-4 p-4 border rounded-lg hover:shadow-md transition-all duration-300 group cursor-pointer"
+                                        onClick={() => setSelectedRental(rental)} // open details
                                     >
                                         <div className="relative overflow-hidden rounded-lg">
-                                            <img src={rental.image} alt={rental.item} className="h-16 w-16 object-cover group-hover:scale-110 transition-transform duration-300" />
+                                            <Image
+                                                src={rental.image}
+                                                alt={rental.item}
+                                                className="h-16 w-16 object-cover group-hover:scale-110 transition-transform duration-300"
+                                                width={64}
+                                                height={64}
+                                            />
                                             {rental.status === "active" && (
                                                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
                                             )}
                                         </div>
                                         <div className="flex-1">
                                             <div className="flex items-center justify-between">
-                                                <h4 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">{rental.item}</h4>
-                                                <span className={`px-2 py-1 rounded text-xs ${rental.status === "active" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"}`}>
+                                                <h4 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                                    {rental.item}
+                                                </h4>
+                                                <span
+                                                    className={`px-2 py-1 rounded text-xs ${rental.status === "active"
+                                                        ? "bg-blue-600 text-white"
+                                                        : "bg-gray-200 text-gray-700"
+                                                        }`}
+                                                >
                                                     {rental.status}
                                                 </span>
                                             </div>
-                                            <p className="text-sm text-gray-500">{rental.category} • {rental.rentedFrom}</p>
+                                            <p className="text-sm text-gray-500">
+                                                {rental.category} • {rental.rentedFrom}
+                                            </p>
                                             <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
-                                                <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {rental.startDate} - {rental.endDate}</span>
-                                                <span className="flex items-center gap-1"><CreditCard className="h-3 w-3" /> {rental.amount}</span>
+                                                <span className="flex items-center gap-1">
+                                                    <Calendar className="h-3 w-3" /> {rental.startDate} - {rental.endDate}
+                                                </span>
+                                                <span className="flex items-center gap-1">
+                                                    <CreditCard className="h-3 w-3" /> {rental.amount}
+                                                </span>
                                                 {rental.rating && (
-                                                    <span className="flex items-center gap-1"><Star className="h-3 w-3 text-yellow-400 fill-yellow-400" /> {rental.rating}</span>
+                                                    <span className="flex items-center gap-1">
+                                                        <Star className="h-3 w-3 text-yellow-400 fill-yellow-400" /> {rental.rating}
+                                                    </span>
                                                 )}
                                             </div>
                                         </div>
                                         <div className="flex gap-2 opacity-50 text-gray-800 group-hover:opacity-100 transition-opacity">
-                                            <button className="p-2 border rounded-md hover:bg-gray-100"><Download className="h-4 w-4" /></button>
+                                            <button className="p-2 border rounded-md hover:bg-gray-100">
+                                                <Download className="h-4 w-4" />
+                                            </button>
                                             {rental.status === "active" && (
-                                                <button className="p-2 border rounded-md hover:bg-gray-100"><Edit className="h-4 w-4" /></button>
+                                                <button className="p-2 border rounded-md hover:bg-gray-100">
+                                                    <Edit className="h-4 w-4" />
+                                                </button>
                                             )}
                                         </div>
                                     </div>
                                 ))}
                             </div>
+
+                            {/* Details Modal */}
+                            {selectedRental && (
+                                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+                                    <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-2xl w-full max-w-md relative transition-transform transform scale-100">
+
+                                        {/* Close Button */}
+                                        <button
+                                            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition"
+                                            onClick={() => setSelectedRental(null)}
+                                        >
+                                            <X className="h-6 w-6" />
+                                        </button>
+
+                                        {/* Title */}
+                                        <h2 className="text-2xl font-semibold text-gray-900 mb-4 text-center">
+                                            {selectedRental.item}
+                                        </h2>
+
+                                        {/* Image */}
+                                        <div className="overflow-hidden rounded-xl mb-5">
+                                            <Image
+                                                src={selectedRental.image}
+                                                alt={selectedRental.item}
+                                                className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
+                                                width={400}
+                                                height={300}
+                                            />
+                                        </div>
+
+                                        {/* Info Section */}
+                                        <div className="space-y-2 text-gray-700 text-sm">
+                                            <p className="flex justify-between">
+                                                <span className="font-medium text-gray-600">Category:</span>
+                                                {selectedRental.category}
+                                            </p>
+                                            <p className="flex justify-between">
+                                                <span className="font-medium text-gray-600">Rented From:</span>
+                                                {selectedRental.rentedFrom}
+                                            </p>
+                                            <p className="flex justify-between">
+                                                <span className="font-medium text-gray-600">Duration:</span>
+                                                {selectedRental.startDate} - {selectedRental.endDate}
+                                            </p>
+                                            <p className="flex justify-between mb-4">
+                                                <span className="font-medium text-gray-600">Amount Paid:</span>
+                                                ₹{selectedRental.amount}
+                                            </p>
+                                        </div>
+
+                                        {/* Return Button */}
+                                        {selectedRental.status === "active" && (
+                                            <button className="w-full py-3 rounded-xl bg-[#3d000c] text-white font-semibold shadow-md hover:from-red-600 hover:to-red-700 transition-all duration-300">
+                                                Return Early
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
                         </div>
 
                         <div className="bg-white rounded-xl shadow p-6">
@@ -175,7 +261,7 @@ export default function CustomerDashboard() {
                                     <h3 className="text-lg font-semibold text-gray-900">Personal Details</h3>
                                     <p className="text-gray-500 text-sm">Your profile information and preferences</p>
                                 </div>
-                                <button className="px-4 py-2 rounded-md bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 flex items-center gap-1">
+                                <button className="px-4 py-2 rounded-md bg-[#3d000c] text-white hover:bg-[#710017] flex items-center gap-1">
                                     <Edit className="h-4 w-4" /> Edit Profile
                                 </button>
                             </div>
@@ -201,8 +287,8 @@ export default function CustomerDashboard() {
 
                             <hr className="my-6" />
                             <div className="flex gap-3">
-                                <button className="px-4 py-2 rounded-md bg-gradient-to-r from-green-600 to-blue-600 text-white hover:from-green-700 hover:to-blue-700">Save Changes</button>
-                                <button className="px-4 py-2 rounded-md border hover:bg-gray-100">Cancel</button>
+                                <button className="px-4 py-2 rounded-md bg-[#3d000c] text-white hover:bg-[#710017]">Save Changes</button>
+                                <button className="px-4 py-2 rounded-md border text-[#3d000c] hover:bg-gray-100">Cancel</button>
                             </div>
                         </div>
                     </div>

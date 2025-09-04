@@ -4,6 +4,7 @@ import { useMemo, useState } from "react"
 import { Header } from "../components/Header"
 import { AnnouncementBar } from "../components/Announcement-bar"
 import Link from "next/link"
+import Image from "next/image"
 
 type Product = {
     id: string | number
@@ -167,10 +168,12 @@ function ProductCard({ item }: { item: Product }) {
             className="group block overflow-hidden rounded-lg border bg-white text-gray-900 hover:shadow-md transition-shadow"
         >
             <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
-                <img
+                <Image
                     src={src || "/placeholder.svg"}
                     alt={`${item.name}`}
                     className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                    width={400}
+                    height={300}
                 />
                 <div className="absolute left-0 top-0 m-2 rounded bg-white/80 px-2 py-1 text-xs font-medium border text-gray-700">
                     {item.brand}
