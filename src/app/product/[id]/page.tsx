@@ -1,6 +1,6 @@
-import { AnnouncementBar } from "../../components/Announcement-bar"
-import { Header } from "../../components/Header"
-import { ProductDetail } from "../../components/product-detail"
+import { AnnouncementBar } from "../../components/Announcement-bar";
+import { Header } from "../../components/Header";
+import { ProductDetail } from "../../components/product-detail";
 
 // Mock product data - in real app this would come from database
 const products = {
@@ -72,10 +72,10 @@ const products = {
     availability: "Available",
     category: "women",
   },
-}
+};
 
-export default function ProductPage({ params }: { params: { id: string } }) {
-  const product = products[params.id as keyof typeof products]
+export default function ProductPage() {
+  const product = products["1"]; // In real app, fetch product by ID from URL params
 
   if (!product) {
     return (
@@ -83,11 +83,15 @@ export default function ProductPage({ params }: { params: { id: string } }) {
         <AnnouncementBar />
         <Header />
         <div className="max-w-7xl mx-auto px-4 py-16 text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-4">Product Not Found</h1>
-          <p className="text-muted-foreground">The product you're looking for doesn't exist.</p>
+          <h1 className="text-2xl font-bold text-foreground mb-4">
+            Product Not Found
+          </h1>
+          <p className="text-muted-foreground">
+            The product you&apos;re looking for doesn&apos;t exist.
+          </p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -96,5 +100,5 @@ export default function ProductPage({ params }: { params: { id: string } }) {
       <Header />
       <ProductDetail product={product} />
     </div>
-  )
+  );
 }

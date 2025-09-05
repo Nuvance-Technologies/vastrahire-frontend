@@ -1,8 +1,47 @@
-import Link from "next/link"
-import { DollarSign, TrendingUp, Shield } from "lucide-react"
-import Image from "next/image"
+"use client";
+
+import Link from "next/link";
+import { DollarSign, TrendingUp, Shield } from "lucide-react";
+import Image from "next/image";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import SpinnerLoader from "@/app/components/Loader";
 
 export default function LenderLoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
+
+  const handleSignin = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const res = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (res?.error) {
+        toast.error("Invalid email or password!");
+      } else {
+        toast.success("Login successful! Redirecting...");
+        router.push("/lender/dashboard");
+      }
+    } catch (error) {
+      toast.error("Login failed! Please try again.");
+      console.error("Login error:", error);
+    }
+  };
+
+  if (loading) {
+    return <SpinnerLoader />;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 relative">
       {/* Background decorative elements */}
@@ -40,58 +79,78 @@ export default function LenderLoginPage() {
               Ready to manage your listings and earnings?
             </p>
           </div>
-
           <div className="space-y-6">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <label htmlFor="email" className="text-sm font-medium text-gray-800 block">
-                  Business Email
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  placeholder="your.business@example.com"
-                  className="w-full h-12 px-3 rounded-md text-gray-700 border-2 focus:border-[#3d000c] outline-none transition-colors"
-                />
+            <form onSubmit={handleSignin}>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label
+                    htmlFor="email"
+                    className="text-sm font-medium text-gray-800 block"
+                  >
+                    Business Email
+                  </label>
+                  <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="your.business@example.com"
+                    className="w-full h-12 px-3 rounded-md text-gray-700 border-2 focus:border-[#3d000c] outline-none transition-colors"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label
+                    htmlFor="password"
+                    className="text-sm font-medium text-gray-800 block"
+                  >
+                    Password
+                  </label>
+                  <input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter your password"
+                    className="w-full h-12 px-3 rounded-md text-gray-700 border-2 focus:border-[#3d000c] outline-none transition-colors"
+                  />
+                </div>
               </div>
-              <div className="space-y-2">
-                <label htmlFor="password" className="text-sm font-medium text-gray-800 block">
-                  Password
-                </label>
-                <input
-                  id="password"
-                  type="password"
-                  placeholder="Enter your password"
-                  className="w-full h-12 px-3 rounded-md text-gray-700 border-2 focus:border-[#3d000c] outline-none transition-colors"
-                />
-              </div>
-            </div>
 
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <input type="checkbox" id="remember" className="rounded border-gray-400 w-4 h-4" />
-                <label htmlFor="remember" className="text-sm text-gray-700">
-                  Keep me signed in
-                </label>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="remember"
+                    className="rounded border-gray-400 w-4 h-4"
+                  />
+                  <label htmlFor="remember" className="text-sm text-gray-700">
+                    Keep me signed in
+                  </label>
+                </div>
+                <Link
+                  href="/lender/forgot-password"
+                  className="text-sm text-[#3d000c] hover:text-[#9f0020] font-medium"
+                >
+                  Forgot password?
+                </Link>
               </div>
-              <Link
-                href="/lender/forgot-password"
-                className="text-sm text-[#3d000c] hover:text-[#9f0020] font-medium"
+
+              <button
+                type="submit"
+                className="w-full h-12 bg-gradient-to-r from-[#3d000c] to-[#710117] hover:from-[#9f0020] hover:to-[#3d000c] text-white font-semibold text-base rounded-md shadow-lg transition"
               >
-                Forgot password?
-              </Link>
-            </div>
-
-            <button className="w-full h-12 bg-gradient-to-r from-[#3d000c] to-[#710117] hover:from-[#9f0020] hover:to-[#3d000c] text-white font-semibold text-base rounded-md shadow-lg transition">
-              Access Dashboard
-            </button>
+                Access Dashboard
+              </button>
+            </form>
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white px-3 text-gray-500 font-medium">Or continue with</span>
+                <span className="bg-white px-3 text-gray-500 font-medium">
+                  Or continue with
+                </span>
               </div>
             </div>
 
@@ -121,17 +180,24 @@ export default function LenderLoginPage() {
             <div className="bg-[#f3e8ff] rounded-lg p-4 space-y-2">
               <div className="flex items-center gap-2 text-sm">
                 <TrendingUp className="w-4 h-4 text-[#3d000c]" />
-                <span className="text-gray-700">Track your earnings and performance</span>
+                <span className="text-gray-700">
+                  Track your earnings and performance
+                </span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <Shield className="w-4 h-4 text-[#3d000c]" />
-                <span className="text-gray-700">Secure payments and item protection</span>
+                <span className="text-gray-700">
+                  Secure payments and item protection
+                </span>
               </div>
             </div>
 
             <p className="text-center text-sm text-gray-500">
               New lender partner?{" "}
-              <Link href="/lender/signup" className="text-[#3d000c] hover:text-[#9f0020] font-semibold">
+              <Link
+                href="/lender/signup"
+                className="text-[#3d000c] hover:text-[#9f0020] font-semibold"
+              >
                 Join our community
               </Link>
             </p>
@@ -139,5 +205,5 @@ export default function LenderLoginPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

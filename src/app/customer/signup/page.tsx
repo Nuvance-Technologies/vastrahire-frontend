@@ -1,8 +1,81 @@
-import Link from "next/link"
-import { Sparkles, Gift } from "lucide-react"
-import Image from "next/image"
+"use client";
+
+import Link from "next/link";
+import { Sparkles, Gift } from "lucide-react";
+import Image from "next/image";
+import { useState } from "react";
+import { toast } from "react-hot-toast";
+import axios from "axios";
+import SpinnerLoader from "@/app/components/Loader";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export default function CustomerSignupPage() {
+  const [firstname, setFirstname] = useState("");
+  const [lastname, setLastname] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
+
+  const emptyFields = () => {
+    setFirstname("");
+    setLastname("");
+    setEmail("");
+    setPassword("");
+    setConfirmPassword("");
+    setTermsAccepted(false);
+  };
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+    if (!termsAccepted) {
+      toast.error("You must accept the terms and conditions");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const res = await axios.post("/api/signup", {
+        firstname,
+        lastname,
+        email,
+        password: confirmPassword,
+        role: "customer",
+      });
+
+      if (res.status === 201) {
+        const result = await signIn("credentials", {
+          redirect: false,
+          email: email,
+          password: password,
+        });
+        if (result?.ok) {
+          toast.success("Signup and login successful!");
+          router.push("/customer/dashboard");
+          emptyFields();
+          return;
+        }
+      }
+    } catch (error) {
+      toast.error("Signup failed. Please try again.");
+      console.error("Signup error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return <SpinnerLoader />;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 relative">
       {/* Background decorative elements */}
@@ -24,10 +97,14 @@ export default function CustomerSignupPage() {
               className="mx-auto"
             />
           </Link>
-          <p className="text-gray-500 mt-2 text-lg">Join the style revolution</p>
+          <p className="text-gray-500 mt-2 text-lg">
+            Join the style revolution
+          </p>
           <div className="flex justify-center items-center gap-2 mt-3 text-[#3d000c]">
             <Sparkles className="w-5 h-5" />
-            <span className="text-sm font-medium">Unlimited Style • Zero Commitment</span>
+            <span className="text-sm font-medium">
+              Unlimited Style • Zero Commitment
+            </span>
           </div>
         </div>
 
@@ -43,83 +120,128 @@ export default function CustomerSignupPage() {
           </div>
 
           {/* Form */}
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
+          <form onSubmit={handleSignup}>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <label
+                    htmlFor="firstName"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    First Name
+                  </label>
+                  <input
+                    id="firstName"
+                    placeholder="John"
+                    value={firstname}
+                    onChange={(e) => setFirstname(e.target.value)}
+                    className="h-12 w-full px-3 text-gray-700 rounded-md border-2 border-gray-300 bg-white focus:border-[#3d000c] outline-none transition-colors"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label
+                    htmlFor="lastName"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Last Name
+                  </label>
+                  <input
+                    id="lastName"
+                    placeholder="Doe"
+                    value={lastname}
+                    onChange={(e) => setLastname(e.target.value)}
+                    className="h-12 w-full px-3 text-gray-700 rounded-md border-2 border-gray-300 bg-white focus:border-[#3d000c] outline-none transition-colors"
+                  />
+                </div>
+              </div>
               <div className="space-y-2">
-                <label htmlFor="firstName" className="text-sm font-medium text-gray-700">
-                  First Name
+                <label
+                  htmlFor="email"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Email Address
                 </label>
                 <input
-                  id="firstName"
-                  placeholder="John"
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your.email@example.com"
                   className="h-12 w-full px-3 text-gray-700 rounded-md border-2 border-gray-300 bg-white focus:border-[#3d000c] outline-none transition-colors"
                 />
               </div>
               <div className="space-y-2">
-                <label htmlFor="lastName" className="text-sm font-medium text-gray-700">
-                  Last Name
+                <label
+                  htmlFor="password"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Create Password
                 </label>
                 <input
-                  id="lastName"
-                  placeholder="Doe"
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Create a strong password"
+                  className="h-12 w-full px-3 text-gray-700 rounded-md border-2 border-gray-300 bg-white focus:border-[#3d000c] outline-none transition-colors"
+                />
+              </div>
+              <div className="space-y-2">
+                <label
+                  htmlFor="confirmPassword"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Confirm Password
+                </label>
+                <input
+                  id="confirmPassword"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Confirm your password"
                   className="h-12 w-full px-3 text-gray-700 rounded-md border-2 border-gray-300 bg-white focus:border-[#3d000c] outline-none transition-colors"
                 />
               </div>
             </div>
-            <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium text-gray-700">
-                Email Address
-              </label>
-              <input
-                id="email"
-                type="email"
-                placeholder="your.email@example.com"
-                className="h-12 w-full px-3 text-gray-700 rounded-md border-2 border-gray-300 bg-white focus:border-[#3d000c] outline-none transition-colors"
-              />
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="password" className="text-sm font-medium text-gray-700">
-                Create Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                placeholder="Create a strong password"
-                className="h-12 w-full px-3 text-gray-700 rounded-md border-2 border-gray-300 bg-white focus:border-[#3d000c] outline-none transition-colors"
-              />
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">
-                Confirm Password
-              </label>
-              <input
-                id="confirmPassword"
-                type="password"
-                placeholder="Confirm your password"
-                className="h-12 w-full px-3 text-gray-700 rounded-md border-2 border-gray-300 bg-white focus:border-[#3d000c] outline-none transition-colors"
-              />
-            </div>
-          </div>
 
-          {/* Terms */}
-          <div className="flex items-start space-x-2">
-            <input type="checkbox" id="terms" className="rounded border-gray-300 w-4 h-4 mt-1" />
-            <label htmlFor="terms" className="text-sm leading-relaxed text-gray-600">
-              I agree to the{" "}
-              <Link href="/terms" className="text-[#3d000c] hover:text-[#9f0020] font-medium">
-                Terms of Service
-              </Link>{" "}
-              and{" "}
-              <Link href="/privacy" className="text-[#3d000c] hover:text-[#9f0020] font-medium">
-                Privacy Policy
-              </Link>
-            </label>
-          </div>
+            {/* Terms */}
+            <div className="flex items-start space-x-2">
+              <input
+                type="checkbox"
+                id="terms"
+                value={termsAccepted ? "accepted" : ""}
+                onChange={(e) => setTermsAccepted(e.target.checked)}
+                className="rounded border-gray-300 w-4 h-4 mt-1"
+              />
+              <label
+                htmlFor="terms"
+                className="text-sm leading-relaxed text-gray-600"
+              >
+                I agree to the{" "}
+                <Link
+                  href="/terms"
+                  className="text-[#3d000c] hover:text-[#9f0020] font-medium"
+                >
+                  Terms of Service
+                </Link>{" "}
+                and{" "}
+                <Link
+                  href="/privacy"
+                  className="text-[#3d000c] hover:text-[#9f0020] font-medium"
+                >
+                  Privacy Policy
+                </Link>
+              </label>
+            </div>
 
-          {/* Signup button */}
-          <button className="w-full h-12 rounded-md bg-gradient-to-r from-[#3d000c] to-[#740118] hover:from-[#9f0020] hover:to-[#3d000c] text-white font-semibold text-base shadow-lg transition-colors">
-            Create Account & Start Exploring
-          </button>
+            {/* Signup button */}
+            <button
+              type="submit"
+              className="w-full h-12 rounded-md bg-gradient-to-r from-[#3d000c] to-[#740118] hover:from-[#9f0020] hover:to-[#3d000c] text-white font-semibold text-base shadow-lg transition-colors"
+            >
+              Create Account & Start Exploring
+            </button>
+          </form>
 
           {/* Divider */}
           <div className="relative">
@@ -127,14 +249,14 @@ export default function CustomerSignupPage() {
               <span className="w-full border-t border-gray-300" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-3 text-gray-500 font-medium">Or sign up with</span>
+              <span className="bg-white px-3 text-gray-500 font-medium">
+                Or sign up with
+              </span>
             </div>
           </div>
 
           {/* Google Button */}
-          <button
-            className="w-full h-12 rounded-md border-2 text-gray-700 border-gray-300 hover:bg-pink-50 transition-colors flex items-center justify-center gap-2 bg-transparent"
-          >
+          <button className="w-full h-12 rounded-md border-2 text-gray-700 border-gray-300 hover:bg-pink-50 transition-colors flex items-center justify-center gap-2 bg-transparent">
             <svg className="h-5 w-5" viewBox="0 0 24 24">
               <path
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -169,12 +291,15 @@ export default function CustomerSignupPage() {
 
           <p className="text-center text-sm text-gray-500">
             Already have an account?{" "}
-            <Link href="/customer/login" className="text-[#3d000c] hover:text-[#9f0020] font-semibold">
+            <Link
+              href="/customer/login"
+              className="text-[#3d000c] hover:text-[#9f0020] font-semibold"
+            >
               Sign in here
             </Link>
           </p>
         </div>
       </div>
     </div>
-  )
+  );
 }

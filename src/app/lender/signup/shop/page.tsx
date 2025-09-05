@@ -1,8 +1,79 @@
-import Link from "next/link"
-import { DollarSign, Users, Award, Zap } from "lucide-react"
-import Image from "next/image"
+"use client";
+
+import Link from "next/link";
+import { DollarSign, Users, Award, Zap } from "lucide-react";
+import Image from "next/image";
+import SpinnerLoader from "@/app/components/Loader";
+import toast from "react-hot-toast";
+import { signIn } from "next-auth/react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function LenderSignupPage() {
+  const [firstname, setFirstname] = useState("");
+  const [lastname, setLastname] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [businessType, setBusinessType] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [agreeTerms, setAgreeTerms] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!agreeTerms) {
+      toast.error("You must agree to the terms and privacy policy.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const res = await axios.post("/api/signup", {
+        firstname,
+        lastname,
+        email,
+        phone,
+        businessType,
+        password,
+        confirmPassword,
+        role: "business",
+      });
+
+      if (res.status === 201) {
+        const result = await signIn("credentials", {
+          email,
+          password,
+          redirect: false,
+        });
+        if (result?.ok) {
+          toast.success("Signup successful! Redirecting...");
+          router.push("/lender/dashboard");
+        } else {
+          toast.error("Signin after signup failed. Please try logging in.");
+        }
+      }
+    } catch (error) {
+      toast.error("Signup failed. Please try again.");
+      console.error("Signup error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return <SpinnerLoader />;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 relative">
       {/* Background decorative elements */}
@@ -27,7 +98,9 @@ export default function LenderSignupPage() {
           <p className="text-gray-500 mt-2 text-lg">Start earning today</p>
           <div className="flex justify-center items-center gap-2 mt-3 text-[#3d000c]">
             <Zap className="w-5 h-5" />
-            <span className="text-sm font-medium">Easy Setup • Instant Earnings</span>
+            <span className="text-sm font-medium">
+              Easy Setup • Instant Earnings
+            </span>
           </div>
         </div>
 
@@ -40,120 +113,172 @@ export default function LenderSignupPage() {
               Join thousands earning from their unused items
             </p>
           </div>
-
           <div className="space-y-6">
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
+            <form onSubmit={handleSignup}>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="firstName"
+                      className="text-sm text-gray-700 font-medium block"
+                    >
+                      First Name
+                    </label>
+                    <input
+                      id="firstName"
+                      placeholder="John"
+                      value={firstname}
+                      onChange={(e) => setFirstname(e.target.value)}
+                      className="w-full h-12 px-3 text-gray-700 rounded-md border-2 focus:border-[#3d000c] outline-none transition-colors"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="lastName"
+                      className="text-sm text-gray-700 font-medium block"
+                    >
+                      Last Name
+                    </label>
+                    <input
+                      id="lastName"
+                      placeholder="Doe"
+                      value={lastname}
+                      onChange={(e) => setLastname(e.target.value)}
+                      className="w-full h-12 px-3 text-gray-700 rounded-md border-2 focus:border-[#3d000c] outline-none transition-colors"
+                    />
+                  </div>
+                </div>
                 <div className="space-y-2">
-                  <label htmlFor="firstName" className="text-sm text-gray-700 font-medium block">
-                    First Name
+                  <label
+                    htmlFor="businessEmail"
+                    className="text-sm text-gray-700 font-medium block"
+                  >
+                    Business Email
                   </label>
                   <input
-                    id="firstName"
-                    placeholder="John"
+                    id="businessEmail"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="your.business@example.com"
                     className="w-full h-12 px-3 text-gray-700 rounded-md border-2 focus:border-[#3d000c] outline-none transition-colors"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label htmlFor="lastName" className="text-sm text-gray-700 font-medium block">
-                    Last Name
+                  <label
+                    htmlFor="phone"
+                    className="text-sm text-gray-700 font-medium block"
+                  >
+                    Phone Number
                   </label>
                   <input
-                    id="lastName"
-                    placeholder="Doe"
+                    id="phone"
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="+1 (555) 123-4567"
+                    className="w-full h-12 px-3 text-gray-700 rounded-md border-2 focus:border-[#3d000c] outline-none transition-colors"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label
+                    htmlFor="businessType"
+                    className="text-sm text-gray-700 font-medium block"
+                  >
+                    Business Type
+                  </label>
+                  <select
+                    id="businessType"
+                    value={businessType}
+                    onChange={(e) => setBusinessType(e.target.value)}
+                    className="w-full h-12 px-3 text-gray-700 rounded-md border-2 focus:border-[#3d000c] outline-none transition-colors bg-white"
+                  >
+                    <option value="" disabled>
+                      Select your business type
+                    </option>
+                    <option value="individual_seller">Individual Seller</option>
+                    <option value="boutique_store">Boutique/Store</option>
+                    <option value="fashion_designer">Fashion Designer</option>
+                    <option value="rental_business">Rental Business</option>
+                    <option value="others">Other</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label
+                    htmlFor="password"
+                    className="text-sm text-gray-700 font-medium block"
+                  >
+                    Create Password
+                  </label>
+                  <input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Create a strong password"
+                    className="w-full h-12 px-3 text-gray-700 rounded-md border-2 focus:border-[#3d000c] outline-none transition-colors"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label
+                    htmlFor="confirmPassword"
+                    className="text-sm text-gray-700 font-medium block"
+                  >
+                    Confirm Password
+                  </label>
+                  <input
+                    id="confirmPassword"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm your password"
                     className="w-full h-12 px-3 text-gray-700 rounded-md border-2 focus:border-[#3d000c] outline-none transition-colors"
                   />
                 </div>
               </div>
-              <div className="space-y-2">
-                <label htmlFor="businessEmail" className="text-sm text-gray-700 font-medium block">
-                  Business Email
-                </label>
+
+              <div className="flex items-start space-x-2">
                 <input
-                  id="businessEmail"
-                  type="email"
-                  placeholder="your.business@example.com"
-                  className="w-full h-12 px-3 text-gray-700 rounded-md border-2 focus:border-[#3d000c] outline-none transition-colors"
+                  type="checkbox"
+                  id="terms"
+                  checked={agreeTerms}
+                  onChange={(e) => setAgreeTerms(e.target.checked)}
+                  className="rounded border-gray-400 w-4 h-4 mt-1"
                 />
-              </div>
-              <div className="space-y-2">
-                <label htmlFor="phone" className="text-sm text-gray-700 font-medium block">
-                  Phone Number
-                </label>
-                <input
-                  id="phone"
-                  type="tel"
-                  placeholder="+1 (555) 123-4567"
-                  className="w-full h-12 px-3 text-gray-700 rounded-md border-2 focus:border-[#3d000c] outline-none transition-colors"
-                />
-              </div>
-              <div className="space-y-2">
-                <label htmlFor="businessType" className="text-sm text-gray-700 font-medium block">
-                  Business Type
-                </label>
-                <select
-                  id="businessType"
-                  className="w-full h-12 px-3 text-gray-700 rounded-md border-2 focus:border-[#3d000c] outline-none transition-colors bg-white"
-                  defaultValue=""
+                <label
+                  htmlFor="terms"
+                  className="text-sm text-gray-700 leading-relaxed"
                 >
-                  <option value="" disabled>
-                    Select your business type
-                  </option>
-                  <option value="individual">Individual Seller</option>
-                  <option value="boutique">Boutique/Store</option>
-                  <option value="designer">Fashion Designer</option>
-                  <option value="rental">Rental Business</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-              <div className="space-y-2">
-                <label htmlFor="password" className="text-sm text-gray-700 font-medium block">
-                  Create Password
+                  I agree to the{" "}
+                  <Link
+                    href="/lender-terms"
+                    className="text-[#3d000c] hover:text-[#9f0020] font-medium"
+                  >
+                    Lender Agreement
+                  </Link>{" "}
+                  and{" "}
+                  <Link
+                    href="/privacy"
+                    className="text-[#3d000c] hover:text-[#9f0020] font-medium"
+                  >
+                    Privacy Policy
+                  </Link>
                 </label>
-                <input
-                  id="password"
-                  type="password"
-                  placeholder="Create a strong password"
-                  className="w-full h-12 px-3 text-gray-700 rounded-md border-2 focus:border-[#3d000c] outline-none transition-colors"
-                />
               </div>
-              <div className="space-y-2">
-                <label htmlFor="confirmPassword" className="text-sm text-gray-700 font-medium block">
-                  Confirm Password
-                </label>
-                <input
-                  id="confirmPassword"
-                  type="password"
-                  placeholder="Confirm your password"
-                  className="w-full h-12 px-3 text-gray-700 rounded-md border-2 focus:border-[#3d000c] outline-none transition-colors"
-                />
-              </div>
-            </div>
 
-            <div className="flex items-start space-x-2">
-              <input type="checkbox" id="terms" className="rounded border-gray-400 w-4 h-4 mt-1" />
-              <label htmlFor="terms" className="text-sm text-gray-700 leading-relaxed">
-                I agree to the{" "}
-                <Link href="/lender-terms" className="text-[#3d000c] hover:text-[#9f0020] font-medium">
-                  Lender Agreement
-                </Link>{" "}
-                and{" "}
-                <Link href="/privacy" className="text-[#3d000c] hover:text-[#9f0020] font-medium">
-                  Privacy Policy
-                </Link>
-              </label>
-            </div>
-
-            <button className="w-full h-12 bg-gradient-to-r from-[#3d000c] to-[#720017] hover:from-[#9f0020] hover:to-[#3d000c] text-white font-semibold text-base rounded-md shadow-lg transition">
-              Start Earning Today
-            </button>
+              <button className="w-full h-12 bg-gradient-to-r from-[#3d000c] to-[#720017] hover:from-[#9f0020] hover:to-[#3d000c] text-white font-semibold text-base rounded-md shadow-lg transition">
+                Start Earning Today
+              </button>
+            </form>
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white px-3 text-gray-500 font-medium">Or sign up with</span>
+                <span className="bg-white px-3 text-gray-500 font-medium">
+                  Or sign up with
+                </span>
               </div>
             </div>
 
@@ -199,7 +324,10 @@ export default function LenderSignupPage() {
 
             <p className="text-center text-sm text-gray-500">
               Already a lender partner?{" "}
-              <Link href="/lender/login" className="text-[#3d000c] hover:text-[#9f0020] font-semibold">
+              <Link
+                href="/lender/login"
+                className="text-[#3d000c] hover:text-[#9f0020] font-semibold"
+              >
                 Sign in to dashboard
               </Link>
             </p>
@@ -207,5 +335,5 @@ export default function LenderSignupPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

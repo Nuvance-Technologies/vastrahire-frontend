@@ -1,13 +1,13 @@
-'use client'
+"use client";
 
-import { AnnouncementBar } from "./Announcement-bar"
-import { Header } from "./Header"
-import { HeroCarousel } from "./Hero-corousel"
-import { HowItWorks } from "./How-it-works"
-import { BecomeLender } from "./Become-lender"
-import { ShopsGrid } from "./Shops-grid"
-import { IndividualRenters } from "./Individual-renters"
-import MovingAnnouncement from "./Moving-announcement"
+import { AnnouncementBar } from "./Announcement-bar";
+import { Header } from "./Header";
+import { HeroCarousel } from "./Hero-corousel";
+import { HowItWorks } from "./How-it-works";
+import { BecomeLender } from "./Become-lender";
+import { ShopsGrid } from "./Shops-grid";
+import { IndividualRenters } from "./Individual-renters";
+import MovingAnnouncement from "./Moving-announcement";
 
 export default function HomePage() {
   return (
@@ -23,5 +23,5 @@ export default function HomePage() {
         <IndividualRenters />
       </main>
     </div>
-  )
+  );
 }

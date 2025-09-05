@@ -1,8 +1,50 @@
-import Link from "next/link"
-import { ShoppingBag, Heart, Star } from "lucide-react"
-import Image from "next/image"
+"use client";
+
+import Link from "next/link";
+import { ShoppingBag, Heart, Star } from "lucide-react";
+import Image from "next/image";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { signIn } from "next-auth/react";
+import SpinnerLoader from "@/app/components/Loader";
+import { useRouter } from "next/navigation";
 
 export default function CustomerLoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
+
+  const handleSignin = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      setLoading(true);
+      const res = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (res?.ok) {
+        toast.success("User signed in successfully!");
+        router.push("/customer/dashboard");
+      } else {
+        toast.error("Invalid email or password");
+      }
+    } catch (error) {
+      toast.error("Error signing in user");
+      console.error("Signin error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return <SpinnerLoader />;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 relative">
       {/* Background decorative elements */}
@@ -24,7 +66,9 @@ export default function CustomerLoginPage() {
               className="mx-auto"
             />
           </Link>
-          <p className="text-gray-500 mt-2 text-lg">Discover your perfect style</p>
+          <p className="text-gray-500 mt-2 text-lg">
+            Discover your perfect style
+          </p>
           <div className="flex justify-center items-center gap-2 mt-3 text-[#3d000c]">
             <ShoppingBag className="w-5 h-5" />
             <span className="text-sm font-medium">Browse • Rent • Flaunt</span>
@@ -43,46 +87,68 @@ export default function CustomerLoginPage() {
           </div>
 
           {/* Form */}
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium text-gray-700">
-                Email Address
-              </label>
-              <input
-                id="email"
-                type="email"
-                placeholder="your.email@example.com"
-                className="h-12 w-full text-gray-700 px-3 rounded-md border-2 border-gray-300 bg-white focus:border-indigo-600 outline-none transition-colors"
-              />
+          <form onSubmit={handleSignin}>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label
+                  htmlFor="email"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Email Address
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your.email@example.com"
+                  className="h-12 w-full text-gray-700 px-3 rounded-md border-2 border-gray-300 bg-white focus:border-indigo-600 outline-none transition-colors"
+                />
+              </div>
+              <div className="space-y-2">
+                <label
+                  htmlFor="password"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Password
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter your password"
+                  className="h-12 w-full text-gray-700 px-3 rounded-md border-2 border-gray-300 bg-white focus:border-indigo-600 outline-none transition-colors"
+                />
+              </div>
             </div>
-            <div className="space-y-2">
-              <label htmlFor="password" className="text-sm font-medium text-gray-700">
-                Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                placeholder="Enter your password"
-                className="h-12 w-full text-gray-700 px-3 rounded-md border-2 border-gray-300 bg-white focus:border-indigo-600 outline-none transition-colors"
-              />
-            </div>
-          </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <input type="checkbox" id="remember" className="rounded border-gray-300 w-4 h-4" />
-              <label htmlFor="remember" className="text-sm text-gray-600">
-                Keep me signed in
-              </label>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="remember"
+                  className="rounded border-gray-300 w-4 h-4"
+                />
+                <label htmlFor="remember" className="text-sm text-gray-600">
+                  Keep me signed in
+                </label>
+              </div>
+              <Link
+                href="/forgot-password"
+                className="text-sm text-[#3d000c] hover:text-[#9f0020] font-medium"
+              >
+                Forgot password?
+              </Link>
             </div>
-            <Link href="/forgot-password" className="text-sm text-[#3d000c] hover:text-[#9f0020] font-medium">
-              Forgot password?
-            </Link>
-          </div>
 
-          <button className="w-full h-12 rounded-md bg-gradient-to-r from-[#3d000c] to-[#650014] hover:from-[#9f0020] hover:to-[#3d000c] text-white font-semibold text-base shadow-lg transition-colors">
-            Sign In & Start Browsing
-          </button>
+            <button
+              type="submit"
+              className="w-full h-12 rounded-md bg-gradient-to-r from-[#3d000c] to-[#650014] hover:from-[#9f0020] hover:to-[#3d000c] text-white font-semibold text-base shadow-lg transition-colors"
+            >
+              Sign In & Start Browsing
+            </button>
+          </form>
 
           {/* Divider */}
           <div className="relative">
@@ -90,14 +156,14 @@ export default function CustomerLoginPage() {
               <span className="w-full border-t border-gray-300" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-3 text-gray-500 font-medium">Or continue with</span>
+              <span className="bg-white px-3 text-gray-500 font-medium">
+                Or continue with
+              </span>
             </div>
           </div>
 
           {/* Google Button */}
-          <button
-            className="w-full h-12 rounded-md border-2 text-gray-700 border-gray-300 hover:bg-indigo-50 transition-colors flex items-center justify-center gap-2 bg-transparent"
-          >
+          <button className="w-full h-12 rounded-md border-2 text-gray-700 border-gray-300 hover:bg-indigo-50 transition-colors flex items-center justify-center gap-2 bg-transparent">
             <svg className="h-5 w-5" viewBox="0 0 24 24">
               <path
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -133,12 +199,15 @@ export default function CustomerLoginPage() {
 
           <p className="text-center text-sm text-gray-500">
             New to RentStyle?{" "}
-            <Link href="/customer/signup" className="text-[#3d000c] hover:text-[#9f0020] font-semibold">
+            <Link
+              href="/customer/signup"
+              className="text-[#3d000c] hover:text-[#9f0020] font-semibold"
+            >
               Create your account
             </Link>
           </p>
         </div>
       </div>
     </div>
-  )
+  );
 }
