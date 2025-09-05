@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Calendar,
   CreditCard,
@@ -15,9 +15,43 @@ import Image from "next/image";
 import { DashboardHeader } from "@/app/components/Dashboard-header";
 import { Header } from "@/app/components/Header";
 import { DashboardNav } from "@/app/components/Dashboard-nav";
+import { AuthorizedUser } from "@/types/AuthoririzedUser";
+import { useSession } from "next-auth/react";
+import axios from "axios";
+import ThreeDotsLoader from "@/app/components/ThreeDotLoader";
 
 export default function CustomerDashboard() {
   const [selectedRental, setSelectedRental] = useState<any | null>(null);
+  const [userProfile, setUserProfile] = useState<AuthorizedUser | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const { data: session } = useSession();
+
+  const fetchUserProfile = async () => {
+    if (!session?.user?.id) {
+      return;
+    }
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        `/api/get-user?userId=${session?.user?.id}`
+      );
+      if (response.status !== 200) {
+        return;
+      }
+
+      const data = response.data as AuthorizedUser;
+      setUserProfile(data);
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserProfile();
+  }, [session?.user?.id]);
 
   const rentalHistory = [
     {
@@ -58,17 +92,6 @@ export default function CustomerDashboard() {
     },
   ];
 
-  const userProfile = {
-    name: "John Smith",
-    email: "john.smith@email.com",
-    phone: "+1 (555) 123-4567",
-    address: "123 Main St, New York, NY 10001",
-    memberSince: "January 2023",
-    totalRentals: 15,
-    totalSpent: "$2,450",
-    avatar: "/abstract-profile.png",
-  };
-
   const stats = [
     {
       label: "Active Rentals",
@@ -94,13 +117,15 @@ export default function CustomerDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       <Header />
-      <DashboardHeader
-        userType="customer"
-        userName={userProfile.name}
-        userAvatar={userProfile.avatar}
-        title="Customer Dashboard"
-        description="Manage your rentals and account settings"
-      />
+      {userProfile && (
+        <DashboardHeader
+          userType="customer"
+          userName={userProfile?.name?.firstname}
+          userAvatar={userProfile?.name?.firstname.charAt(0).toUpperCase()}
+          title="Customer Dashboard"
+          description="Manage your rentals and account settings"
+        />
+      )}
 
       <div className="container mx-auto px-4 py-8">
         {/* Stats */}
@@ -135,20 +160,22 @@ export default function CustomerDashboard() {
           <div className="lg:col-span-1">
             <div className="bg-[#3d000c8e] text-[#ffecd1] rounded-xl p-6 sticky top-4">
               <div className="flex flex-col items-center gap-3 mb-6">
-                <Image
-                  src={userProfile.avatar}
-                  alt={userProfile.name}
+                {/* <Image
+                  src={userProfile?.name?.firstname.charAt(0).toUpperCase()}
+                  alt={userProfile?.name?.firstname}
                   className="h-32 w-32 rounded-full border-2 border-white/20"
                   width={128}
                   height={128}
-                />
+                /> */}
+                <div className="h-32 w-32 rounded-full border-2 border-white/20 flex items-center justify-center">
+                  <span className="text-2xl font-semibold text-white">
+                    {userProfile?.name?.firstname.charAt(0).toUpperCase()}
+                  </span>
+                </div>
                 <div>
                   <h2 className="text-white font-semibold">
-                    {userProfile.name}
+                    {userProfile?.name?.firstname}
                   </h2>
-                  <p className="text-white/70 text-sm">
-                    Member since {userProfile.memberSince}
-                  </p>
                 </div>
               </div>
               <DashboardNav userType="customer" />
@@ -321,29 +348,39 @@ export default function CustomerDashboard() {
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
+              {loading ? (
+                <>
+                  <ThreeDotsLoader />
+                </>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    {[
+                      {
+                        label: "Full Name",
+                        value:
+                          userProfile?.name?.firstname +
+                          " " +
+                          userProfile?.name?.lastname,
+                      },
+                      { label: "Email Address", value: userProfile?.email },
+                    ].map((field, index) => (
+                      <div key={index}>
+                        <label className="text-sm font-medium text-gray-500">
+                          {field.label}
+                        </label>
+                        <p className="text-gray-900 font-medium">
+                          {field.value}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                  {/* <div className="space-y-4">
                   {[
-                    { label: "Full Name", value: userProfile.name },
-                    { label: "Email Address", value: userProfile.email },
-                    { label: "Phone Number", value: userProfile.phone },
-                  ].map((field, index) => (
-                    <div key={index}>
-                      <label className="text-sm font-medium text-gray-500">
-                        {field.label}
-                      </label>
-                      <p className="text-gray-900 font-medium">{field.value}</p>
-                    </div>
-                  ))}
-                </div>
-                <div className="space-y-4">
-                  {[
-                    { label: "Address", value: userProfile.address },
                     {
                       label: "Total Rentals",
                       value: `${userProfile.totalRentals} items`,
                     },
-                    { label: "Member Since", value: userProfile.memberSince },
                   ].map((field, index) => (
                     <div key={index}>
                       <label className="text-sm font-medium text-gray-500">
@@ -352,8 +389,9 @@ export default function CustomerDashboard() {
                       <p className="text-gray-900 font-medium">{field.value}</p>
                     </div>
                   ))}
+                </div> */}
                 </div>
-              </div>
+              )}
 
               <hr className="my-6" />
               <div className="flex gap-3">

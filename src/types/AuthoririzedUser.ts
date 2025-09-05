@@ -3,8 +3,8 @@ export interface AuthorizedUser {
   name: { firstname: string; lastname: string };
   email: string;
   role: "individual" | "business" | "customer";
-  phoneNumber: string;
-  businessType:
+  phoneNumber?: string;
+  businessType?:
     | "individual_seller"
     | "boutique_store"
     | "fashion_designer"

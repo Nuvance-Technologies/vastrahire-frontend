@@ -58,7 +58,6 @@ const userSchema = new mongoose.Schema({
       BUSINESS_TYPE.RENTAL_BUSINESS,
       BUSINESS_TYPE.OTHERS,
     ],
-    default: BUSINESS_TYPE.INDIVIDUAL_SELLER,
   },
 });
 
