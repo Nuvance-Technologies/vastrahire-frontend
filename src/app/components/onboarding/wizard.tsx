@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
 
 type Question = {
   id: string
@@ -63,10 +64,12 @@ function ProgressBar({ current, total }: { current: number; total: number }) {
 }
 
 export default function OnboardingWizard() {
-  const router = useRouter()
-  const [answers, setAnswers] = useState<Record<string, string[]>>({})
-  const [activeIndex, setActiveIndex] = useState(0)
-  const [animPhase, setAnimPhase] = useState<"enter" | "exit">("enter")
+  const router = useRouter();
+  const { data: session } = useSession();
+  const [answers, setAnswers] = useState<Record<string, string[]>>({});
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [animPhase, setAnimPhase] = useState<"enter" | "exit">("enter");
+  const [loading, setLoading] = useState(false);
 
   // Inside OnboardingWizard.tsx
 
@@ -212,8 +215,32 @@ export default function OnboardingWizard() {
     }, 180)
   }
 
-  function finish() {
-    router.push("/")
+  async function finish() {
+    setLoading(true);
+    try {
+      const userId = session?.user?.id;
+      if (!userId) {
+        alert("User not logged in");
+        setLoading(false);
+        return;
+      }
+      const res = await fetch("/api/onboarding", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, answers }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert("Onboarding answers saved!");
+        router.push("/customer/dashboard"); // or wherever you want to redirect
+      } else {
+        alert(data.error || "Failed to save answers");
+      }
+    } catch (err) {
+      alert("Error saving onboarding answers");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -275,15 +302,19 @@ export default function OnboardingWizard() {
               <button
                 type="button"
                 onClick={activeIndex === total - 1 ? finish : next}
-                disabled={!canProceed()}
+                disabled={!canProceed() || loading}
                 className={[
                   "inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold transition",
-                  canProceed()
+                  canProceed() && !loading
                     ? "bg-[#3d000c] text-white hover:bg-[#6d0016e8]"
                     : "bg-slate-200 text-slate-500 cursor-not-allowed",
                 ].join(" ")}
               >
-                {activeIndex === total - 1 ? "Finish" : "Next"}
+                {loading
+                  ? "Saving..."
+                  : activeIndex === total - 1
+                  ? "Finish"
+                  : "Next"}
               </button>
             </div>
 

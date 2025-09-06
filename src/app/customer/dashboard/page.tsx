@@ -19,12 +19,16 @@ import { AuthorizedUser } from "@/types/AuthoririzedUser";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import ThreeDotsLoader from "@/app/components/ThreeDotLoader";
+import toast from "react-hot-toast";
 
 export default function CustomerDashboard() {
   const [selectedRental, setSelectedRental] = useState<any | null>(null);
   const [userProfile, setUserProfile] = useState<AuthorizedUser | null>(null);
   const [loading, setLoading] = useState(false);
-
+  const [isEditable, setIsEditable] = useState(false);
+  const [firstname, setFirstname] = useState("");
+  const [lastname, setLastname] = useState("");
+  const [email, setEmail] = useState("");
   const { data: session } = useSession();
 
   const fetchUserProfile = async () => {
@@ -48,6 +52,45 @@ export default function CustomerDashboard() {
       setLoading(false);
     }
   };
+
+  const handleUserDataUpdate = async () => {
+    if (!userProfile) return;
+
+    try {
+      setLoading(true);
+      const updatedData = {
+        
+          firstname: firstname,
+          lastname: lastname,
+        
+        email: email,
+      };
+      console.log("Updating user data with:", updatedData);
+
+      const response = await axios.put(
+        `/api/update-user?userId=${session?.user?.id}`,
+        {
+          firstname: firstname,
+          lastname: lastname,
+          email: email,
+        }
+      );
+
+      console.log("Update response:", response.data.user.name);
+
+      if (response.status === 200) {
+        toast.success("Profile updated successfully");
+        setUserProfile(response.data.user);
+        setIsEditable(false);
+      } else {
+        console.error("Failed to update user data");
+      }
+    } catch (error) {
+      console.error("Error updating user data:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
     fetchUserProfile();
@@ -224,11 +267,10 @@ export default function CustomerDashboard() {
                           {rental.item}
                         </h4>
                         <span
-                          className={`px-2 py-1 rounded text-xs ${
-                            rental.status === "active"
-                              ? "bg-blue-600 text-white"
-                              : "bg-gray-200 text-gray-700"
-                          }`}
+                          className={`px-2 py-1 rounded text-xs ${rental.status === "active"
+                            ? "bg-blue-600 text-white"
+                            : "bg-gray-200 text-gray-700"
+                            }`}
                         >
                           {rental.status}
                         </span>
@@ -343,7 +385,7 @@ export default function CustomerDashboard() {
                     Your profile information and preferences
                   </p>
                 </div>
-                <button className="px-4 py-2 rounded-md bg-[#3d000c] text-white hover:bg-[#710017] flex items-center gap-1">
+                <button className="px-4 py-2 rounded-md bg-[#3d000c] text-white hover:bg-[#710017] flex items-center gap-1" onClick={() => setIsEditable(true)}>
                   <Edit className="h-4 w-4" /> Edit Profile
                 </button>
               </div>
@@ -355,25 +397,65 @@ export default function CustomerDashboard() {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
-                    {[
-                      {
-                        label: "Full Name",
-                        value:
-                          userProfile?.name?.firstname +
-                          " " +
-                          userProfile?.name?.lastname,
-                      },
-                      { label: "Email Address", value: userProfile?.email },
-                    ].map((field, index) => (
-                      <div key={index}>
+                    <div>
+                      {isEditable ? (
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-2">
+                            <label
+                              htmlFor="firstName"
+                              className="text-sm font-medium text-gray-700"
+                            >
+                              First Name
+                            </label>
+                            <input
+                              id="firstName"
+                              placeholder="John"
+                              value={firstname}
+                              onChange={(e) => setFirstname(e.target.value)}
+                              className="h-12 w-full px-3 text-gray-700 rounded-md border-2 border-gray-300 bg-white focus:border-[#3d000c] outline-none transition-colors"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <label
+                              htmlFor="lastName"
+                              className="text-sm font-medium text-gray-700"
+                            >
+                              Last Name
+                            </label>
+                            <input
+                              id="lastName"
+                              placeholder="Doe"
+                              value={lastname}
+                              onChange={(e) => setLastname(e.target.value)}
+                              className="h-12 w-full px-3 text-gray-700 rounded-md border-2 border-gray-300 bg-white focus:border-[#3d000c] outline-none transition-colors"
+                            />
+                          </div>
+                        </div>
+                      ) : (<>
                         <label className="text-sm font-medium text-gray-500">
-                          {field.label}
+                          Full Name
                         </label>
-                        <p className="text-gray-900 font-medium">
-                          {field.value}
-                        </p>
-                      </div>
-                    ))}
+                        <p className="text-gray-900 font-medium">{userProfile?.name?.firstname}{" "}
+                          {userProfile?.name?.lastname}</p></>)}
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-500">
+                        Email Address
+                      </label>
+                      {isEditable ? (<>
+                        <input
+                          id="email"
+                          type="email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          placeholder="your.email@example.com"
+                          className="h-12 w-full px-3 text-gray-700 rounded-md border-2 border-gray-300 bg-white focus:border-[#3d000c] outline-none transition-colors"
+                        />
+                      </>) : (<p className="text-gray-900 font-medium">
+                        {userProfile?.email}
+                      </p>)}
+
+                    </div>
                   </div>
                   {/* <div className="space-y-4">
                   {[
@@ -393,15 +475,25 @@ export default function CustomerDashboard() {
                 </div>
               )}
 
-              <hr className="my-6" />
+              {isEditable ? (<><hr className="my-6" />
               <div className="flex gap-3">
-                <button className="px-4 py-2 rounded-md bg-[#3d000c] text-white hover:bg-[#710017]">
+                <button className="px-4 py-2 rounded-md bg-[#3d000c] text-white hover:bg-[#710017]"
+                onClick={() => handleUserDataUpdate()}
+                >
                   Save Changes
                 </button>
-                <button className="px-4 py-2 rounded-md border text-[#3d000c] hover:bg-gray-100">
+                <button className="px-4 py-2 rounded-md border text-[#3d000c] hover:bg-gray-100" 
+                onClick={() => {
+                  setIsEditable(false)
+                  setFirstname(userProfile?.name?.firstname || "")
+                  setLastname(userProfile?.name?.lastname || "")
+                  setEmail(userProfile?.email || "")
+                }}>
                   Cancel
                 </button>
-              </div>
+              </div></>):(<></>) }
+
+              
             </div>
           </div>
         </div>

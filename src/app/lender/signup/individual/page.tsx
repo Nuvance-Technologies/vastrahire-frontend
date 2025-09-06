@@ -9,6 +9,8 @@ import axios from "axios";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import SpinnerLoader from "@/app/components/Loader";
+import { isValidEmail } from "@/util/emailValidator";
+
 
 export default function LenderSignupPage() {
   const [firstname, setFirstname] = useState("");
@@ -25,6 +27,10 @@ export default function LenderSignupPage() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    if(!isValidEmail(email)){
+      toast.error("Please enter a valid email address");
+      return;
+    }
 
     if (!agreeTerms) {
       toast.error("You must agree to the terms and privacy policy.");
@@ -35,8 +41,6 @@ export default function LenderSignupPage() {
       toast.error("Passwords do not match.");
       return;
     }
-
-    console.log(businessType);
 
     try {
       setLoading(true);
@@ -332,7 +336,7 @@ export default function LenderSignupPage() {
           <p className="text-center text-sm text-gray-500">
             Already a lender partner?{" "}
             <Link
-              href="/lender/login"
+              href="/login"
               className="text-[#3d000c] hover:text-[#9f0020] font-semibold"
             >
               Sign in to dashboard

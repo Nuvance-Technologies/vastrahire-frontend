@@ -148,30 +148,12 @@ export function Header() {
             <div className="relative" ref={loginRef}>
               <button
                 onClick={() => {
-                  setIsOpen(!isOpen);
-                  setIsOpen1(false);
+                  router.push("/login");
                 }}
                 className="flex items-center px-3 py-2 bg-[#3d000c] text-white rounded-md hover:bg-[#87001b] gap-1"
               >
                 Login
-                <ChevronDown className="h-3 w-3" />
               </button>
-              {isOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg py-1 z-50">
-                  <Link
-                    href="/customer/login"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  >
-                    Customer Login
-                  </Link>
-                  <Link
-                    href="/lender/login"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  >
-                    Lender Login
-                  </Link>
-                </div>
-              )}
             </div>
 
             <div className="relative">

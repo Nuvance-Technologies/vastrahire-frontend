@@ -9,6 +9,7 @@ import axios from "axios";
 import SpinnerLoader from "@/app/components/Loader";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { isValidEmail } from "@/util/emailValidator";
 
 export default function CustomerSignupPage() {
   const [firstname, setFirstname] = useState("");
@@ -32,6 +33,10 @@ export default function CustomerSignupPage() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isValidEmail(email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
     if (password !== confirmPassword) {
       toast.error("Passwords do not match");
       return;
@@ -292,7 +297,7 @@ export default function CustomerSignupPage() {
           <p className="text-center text-sm text-gray-500">
             Already have an account?{" "}
             <Link
-              href="/customer/login"
+              href="/login"
               className="text-[#3d000c] hover:text-[#9f0020] font-semibold"
             >
               Sign in here

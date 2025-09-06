@@ -3,21 +3,36 @@
 import Link from "next/link";
 import { ShoppingBag, Heart, Star } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import SpinnerLoader from "@/app/components/Loader";
 import { useRouter } from "next/navigation";
+import { isValidEmail } from "@/util/emailValidator";
 
 export default function CustomerLoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const { data: session } = useSession();
 
   const router = useRouter();
+  useEffect(() => {
+    if(session?.user){
+      if (session?.user?.role == 'customer') {
+      router.push("/customer/dashboard");
+    } else {
+      router.push("/lender/dashboard");
+    }
+    }
+  }, [session?.user?.role, router]);
 
   const handleSignin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isValidEmail(email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
 
     try {
       setLoading(true);
@@ -29,7 +44,6 @@ export default function CustomerLoginPage() {
 
       if (res?.ok) {
         toast.success("User signed in successfully!");
-        router.push("/customer/dashboard");
       } else {
         toast.error("Invalid email or password");
       }
