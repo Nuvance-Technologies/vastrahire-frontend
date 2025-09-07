@@ -33,7 +33,129 @@ export default function LateFeePolicyPage() {
             <li className="text-neutral-900 font-medium">Terms and conditions</li>
           </ol>
         </nav>
+        {/* Header */}
+        <header className="mb-8">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-neutral-900">
+            VASTRAHIRE Rental Agreement
+          </h1>
+          <p className="mt-3 text-neutral-600">
+            This Rental Agreement outlines the terms and conditions governing your use of VASTRAHIRE’s products. By renting an item through our platform, you agree to follow these rules, ensuring a smooth and fair experience for all.
+          </p>
+        </header>
 
+        {/* Agreement Content */}
+        <div className="prose prose-neutral max-w-none text-neutral-600">
+          <h2 id="rental-period" className="scroll-mt-24">1. Rental Period</h2>
+          <p>
+            The rental period begins on the date you receive the product and ends on the agreed return date. Extensions must be requested in advance and may incur additional charges.
+          </p>
+
+          <h2 id="care-use" className="scroll-mt-24">2. Care & Proper Use</h2>
+          <p>
+            You agree to treat all rented items with the utmost care, as outlined in our <Link href="/policies/wear-and-care" className="underline">Wear & Care Policy</Link>.
+          </p>
+
+          <h2 id="damage-loss" className="scroll-mt-24">3. Damage, Loss, or Theft</h2>
+          <p>
+            Minor wear and tear is covered under our Damage Waiver. However, significant damage, loss, or theft will make you liable for the product’s full current retail value.
+          </p>
+
+          <h2 id="returns" className="scroll-mt-24">4. Returns</h2>
+          <p>
+            Items must be returned on or before the due date. Late returns will incur charges as per our <Link href="/policies/late-fee" className="underline">Late Fee Policy</Link>.
+          </p>
+
+          <h2 id="prohibited" className="scroll-mt-24">5. Prohibited Actions</h2>
+          <ul>
+            <li>Do not attempt to clean, repair, or alter rented items yourself.</li>
+            <li>Do not sub-rent or lend the product to another person.</li>
+            <li>Do not use items in hazardous or inappropriate environments.</li>
+          </ul>
+
+          <h2 id="liability" className="scroll-mt-24">6. Liability</h2>
+          <p>
+            You are fully responsible for the item from the time of delivery until its return. VASTRAHIRE is not liable for any injuries, accidents, or damages resulting from misuse of the product.
+          </p>
+
+          <h2 id="agreement" className="scroll-mt-24">7. Agreement to Terms</h2>
+          <p>
+            By renting from VASTRAHIRE, you acknowledge and agree to these terms. This agreement is legally binding.
+          </p>
+
+          <p className="mt-8">
+            Thank you for respecting our policies and helping us maintain a seamless rental experience for all VASTRAHIRE users.
+          </p>
+        </div>
+
+
+
+      </section>
+      <section className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-5">
+        {/* Header */}
+        <header className="mb-8">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-neutral-900">
+            The VASTRAHIRE Cleaning & Hygiene Policy: Our Commitment to You
+          </h1>
+          <p className="mt-3 text-neutral-600">
+            Your safety and peace of mind are our top priorities. In a community built on sharing, hygiene is not just a policy—it is our most important promise.
+            Every item you receive has been meticulously cleaned, sanitized, and prepared by our expert team.
+          </p>
+          <p className="mt-3 text-neutral-600 italic">
+            You will never have to worry about cleaning or sanitizing a VASTRAHIRE item. We handle it all.
+          </p>
+        </header>
+
+        {/* Policy Content */}
+        <div className="prose prose-neutral max-w-none text-neutral-600">
+          <h2 id="protocol" className="scroll-mt-24">Our Multi-Step Professional Cleaning Protocol</h2>
+          <p>
+            After every single rental, each item undergoes a rigorous, multi-step cleaning process tailored to its specific category and material.
+          </p>
+
+          <h3>1. Immediate Inspection Upon Return</h3>
+          <p>
+            Upon return, every garment is immediately sent to our dedicated care facility. Our team inspects each piece under bright light to identify repairs or specialized cleaning needs.
+          </p>
+
+          <h3>For Clothing (Women’s, Men’s & Kids’)</h3>
+          <ul>
+            <li><strong>Professional Dry Cleaning:</strong> Eco-friendly solvents used for delicate fabrics.</li>
+            <li><strong>Steam Sanitization:</strong> Kills 99.9% of bacteria and germs.</li>
+            <li><strong>Odor Neutralization:</strong> Specialized equipment removes all lingering odors.</li>
+            <li><strong>Special Note for Kids:</strong> Hypoallergenic agents safe for sensitive skin.</li>
+          </ul>
+
+          <h3>For Shoes</h3>
+          <ul>
+            <li><strong>Interior Sanitization:</strong> Anti-bacterial and deodorizing treatment.</li>
+            <li><strong>Sole & Surface Cleaning:</strong> Thorough cleaning, polishing, and conditioning.</li>
+          </ul>
+
+          <h3>For Bags</h3>
+          <ul>
+            <li><strong>Interior & Exterior Detailing:</strong> Vacuumed, wiped, and conditioned.</li>
+            <li><strong>High-Touch Point Sanitization:</strong> Handles, zippers, and clasps sanitized with safe, alcohol-free spray.</li>
+          </ul>
+
+          <h3>For Watches & Jewelry</h3>
+          <ul>
+            <li><strong>Jewelry:</strong> Cleaned using professional ultrasonic cleaners, then polished.</li>
+            <li><strong>Watches:</strong> Bands, clasps, and cases sanitized and polished with care.</li>
+          </ul>
+
+          <h2 id="renter-role" className="scroll-mt-24">Your Role as a Renter</h2>
+          <ul>
+            <li><strong>Do Not Attempt to Clean:</strong> Never wash, dry clean, or repair items yourself.</li>
+            <li><strong>Handle with Care:</strong> Be mindful of spills and stains. Minor wear is covered, but significant damage is not.</li>
+          </ul>
+
+          <p className="mt-8">
+            Our commitment is to your health and the longevity of our collection. VASTRAHIRE provides endless style while upholding the highest standards of cleanliness and care.
+          </p>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <header className="mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-neutral-900">
@@ -134,69 +256,13 @@ export default function LateFeePolicyPage() {
             ensures that another person gets to experience the joy of a beautiful product for their own special day.
           </p>
         </div>
-      </section>
-      <section className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-12">
-        {/* Header */}
-        <header className="mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-neutral-900">
-            VASTRAHIRE Rental Agreement
-          </h1>
-          <p className="mt-3 text-neutral-600">
-            This Rental Agreement outlines the terms and conditions governing your use of VASTRAHIRE’s products. By renting an item through our platform, you agree to follow these rules, ensuring a smooth and fair experience for all.
-          </p>
-        </header>
-
-        {/* Agreement Content */}
-        <div className="prose prose-neutral max-w-none text-neutral-600">
-          <h2 id="rental-period" className="scroll-mt-24">1. Rental Period</h2>
-          <p>
-            The rental period begins on the date you receive the product and ends on the agreed return date. Extensions must be requested in advance and may incur additional charges.
-          </p>
-
-          <h2 id="care-use" className="scroll-mt-24">2. Care & Proper Use</h2>
-          <p>
-            You agree to treat all rented items with the utmost care, as outlined in our <Link href="/policies/wear-and-care" className="underline">Wear & Care Policy</Link>.
-          </p>
-
-          <h2 id="damage-loss" className="scroll-mt-24">3. Damage, Loss, or Theft</h2>
-          <p>
-            Minor wear and tear is covered under our Damage Waiver. However, significant damage, loss, or theft will make you liable for the product’s full current retail value.
-          </p>
-
-          <h2 id="returns" className="scroll-mt-24">4. Returns</h2>
-          <p>
-            Items must be returned on or before the due date. Late returns will incur charges as per our <Link href="/policies/late-fee" className="underline">Late Fee Policy</Link>.
-          </p>
-
-          <h2 id="prohibited" className="scroll-mt-24">5. Prohibited Actions</h2>
-          <ul>
-            <li>Do not attempt to clean, repair, or alter rented items yourself.</li>
-            <li>Do not sub-rent or lend the product to another person.</li>
-            <li>Do not use items in hazardous or inappropriate environments.</li>
-          </ul>
-
-          <h2 id="liability" className="scroll-mt-24">6. Liability</h2>
-          <p>
-            You are fully responsible for the item from the time of delivery until its return. VASTRAHIRE is not liable for any injuries, accidents, or damages resulting from misuse of the product.
-          </p>
-
-          <h2 id="agreement" className="scroll-mt-24">7. Agreement to Terms</h2>
-          <p>
-            By renting from VASTRAHIRE, you acknowledge and agree to these terms. This agreement is legally binding.
-          </p>
-
-          <p className="mt-8">
-            Thank you for respecting our policies and helping us maintain a seamless rental experience for all VASTRAHIRE users.
-          </p>
-        </div>
-
         {/* Helpful Links */}
         <div className="mt-10 flex flex-wrap items-center gap-3">
           <Link
-            href="mailto:vastrahire@gmail.com?subject=Rental%20Agreement%20Query"
+            href="/earn-through-us"
             className="rounded-2xl bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800"
           >
-            Contact Support
+            Okay
           </Link>
         </div>
 

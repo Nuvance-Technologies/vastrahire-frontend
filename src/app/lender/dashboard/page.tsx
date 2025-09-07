@@ -1,5 +1,6 @@
 "use client"
 
+import * as React from "react"
 import { useState } from "react"
 import {
     CreditCard,
@@ -15,11 +16,56 @@ import {
     Users,
     Star,
     Calendar,
+    Crown,
+    Gem,
 } from "lucide-react"
 import { DashboardHeader } from "@/app/components/Dashboard-header"
 import { DashboardNav } from "@/app/components/Dashboard-nav"
 import { Header } from "@/app/components/Header"
 import Image from "next/image"
+import { motion } from "framer-motion"
+
+type Tier = "Golden" | "Platinum" | "Diamond"
+type TierOrNone = Tier | "none"
+
+// Mock stats (replace with API later)
+const MOCK_STATS = {
+    rentalsCompleted: 20,
+    totalValue: 180000,
+}
+function getLenderTier(): TierOrNone {
+    const { rentalsCompleted, totalValue } = MOCK_STATS
+    if (rentalsCompleted >= 30 && totalValue >= 300000) return "Diamond"
+    if (rentalsCompleted >= 15 && totalValue >= 150000) return "Platinum"
+    if (rentalsCompleted >= 5 && totalValue >= 50000) return "Golden"
+    return "none"
+}
+const TIER_STYLES: Record<TierOrNone, { label: string; gradient: string; color: string; icon: React.ReactElement }> = {
+    Golden: {
+        label: "Golden Lender",
+        gradient: "bg-gradient-to-r from-yellow-300 to-yellow-500",
+        color: "text-yellow-800",
+        icon: <Crown className="w-4 h-4 text-yellow-800" />,
+    },
+    Platinum: {
+        label: "Platinum Lender",
+        gradient: "bg-gradient-to-r from-gray-200 to-gray-400",
+        color: "text-gray-700",
+        icon: <Crown className="w-4 h-4 text-gray-600" />,
+    },
+    Diamond: {
+        label: "Diamond Lender",
+        gradient: "bg-gradient-to-r from-sky-200 to-sky-400",
+        color: "text-sky-700",
+        icon: <Gem className="w-4 h-4 text-sky-600" />,
+    },
+    none: {
+        label: "",
+        gradient: "",
+        color: "",
+        icon: <></>,
+    },
+}
 
 export default function LenderDashboard() {
     const [showAddForm, setShowAddForm] = useState(false)
@@ -86,6 +132,9 @@ export default function LenderDashboard() {
         { label: "Avg Rating", value: "4.9", icon: Star, color: "text-yellow-600", trend: "Excellent" },
     ]
 
+    const tier = getLenderTier()
+    const tierStyle = TIER_STYLES[tier]
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
             <Header />
@@ -114,11 +163,27 @@ export default function LenderDashboard() {
                             </div>
                         )
                     })}
+
+
+
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                     {/* Sidebar */}
                     <div className="lg:col-span-1 space-y-4">
+                        {tier && (
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className={`rounded-xl shadow p-6 flex flex-col justify-center items-center ${tierStyle.gradient} ${tierStyle.color}`}
+                            >
+                                <div className="flex items-center gap-2 mb-2">
+                                    {tierStyle.icon}
+                                    <h3 className="text-lg font-semibold">{tierStyle.label}</h3>
+                                </div>
+                                <p className="text-sm opacity-80">Your current membership tier</p>
+                            </motion.div>
+                        )}
                         <div className="bg-[#3d000c8e] text-[#ffecd1] p-6 rounded-xl sticky top-4">
                             <div className="flex items-center gap-3 mb-4">
                                 <Image src={lenderProfile.avatar} alt={lenderProfile.name} className="h-12 w-12 rounded-full border-2 border-white/20" width={48} height={48} />
@@ -132,7 +197,6 @@ export default function LenderDashboard() {
                     </div>
 
                     <div className="lg:col-span-3 space-y-6">
-                        {/* Add New Product */}
                         <div className="bg-white rounded-xl shadow p-6">
                             <div className="flex justify-between items-center">
                                 <h2 className="text-lg font-semibold text-gray-800">Add New Product</h2>
@@ -146,42 +210,42 @@ export default function LenderDashboard() {
                             </div>
 
                             {showAddForm && (
-                                <form className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <form className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-black">
                                     <input
                                         type="text"
                                         placeholder="Product Name"
                                         value={newProduct.name}
                                         onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
-                                        className="border rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
+                                        className="border rounded-lg p-2"
                                     />
                                     <input
                                         type="text"
                                         placeholder="Category"
                                         value={newProduct.category}
                                         onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
-                                        className="border rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
+                                        className="border rounded-lg p-2 "
                                     />
                                     <input
                                         type="number"
                                         placeholder="Daily Rate ($)"
                                         value={newProduct.dailyRate}
                                         onChange={(e) => setNewProduct({ ...newProduct, dailyRate: e.target.value })}
-                                        className="border rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
+                                        className="border rounded-lg p-2 "
                                     />
                                     <input
                                         type="text"
                                         placeholder="Pickup Location"
                                         value={newProduct.location}
                                         onChange={(e) => setNewProduct({ ...newProduct, location: e.target.value })}
-                                        className="border rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
+                                        className="border rounded-lg p-2 "
                                     />
                                     <textarea
                                         placeholder="Description"
                                         value={newProduct.description}
                                         onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
-                                        className="border rounded-lg p-2 col-span-2 focus:ring-2 focus:ring-blue-500"
+                                        className="border rounded-lg p-2 col-span-2 "
                                     />
-                                    <button className="col-span-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg">
+                                    <button className="col-span-2 px-4 py-2 bg-[#3d000c] hover:bg-[#570112] text-white rounded-lg">
                                         <Plus className="inline h-4 w-4 mr-1" /> List Product
                                     </button>
                                 </form>

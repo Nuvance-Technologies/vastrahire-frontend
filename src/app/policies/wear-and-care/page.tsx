@@ -141,10 +141,10 @@ export default function WearAndCarePolicyPage() {
                 {/* Helpful Links */}
                 <div className="mt-10 flex flex-wrap items-center gap-3">
                     <Link
-                        href="mailto:vastrahire@gmail.com?subject=Wear%20and%20Care%20Query"
+                        href="/"
                         className="rounded-2xl bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800"
                     >
-                        Contact Support
+                        Okay
                     </Link>
                 </div>
 

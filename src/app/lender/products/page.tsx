@@ -182,6 +182,7 @@ export default function ProductManagement() {
                 {/* Filters and Search */}
                 <div className="bg-white rounded-xl shadow mb-6 p-6">
                     <div className="flex flex-col md:flex-row gap-4 text-gray-700">
+                        {/* Search bar */}
                         <div className="flex-1 relative">
                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                             <input
@@ -190,20 +191,24 @@ export default function ProductManagement() {
                                 className="w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                             />
                         </div>
-                        <div className="flex gap-2">
-                            <select className="w-40 border rounded-lg px-3 py-2">
+
+                        {/* Filters */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:flex gap-2 w-full md:w-auto">
+                            <select className="w-full sm:w-auto border rounded-lg px-3 py-2">
                                 <option>All Categories</option>
                                 <option>Electronics</option>
                                 <option>Photography</option>
                                 <option>Sports</option>
                             </select>
-                            <select className="w-32 border rounded-lg px-3 py-2">
+
+                            <select className="w-full sm:w-auto border rounded-lg px-3 py-2">
                                 <option>All Status</option>
                                 <option>Available</option>
                                 <option>Rented</option>
                                 <option>Maintenance</option>
                             </select>
-                            <button className="flex items-center border rounded-lg px-4 py-2 hover:bg-gray-100">
+
+                            <button className="flex items-center justify-center border rounded-lg px-4 py-2 bg-[#3d000c] text-white w-full sm:w-auto">
                                 <Filter className="h-4 w-4 mr-2" />
                                 Filter
                             </button>
@@ -211,97 +216,98 @@ export default function ProductManagement() {
                     </div>
                 </div>
 
-                {/* Products Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 text-gray-800">
-                    {products.map((product) => (
-                        <div key={product.id} className="bg-white rounded-xl shadow overflow-hidden">
-                            <div className="relative">
-                                <Image
-                                    src={product.image || "/placeholder.svg"}
-                                    alt={product.name}
-                                    className="w-full h-48 object-cover"
-                                    width={400}
-                                    height={300}
-                                />
-                                <div className="absolute top-4 right-4">
-                                    <span
-                                        className={`px-2 py-1 text-xs font-medium rounded-full capitalize ${getStatusColor(
-                                            product.status
-                                        )}`}
-                                    >
-                                        {product.status}
+            </div>
+
+            {/* Products Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 text-gray-800">
+                {products.map((product) => (
+                    <div key={product.id} className="bg-white rounded-xl shadow overflow-hidden">
+                        <div className="relative">
+                            <Image
+                                src={product.image || "/placeholder.svg"}
+                                alt={product.name}
+                                className="w-full h-48 object-cover"
+                                width={400}
+                                height={300}
+                            />
+                            <div className="absolute top-4 right-4">
+                                <span
+                                    className={`px-2 py-1 text-xs font-medium rounded-full capitalize ${getStatusColor(
+                                        product.status
+                                    )}`}
+                                >
+                                    {product.status}
+                                </span>
+                            </div>
+                        </div>
+                        <div className="p-6">
+                            <div className="flex items-start justify-between mb-3">
+                                <div>
+                                    <h3 className="font-semibold text-gray-900 text-lg">{product.name}</h3>
+                                    <p className="text-sm text-gray-500">{product.category}</p>
+                                </div>
+                                <button className="p-2 hover:bg-gray-100 rounded-full">
+                                    <MoreHorizontal className="h-4 w-4" />
+                                </button>
+                            </div>
+
+                            <div className="space-y-3">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm text-gray-500">Daily Rate</span>
+                                    <span className="font-semibold text-indigo-600">${product.dailyRate}</span>
+                                </div>
+
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm text-gray-500">Condition</span>
+                                    <span className="px-2 py-1 border rounded text-xs capitalize">
+                                        {product.condition}
                                     </span>
                                 </div>
-                            </div>
-                            <div className="p-6">
-                                <div className="flex items-start justify-between mb-3">
-                                    <div>
-                                        <h3 className="font-semibold text-gray-900 text-lg">{product.name}</h3>
-                                        <p className="text-sm text-gray-500">{product.category}</p>
+
+                                {product.status === "rented" && product.currentRenter && (
+                                    <div className="bg-blue-50 p-3 rounded-lg">
+                                        <div className="flex items-center gap-2 mb-1">
+                                            {getStatusIcon(product.status)}
+                                            <span className="text-sm font-medium">Currently Rented</span>
+                                        </div>
+                                        <p className="text-sm text-gray-500">
+                                            By {product.currentRenter} until {product.rentedUntil}
+                                        </p>
                                     </div>
-                                    <button className="p-2 hover:bg-gray-100 rounded-full">
-                                        <MoreHorizontal className="h-4 w-4" />
-                                    </button>
+                                )}
+
+                                <div className="grid grid-cols-2 gap-4 pt-3 border-t">
+                                    <div className="text-center">
+                                        <p className="text-sm text-gray-500">Total Earnings</p>
+                                        <p className="font-semibold text-indigo-600">${product.totalEarnings}</p>
+                                    </div>
+                                    <div className="text-center">
+                                        <p className="text-sm text-gray-500">Total Rentals</p>
+                                        <p className="font-semibold">{product.totalRentals}</p>
+                                    </div>
                                 </div>
 
-                                <div className="space-y-3">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-500">Daily Rate</span>
-                                        <span className="font-semibold text-indigo-600">${product.dailyRate}</span>
+                                <div className="flex items-center justify-between pt-2">
+                                    <div className="flex items-center gap-1">
+                                        <span className="text-sm text-gray-500">Rating:</span>
+                                        <span className="font-medium">{product.rating}/5</span>
                                     </div>
-
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-500">Condition</span>
-                                        <span className="px-2 py-1 border rounded text-xs capitalize">
-                                            {product.condition}
-                                        </span>
-                                    </div>
-
-                                    {product.status === "rented" && product.currentRenter && (
-                                        <div className="bg-blue-50 p-3 rounded-lg">
-                                            <div className="flex items-center gap-2 mb-1">
-                                                {getStatusIcon(product.status)}
-                                                <span className="text-sm font-medium">Currently Rented</span>
-                                            </div>
-                                            <p className="text-sm text-gray-500">
-                                                By {product.currentRenter} until {product.rentedUntil}
-                                            </p>
-                                        </div>
-                                    )}
-
-                                    <div className="grid grid-cols-2 gap-4 pt-3 border-t">
-                                        <div className="text-center">
-                                            <p className="text-sm text-gray-500">Total Earnings</p>
-                                            <p className="font-semibold text-indigo-600">${product.totalEarnings}</p>
-                                        </div>
-                                        <div className="text-center">
-                                            <p className="text-sm text-gray-500">Total Rentals</p>
-                                            <p className="font-semibold">{product.totalRentals}</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-center justify-between pt-2">
-                                        <div className="flex items-center gap-1">
-                                            <span className="text-sm text-gray-500">Rating:</span>
-                                            <span className="font-medium">{product.rating}/5</span>
-                                        </div>
-                                        <div className="flex gap-2">
-                                            <button className="border rounded-lg p-2 hover:bg-gray-100">
-                                                <TrendingUp className="h-4 w-4" />
-                                            </button>
-                                            <button className="border rounded-lg p-2 hover:bg-gray-100">
-                                                <Edit className="h-4 w-4" />
-                                            </button>
-                                            <button className="border rounded-lg p-2 hover:bg-gray-100 text-red-600">
-                                                <Trash2 className="h-4 w-4" />
-                                            </button>
-                                        </div>
+                                    <div className="flex gap-2">
+                                        <button className="border rounded-lg p-2 hover:bg-gray-100">
+                                            <TrendingUp className="h-4 w-4" />
+                                        </button>
+                                        <button className="border rounded-lg p-2 hover:bg-gray-100">
+                                            <Edit className="h-4 w-4" />
+                                        </button>
+                                        <button className="border rounded-lg p-2 hover:bg-gray-100 text-red-600">
+                                            <Trash2 className="h-4 w-4" />
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    ))}
-                </div>
+                    </div>
+                ))}
             </div>
         </div>
     )

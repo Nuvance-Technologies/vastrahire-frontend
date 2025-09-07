@@ -73,15 +73,14 @@ const products = [
   { id: 6, name: "Traditional Lehenga", image: "/ethnic3.png", discount: "60% OFF", category: "Hybrid watches" },
 ]
 
-// ✅ Categories
 const categories = [
   "All",
-  "Smart Watches",
-  "Leather strap",
-  "Analog watches",
-  "Smart bands",
-  "Luxury watches",
-  "Hybrid watches",
+  "Watches",
+  "Rings",
+  "Bracelets",
+  "Necklaces",
+  "Goggles",
+  "Brooches",
 ]
 
 export default function ClothingPage() {
