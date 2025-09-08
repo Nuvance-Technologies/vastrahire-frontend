@@ -3,11 +3,7 @@
 import * as React from "react";
 import { useState } from "react";
 import {
-  CreditCard,
   Edit,
-  MapPin,
-  Settings,
-  Bell,
   Plus,
   Package,
   DollarSign,
@@ -15,7 +11,6 @@ import {
   Trash2,
   Users,
   Star,
-  Calendar,
   Crown,
   Gem,
 } from "lucide-react";
