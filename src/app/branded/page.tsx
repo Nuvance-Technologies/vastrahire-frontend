@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react"
 import { Header } from "../components/Header"
 import { AnnouncementBar } from "../components/Announcement-bar"
+import { Search, Filter } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 
@@ -233,6 +234,42 @@ export default function BrandedItemsPage() {
             <AnnouncementBar />
             <Header />
             <div className="container mx-auto px-4 py-8">
+                {/* Filters and Search */}
+                <div className="bg-white rounded-xl shadow mb-6 p-6">
+                    <div className="flex flex-col md:flex-row gap-4 text-gray-700">
+                        {/* Search bar */}
+                        <div className="flex-1 relative">
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                            <input
+                                type="text"
+                                placeholder="Search products..."
+                                className="w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            />
+                        </div>
+
+                        {/* Filters */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:flex gap-2 w-full md:w-auto">
+                            <select className="w-full sm:w-auto border rounded-lg px-3 py-2">
+                                <option>All Categories</option>
+                                <option>Electronics</option>
+                                <option>Photography</option>
+                                <option>Sports</option>
+                            </select>
+
+                            <select className="w-full sm:w-auto border rounded-lg px-3 py-2">
+                                <option>All Status</option>
+                                <option>Available</option>
+                                <option>Rented</option>
+                                <option>Maintenance</option>
+                            </select>
+
+                            <button className="flex items-center justify-center border rounded-lg px-4 py-2 bg-[#3d000c] text-white w-full sm:w-auto">
+                                <Filter className="h-4 w-4 mr-2" />
+                                Filter
+                            </button>
+                        </div>
+                    </div>
+                </div>
                 <SectionHeader />
                 <div className="flex flex-col gap-6 md:gap-8">
                     <BrandFilter brands={BRANDS} value={selectedBrand} onChange={setSelectedBrand} />

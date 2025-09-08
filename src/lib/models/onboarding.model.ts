@@ -5,18 +5,23 @@ export interface OnboardingAnswers extends Document {
   answers: Record<string, string[]>; // key: question id, value: array of selected option ids
 }
 
-const OnboardingSchema = new Schema<OnboardingAnswers>({
-  userId: {
-    type: String,
-    required: true,
-    index: true,
+const OnboardingSchema = new Schema<OnboardingAnswers>(
+  {
+    userId: {
+      type: String,
+      required: true,
+      index: true,
+    },
+    answers: {
+      type: Schema.Types.Mixed,
+      required: true,
+    },
   },
-  answers: {
-    type: Schema.Types.Mixed,
-    required: true,
-  },
-}, { timestamps: true });
+  { timestamps: true }
+);
 
-const Onboarding = mongoose.models.Onboarding || mongoose.model<OnboardingAnswers>("Onboarding", OnboardingSchema);
+const Onboarding =
+  mongoose.models.Onboarding ||
+  mongoose.model<OnboardingAnswers>("Onboarding", OnboardingSchema);
 
 export default Onboarding;

@@ -1,16 +1,17 @@
-
 "use client"
-import { useState, useRef, useEffect } from "react"
-import { Star, Heart, Share2, ShoppingCart, ShoppingBag, Ruler, Truck, Shield, RotateCcw, X } from "lucide-react"
+
+import { useState, useRef, useEffect, useMemo } from "react"
+import { Star, Heart, ShoppingCart, ShoppingBag, Ruler, Truck, RotateCcw, X } from "lucide-react"
 import Link from "next/link"
 import ReviewCard, { type Review as ReviewModel } from "../components/reviews/review-card"
-import Image from 'next/image'
+import Image from "next/image"
 import ReviewForm from "../components/reviews/review-form"
+
 interface Product {
   id: number
   name: string
   brand: string
-  price: string
+  price: string // e.g. "$30/day"
   originalPrice: string
   rating: number
   reviews: number
@@ -29,6 +30,7 @@ interface Product {
   availability: string
   category: string
 }
+
 interface ProductDetailProps {
   product: Product
 }
@@ -37,7 +39,6 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const [selectedImage, setSelectedImage] = useState(0)
   const [selectedSize, setSelectedSize] = useState("")
   const [showSizeChart, setShowSizeChart] = useState(false)
-  const [rentalDays, setRentalDays] = useState(3)
   const [showFeedbackModal, setShowFeedbackModal] = useState(false)
   const [feedbackReason, setFeedbackReason] = useState("")
   const [feedbackComments, setFeedbackComments] = useState("")
@@ -47,8 +48,29 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const [activeTab, setActiveTab] = useState<"details" | "reviews" | "care">("details")
   const [reviews, setReviews] = useState<ReviewModel[]>([])
   const productRef = useRef<HTMLDivElement>(null)
-  const totalPrice = Number.parseInt(product.price.replace(/[^0-9]/g, "")) * rentalDays
 
+  // --- Date range states ---
+  const [fromDate, setFromDate] = useState("")
+  const [toDate, setToDate] = useState("")
+
+  // Parse pricePerDay from product.price string like "$30/day"
+  const pricePerDay = useMemo(() => {
+    const n = parseInt(product.price.replace(/\D/g, ""), 10)
+    return Number.isFinite(n) ? n : 0
+  }, [product.price])
+
+  // Compute rental days (inclusive) from date range
+  const rentalDays = useMemo(() => {
+    if (!fromDate || !toDate) return 0
+    const start = new Date(fromDate)
+    const end = new Date(toDate)
+    const diff = (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
+    return diff >= 0 ? Math.floor(diff) + 1 : 0
+  }, [fromDate, toDate])
+
+  const totalPrice = useMemo(() => rentalDays * pricePerDay, [rentalDays, pricePerDay])
+
+  // --- Swipe-to-feedback listeners ---
   useEffect(() => {
     const handleTouchStart = (e: TouchEvent) => {
       setSwipeStartX(e.touches[0].clientX)
@@ -64,20 +86,15 @@ export function ProductDetail({ product }: ProductDetailProps) {
       if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
         e.preventDefault()
       }
-
     }
     const handleTouchEnd = (e: TouchEvent) => {
       if (!isSwipeActive) return
-
       const endX = e.changedTouches[0].clientX
       const endY = e.changedTouches[0].clientY
       const diffX = swipeStartX - endX
       const diffY = swipeStartY - endY
-
       if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 100) {
-        if (diffX < 0) {
-          setShowFeedbackModal(true)
-        }
+        if (diffX < 0) setShowFeedbackModal(true)
       }
       setIsSwipeActive(false)
     }
@@ -86,59 +103,58 @@ export function ProductDetail({ product }: ProductDetailProps) {
       setSwipeStartY(e.clientY)
       setIsSwipeActive(true)
     }
-    const handleMouseMove = (e: MouseEvent) => {
+    const handleMouseMove = () => {
       if (!isSwipeActive) return
     }
-
     const handleMouseUp = (e: MouseEvent) => {
       if (!isSwipeActive) return
       const diffX = swipeStartX - e.clientX
       const diffY = swipeStartY - e.clientY
       if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 100) {
-        if (diffX < 0) {
-          setShowFeedbackModal(true)
-        }
+        if (diffX < 0) setShowFeedbackModal(true)
       }
       setIsSwipeActive(false)
     }
-    const productElement = productRef.current
-    if (productElement) {
-      productElement.addEventListener("touchstart", handleTouchStart, { passive: false })
-      productElement.addEventListener("touchmove", handleTouchMove, { passive: false })
-      productElement.addEventListener("touchend", handleTouchEnd)
-      productElement.addEventListener("mousedown", handleMouseDown)
-      productElement.addEventListener("mousemove", handleMouseMove)
-      productElement.addEventListener("mouseup", handleMouseUp)
+
+    const el = productRef.current
+    if (el) {
+      el.addEventListener("touchstart", handleTouchStart, { passive: false })
+      el.addEventListener("touchmove", handleTouchMove, { passive: false })
+      el.addEventListener("touchend", handleTouchEnd)
+      el.addEventListener("mousedown", handleMouseDown)
+      el.addEventListener("mousemove", handleMouseMove)
+      el.addEventListener("mouseup", handleMouseUp)
     }
     return () => {
-      if (productElement) {
-        productElement.removeEventListener("touchstart", handleTouchStart)
-        productElement.removeEventListener("touchmove", handleTouchMove)
-        productElement.removeEventListener("touchend", handleTouchEnd)
-        productElement.removeEventListener("mousedown", handleMouseDown)
-        productElement.removeEventListener("mousemove", handleMouseMove)
-        productElement.removeEventListener("mouseup", handleMouseUp)
+      if (el) {
+        el.removeEventListener("touchstart", handleTouchStart)
+        el.removeEventListener("touchmove", handleTouchMove)
+        el.removeEventListener("touchend", handleTouchEnd)
+        el.removeEventListener("mousedown", handleMouseDown)
+        el.removeEventListener("mousemove", handleMouseMove)
+        el.removeEventListener("mouseup", handleMouseUp)
       }
     }
   }, [swipeStartX, swipeStartY, isSwipeActive])
+
+  // Reviews localStorage persistence
   useEffect(() => {
     try {
       const raw = typeof window !== "undefined" ? window.localStorage.getItem(`reviews:product:${product.id}`) : null
       if (raw) setReviews(JSON.parse(raw) as ReviewModel[])
-    } catch { }
+    } catch {}
   }, [product.id])
 
   useEffect(() => {
-    if (reviews.length === 0) {
-      setActiveTab("reviews")
-    }
+    if (reviews.length === 0) setActiveTab("reviews")
   }, [reviews.length])
+
   useEffect(() => {
     try {
       if (typeof window !== "undefined") {
         window.localStorage.setItem(`reviews:product:${product.id}`, JSON.stringify(reviews))
       }
-    } catch { }
+    } catch {}
   }, [reviews, product.id])
 
   const handleFeedbackSubmit = () => {
@@ -155,17 +171,14 @@ export function ProductDetail({ product }: ProductDetailProps) {
       alert("Thank you for your feedback! We'll use this to improve our recommendations.")
     }
   }
+
   return (
     <>
-      <main
-        ref={productRef}
-        className="mx-auto px-4 sm:px-6 lg:px-8 py-8 select-none bg-gray-50"
-      >
+      <main ref={productRef} className="mx-auto px-4 sm:px-6 lg:px-8 py-8 select-none bg-gray-50">
         {/* Tip Banner */}
         <div className="mb-4 md:hidden p-3 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-lg border border-gray-200">
           <p className="text-sm text-gray-700 text-center">
-            💡 <strong>Tip:</strong> Swipe right on the product if you're not
-            satisfied to give us feedback
+            💡 <strong>Tip:</strong> Swipe right on the product if you're not satisfied to give us feedback
           </p>
         </div>
 
@@ -185,8 +198,9 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 <button
                   key={index}
                   onClick={() => setSelectedImage(index)}
-                  className={`aspect-square overflow-hidden rounded-md border-2 ${selectedImage === index ? "border-indigo-500" : "border-gray-200"
-                    }`}
+                  className={`aspect-square overflow-hidden rounded-md border-2 ${
+                    selectedImage === index ? "border-indigo-500" : "border-gray-200"
+                  }`}
                 >
                   <Image
                     src={image || "/placeholder.svg"}
@@ -204,19 +218,14 @@ export function ProductDetail({ product }: ProductDetailProps) {
           <div className="space-y-6">
             <div>
               <p className="text-sm text-gray-500 mb-1">{product.brand}</p>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                {product.name}
-              </h1>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">{product.name}</h1>
 
               <div className="flex items-center gap-4 mb-4">
                 <div className="flex items-center gap-1">
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className={`h-4 w-4 ${i < Math.floor(product.rating)
-                        ? "fill-yellow-500 text-yellow-500"
-                        : "text-gray-300"
-                        }`}
+                      className={`h-4 w-4 ${i < Math.floor(product.rating) ? "fill-yellow-500 text-yellow-500" : "text-gray-300"}`}
                     />
                   ))}
                 </div>
@@ -228,19 +237,15 @@ export function ProductDetail({ product }: ProductDetailProps) {
               {/* Price */}
               <div className="flex items-center gap-4">
                 <span className="text-2xl font-bold flex text-[#3d000c]">
-                  <p className="text-gray-600">Rented Price:&nbsp;</p> {product.price}/day
+                  <p className="text-gray-600">Rented Price:&nbsp;</p> {product.price}
                 </span>
-                <span className="text-lg text-gray-400 line-through">
-                  {product.originalPrice}
-                </span>
-                <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
-                  {product.availability}
-                </span>
+                <span className="text-lg text-gray-400 line-through">{product.originalPrice}</span>
+                <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">{product.availability}</span>
               </div>
-              {/* Price */}
               <div className="flex items-center gap-4">
                 <span className="text-xl flex font-bold text-[#3d000c]">
-                  <p className="text-gray-600">Retail price:&nbsp;</p>{product.price}
+                  <p className="text-gray-600">Retail price:&nbsp;</p>
+                  {product.price}
                 </span>
               </div>
             </div>
@@ -265,10 +270,11 @@ export function ProductDetail({ product }: ProductDetailProps) {
                   <button
                     key={size}
                     onClick={() => setSelectedSize(size)}
-                    className={`px-4 py-2 border rounded-md transition-colors ${selectedSize === size
-                      ? "border-[#3d000c] bg-[#3d000c] text-white"
-                      : "border-gray-200 hover:border-[#3d000c] text-black"
-                      }`}
+                    className={`px-4 py-2 border rounded-md transition-colors ${
+                      selectedSize === size
+                        ? "border-[#3d000c] bg-[#3d000c] text-white"
+                        : "border-gray-200 hover:border-[#3d000c] text-black"
+                    }`}
                   >
                     {size}
                   </button>
@@ -291,50 +297,71 @@ export function ProductDetail({ product }: ProductDetailProps) {
                       </tr>
                     </thead>
                     <tbody>
-                      {Object.entries(product.sizeChart).map(
-                        ([size, measurements]) => (
-                          <tr key={size} className="border-b border-gray-200 text-gray-800">
-                            <td className="py-2 font-medium">{size}</td>
-                            <td className="py-2">{measurements.bust}</td>
-                            <td className="py-2">{measurements.waist}</td>
-                            <td className="py-2">{measurements.hips}</td>
-                          </tr>
-                        )
-                      )}
+                      {Object.entries(product.sizeChart).map(([size, measurements]) => (
+                        <tr key={size} className="border-b border-gray-200 text-gray-800">
+                          <td className="py-2 font-medium">{size}</td>
+                          <td className="py-2">{measurements.bust}</td>
+                          <td className="py-2">{measurements.waist}</td>
+                          <td className="py-2">{measurements.hips}</td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
               </div>
             )}
 
-            {/* Rental Duration */}
+            {/* Rental Duration - Date Range */}
             <div className="space-y-3">
               <h3 className="font-semibold text-gray-900">Rental Duration</h3>
-              <div className="flex items-center gap-4 text-gray-700">
-                <button
-                  onClick={() => setRentalDays(Math.max(1, rentalDays - 1))}
-                  className="w-10 h-10 border border-gray-200 rounded-md flex items-center justify-center hover:bg-gray-100"
-                >
-                  -
-                </button>
-                <span className="text-lg font-medium">{rentalDays} days</span>
-                <button
-                  onClick={() => setRentalDays(rentalDays + 1)}
-                  className="w-10 h-10 border border-gray-200 rounded-md flex items-center justify-center hover:bg-gray-100"
-                >
-                  +
-                </button>
+
+              <div className="flex flex-col sm:flex-row items-center gap-4 text-gray-700">
+                {/* From Date */}
+                <label className="flex flex-col text-sm font-medium text-gray-700">
+                  From
+                  <input
+                    type="date"
+                    value={fromDate}
+                    onChange={(e) => {
+                      const v = e.target.value
+                      setFromDate(v)
+                      if (toDate && new Date(v) > new Date(toDate)) setToDate("")
+                    }}
+                    min={new Date().toISOString().slice(0, 10)}
+                    className="mt-1 px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  />
+                </label>
+
+                {/* To Date */}
+                <label className="flex flex-col text-sm font-medium text-gray-700">
+                  To
+                  <input
+                    type="date"
+                    value={toDate}
+                    min={fromDate || new Date().toISOString().slice(0, 10)}
+                    onChange={(e) => setToDate(e.target.value)}
+                    className="mt-1 px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  />
+                </label>
               </div>
-              <p className="text-sm text-gray-500">
-                Total:{" "}
-                <span className="font-semibold text-gray-900">${totalPrice}</span>
-              </p>
+
+              {/* Show duration & price */}
+              {fromDate && toDate ? (
+                <div>
+                  <p className="text-lg text-neutral-800 font-medium">{rentalDays} {rentalDays === 1 ? "day" : "days"}</p>
+                  <p className="text-sm text-gray-500">
+                    Total: <span className="font-semibold text-gray-900">${totalPrice}</span>
+                  </p>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">Please select both dates.</p>
+              )}
             </div>
 
             {/* Action Buttons */}
             <div className="space-y-3">
               <button
-                disabled={!selectedSize}
+                disabled={!selectedSize || rentalDays === 0}
                 className="w-full py-3 bg-[#3d000c] text-white rounded-lg font-semibold hover:bg-[#85021c] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 <ShoppingBag className="h-5 w-5" />
@@ -385,19 +412,25 @@ export function ProductDetail({ product }: ProductDetailProps) {
             <div className="flex space-x-8">
               <button
                 onClick={() => setActiveTab("details")}
-                className={`py-4 px-1 border-b-2 ${activeTab === "details"} border-transparent text-gray-500 hover:text-gray-900`}
+                className={`py-4 px-1 border-b-2 ${
+                  activeTab === "details" ? "border-gray-900 text-gray-900" : "border-transparent text-gray-500 hover:text-gray-900"
+                }`}
               >
                 Details
               </button>
               <button
                 onClick={() => setActiveTab("reviews")}
-                className={`py-4 px-1 border-b-2 ${activeTab === "reviews"} border-transparent text-gray-500 hover:text-gray-900`}
+                className={`py-4 px-1 border-b-2 ${
+                  activeTab === "reviews" ? "border-gray-900 text-gray-900" : "border-transparent text-gray-500 hover:text-gray-900"
+                }`}
               >
                 Reviews ({(reviews?.length ?? 0) || product.reviews})
               </button>
               <button
                 onClick={() => setActiveTab("care")}
-                className={`py-4 px-1 border-b-2 ${activeTab === "care"} border-transparent text-gray-500 hover:text-gray-900`}
+                className={`py-4 px-1 border-b-2 ${
+                  activeTab === "care" ? "border-gray-900 text-gray-900" : "border-transparent text-gray-500 hover:text-gray-900"
+                }`}
               >
                 Care Instructions
               </button>
@@ -408,61 +441,42 @@ export function ProductDetail({ product }: ProductDetailProps) {
             {activeTab === "details" && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-4">
-                    Product Details
-                  </h3>
+                  <h3 className="font-semibold text-gray-900 mb-4">Product Details</h3>
                   <dl className="space-y-3">
                     <div>
                       <dt className="text-sm font-medium text-gray-500">Material</dt>
-                      <dd className="text-sm text-gray-900">
-                        {product.details.material}
-                      </dd>
+                      <dd className="text-sm text-gray-900">{product.details.material}</dd>
                     </div>
                     <div>
-                      <dt className="text-sm font-medium text-gray-500">
-                        Embroidery
-                      </dt>
-                      <dd className="text-sm text-gray-900">
-                        {product.details.embroidery}
-                      </dd>
+                      <dt className="text-sm font-medium text-gray-500">Embroidery</dt>
+                      <dd className="text-sm text-gray-900">{product.details.embroidery}</dd>
                     </div>
                     <div>
-                      <dt className="text-sm font-medium text-gray-500">
-                        Care Instructions
-                      </dt>
-                      <dd className="text-sm text-gray-900">
-                        {product.details.care}
-                      </dd>
+                      <dt className="text-sm font-medium text-gray-500">Care Instructions</dt>
+                      <dd className="text-sm text-gray-900">{product.details.care}</dd>
                     </div>
                     <div>
                       <dt className="text-sm font-medium text-gray-500">Origin</dt>
-                      <dd className="text-sm text-gray-900">
-                        {product.details.origin}
-                      </dd>
+                      <dd className="text-sm text-gray-900">{product.details.origin}</dd>
                     </div>
                   </dl>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-4">
-                    Styling Information
-                  </h3>
+                  <h3 className="font-semibold text-gray-900 mb-4">Styling Information</h3>
                   <dl className="space-y-3">
                     <div>
                       <dt className="text-sm font-medium text-gray-500">Season</dt>
-                      <dd className="text-sm text-gray-900">
-                        {product.details.season}
-                      </dd>
+                      <dd className="text-sm text-gray-900">{product.details.season}</dd>
                     </div>
                     <div>
                       <dt className="text-sm font-medium text-gray-500">Best For</dt>
-                      <dd className="text-sm text-gray-900">
-                        {product.details.occasion}
-                      </dd>
+                      <dd className="text-sm text-gray-900">{product.details.occasion}</dd>
                     </div>
                   </dl>
                 </div>
               </div>
             )}
+
             {activeTab === "reviews" && (
               <div className="grid gap-8 md:grid-cols-2">
                 <section aria-label="Reviews" className="order-2 md:order-1 grid gap-4">
@@ -488,6 +502,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 </div>
               </div>
             )}
+
             {activeTab === "care" && (
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="rounded-lg border border-gray-600 bg-card p-6">
@@ -515,9 +530,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
         {/* Related Products */}
         <div className="mt-16">
-          <h2 className="text-2xl font-bold text-gray-900 mb-8">
-            You Might Also Like
-          </h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-8">You Might Also Like</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[1, 2, 3, 4].map((i) => (
               <Link key={i} href={`/product/${i + 10}`}>
@@ -532,14 +545,10 @@ export function ProductDetail({ product }: ProductDetailProps) {
                     />
                   </div>
                   <div className="p-4">
-                    <h3 className="font-semibold text-gray-900 mb-1">
-                      Related Product {i}
-                    </h3>
+                    <h3 className="font-semibold text-gray-900 mb-1">Related Product {i}</h3>
                     <p className="text-sm text-gray-500 mb-2">Brand Name</p>
                     <div className="flex items-center justify-between">
-                      <span className="text-lg font-bold text-indigo-600">
-                        $30/day
-                      </span>
+                      <span className="text-lg font-bold text-indigo-600">$30/day</span>
                       <div className="flex items-center gap-1">
                         <span className="text-yellow-500">★</span>
                         <span className="text-sm text-gray-500">4.7 (89)</span>
@@ -558,42 +567,30 @@ export function ProductDetail({ product }: ProductDetailProps) {
         <div className="fixed inset-0 bg-gray-900/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg border border-gray-200 max-w-md w-full p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">
-                Help Us Improve
-              </h3>
-              <button
-                onClick={() => setShowFeedbackModal(false)}
-                className="text-gray-500 hover:text-gray-900"
-              >
+              <h3 className="text-lg font-semibold text-gray-900">Help Us Improve</h3>
+              <button onClick={() => setShowFeedbackModal(false)} className="text-gray-500 hover:text-gray-900">
                 <X className="h-5 w-5" />
               </button>
             </div>
 
             <p className="text-sm text-gray-500 mb-4">
-              We noticed you're not satisfied with this product. Could you tell us
-              why?
+              We noticed you're not satisfied with this product. Could you tell us why?
             </p>
 
             <div className="space-y-3 mb-6">
-              {[
-                "Not my style",
-                "Poor quality",
-                "Wrong size information",
-                "Too expensive",
-                "Better options available",
-                "Misleading photos",
-              ].map((reason) => (
-                <button
-                  key={reason}
-                  onClick={() => setFeedbackReason(reason)}
-                  className={`w-full text-left p-3 rounded-lg border transition-colors ${feedbackReason === reason
-                    ? "border-indigo-500 bg-indigo-50 text-indigo-600"
-                    : "border-gray-200 hover:border-indigo-300"
+              {["Not my style", "Poor quality", "Wrong size information", "Too expensive", "Better options available", "Misleading photos"].map(
+                (reason) => (
+                  <button
+                    key={reason}
+                    onClick={() => setFeedbackReason(reason)}
+                    className={`w-full text-left p-3 rounded-lg border transition-colors ${
+                      feedbackReason === reason ? "border-indigo-500 bg-indigo-50 text-indigo-600" : "border-gray-200 hover:border-indigo-300"
                     }`}
-                >
-                  {reason}
-                </button>
-              ))}
+                  >
+                    {reason}
+                  </button>
+                )
+              )}
             </div>
 
             <textarea
@@ -604,10 +601,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
             />
 
             <div className="flex gap-3 mt-6">
-              <button
-                onClick={() => setShowFeedbackModal(false)}
-                className="flex-1 py-2 px-4 border border-gray-200 rounded-lg text-gray-900 hover:bg-gray-100 transition-colors"
-              >
+              <button onClick={() => setShowFeedbackModal(false)} className="flex-1 py-2 px-4 border border-gray-200 rounded-lg text-gray-900 hover:bg-gray-100 transition-colors">
                 Cancel
               </button>
               <button
@@ -622,6 +616,5 @@ export function ProductDetail({ product }: ProductDetailProps) {
         </div>
       )}
     </>
-
   )
 }

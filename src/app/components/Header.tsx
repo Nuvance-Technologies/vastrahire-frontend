@@ -95,6 +95,12 @@ export function Header() {
                   Wear & Care Policy
                 </Link>
                 <Link
+                  href="/policies/faqs"
+                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                >
+                  FAQs
+                </Link>
+                <Link
                   href="/about"
                   className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                 >
@@ -223,13 +229,19 @@ export function Header() {
                   href="/customer/signup"
                   className="block px-4 py-2 text-gray-500 hover:bg-gray-100"
                 >
-                  New Customer? Sign Up
+                  Signup as a customer
                 </Link>
                 <Link
                   href="/lender/signup"
                   className="block px-4 py-2 text-gray-500 hover:bg-gray-100"
                 >
-                  Become a Lender
+                  Register as a Shop
+                </Link>
+                <Link
+                  href="/lender/signup"
+                  className="block px-4 py-2 text-gray-500 hover:bg-gray-100"
+                >
+                  Register as an Individual Lender
                 </Link>
               </div>
             )}
@@ -289,10 +301,10 @@ export function Header() {
                 Bags
               </Link>
               <Link
-                href="/category/watches"
+                href="/category/accessories"
                 className="text-gray-700 hover:text-[#3d000c] transition"
               >
-                Watches
+                Accessories
               </Link>
               <Link
                 href="/branded"
@@ -446,17 +458,26 @@ export function Header() {
                 </button>
                 {showDropdown && (
                   <div className="absolute mt-2 w-32 bg-white text-[#3d000c] shadow-lg rounded">
-                    <ul className="py-2">
-                      <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                        Option 1
-                      </li>
-                      <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                        Option 2
-                      </li>
-                      <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                        Option 3
-                      </li>
-                    </ul>
+                    <div className="py-2 flex flex-col">
+                      <Link
+                        href="/policies/wear-and-care"
+                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                      >
+                        Wear & Care Policy
+                      </Link>
+                      <Link
+                        href="/policies/faqs"
+                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                      >
+                        FAQs
+                      </Link>
+                      <Link
+                        href="/about"
+                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                      >
+                        About us
+                      </Link>
+                    </div>
                   </div>
                 )}
               </div>
