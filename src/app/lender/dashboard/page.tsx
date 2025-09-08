@@ -78,6 +78,8 @@ export default function LenderDashboard() {
     dailyRate: "",
     description: "",
     location: "",
+    retailPrice: "",
+    sizes: ""
   });
 
   const lenderProducts = [
@@ -253,61 +255,59 @@ export default function LenderDashboard() {
               </div>
 
               {showAddForm && (
-                <form className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-black">
-                  <input
-                    type="text"
-                    placeholder="Product Name"
-                    value={newProduct.name}
-                    onChange={(e) =>
-                      setNewProduct({ ...newProduct, name: e.target.value })
-                    }
-                    className="border rounded-lg p-2"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Category"
-                    value={newProduct.category}
-                    onChange={(e) =>
-                      setNewProduct({ ...newProduct, category: e.target.value })
-                    }
-                    className="border rounded-lg p-2 "
-                  />
-                  <input
-                    type="number"
-                    placeholder="Daily Rate ($)"
-                    value={newProduct.dailyRate}
-                    onChange={(e) =>
-                      setNewProduct({
-                        ...newProduct,
-                        dailyRate: e.target.value,
-                      })
-                    }
-                    className="border rounded-lg p-2 "
-                  />
-                  <input
-                    type="text"
-                    placeholder="Pickup Location"
-                    value={newProduct.location}
-                    onChange={(e) =>
-                      setNewProduct({ ...newProduct, location: e.target.value })
-                    }
-                    className="border rounded-lg p-2 "
-                  />
-                  <textarea
-                    placeholder="Description"
-                    value={newProduct.description}
-                    onChange={(e) =>
-                      setNewProduct({
-                        ...newProduct,
-                        description: e.target.value,
-                      })
-                    }
-                    className="border rounded-lg p-2 col-span-2 "
-                  />
-                  <button className="col-span-2 px-4 py-2 bg-[#3d000c] hover:bg-[#570112] text-white rounded-lg">
-                    <Plus className="inline h-4 w-4 mr-1" /> List Product
-                  </button>
-                </form>
+              <form className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-black">
+                                    <input
+                                        type="text"
+                                        placeholder="Product Name"
+                                        value={newProduct.name}
+                                        onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
+                                        className="border rounded-lg p-2"
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Category"
+                                        value={newProduct.category}
+                                        onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
+                                        className="border rounded-lg p-2"
+                                    />
+                                    <input
+                                        type="number"
+                                        placeholder="Daily Rate ($)"
+                                        value={newProduct.dailyRate}
+                                        onChange={(e) => setNewProduct({ ...newProduct, dailyRate: e.target.value })}
+                                        className="border rounded-lg p-2"
+                                    />
+                                    <input
+                                        type="number"
+                                        placeholder="Retail Price ($)"
+                                        value={newProduct.retailPrice}
+                                        onChange={(e) => setNewProduct({ ...newProduct, retailPrice: e.target.value })}
+                                        className="border rounded-lg p-2"
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Available Sizes (e.g., S, M, L, XL)"
+                                        value={newProduct.sizes}
+                                        onChange={(e) => setNewProduct({ ...newProduct, sizes: e.target.value })}
+                                        className="border rounded-lg p-2"
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Pickup Location"
+                                        value={newProduct.location}
+                                        onChange={(e) => setNewProduct({ ...newProduct, location: e.target.value })}
+                                        className="border rounded-lg p-2"
+                                    />
+                                    <textarea
+                                        placeholder="Description"
+                                        value={newProduct.description}
+                                        onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
+                                        className="border rounded-lg p-2 col-span-2"
+                                    />
+                                    <button className="col-span-2 px-4 py-2 bg-[#3d000c] hover:bg-[#570112] text-white rounded-lg">
+                                        <Plus className="inline h-4 w-4 mr-1" /> List Product
+                                    </button>
+                                </form>
               )}
             </div>
 
