@@ -18,12 +18,14 @@ import {
     Calendar,
     Crown,
     Gem,
+    InfoIcon
 } from "lucide-react"
 import { DashboardHeader } from "@/app/components/Dashboard-header"
 import { DashboardNav } from "@/app/components/Dashboard-nav"
 import { Header } from "@/app/components/Header"
 import Image from "next/image"
 import { motion } from "framer-motion"
+import Link from "next/link"
 
 type Tier = "Golden" | "Platinum" | "Diamond"
 type TierOrNone = Tier | "none"
@@ -73,8 +75,10 @@ export default function LenderDashboard() {
         name: "",
         category: "",
         dailyRate: "",
+        retailPrice: "",
         description: "",
         location: "",
+        sizes: ""
     })
 
     const lenderProducts = [
@@ -170,13 +174,16 @@ export default function LenderDashboard() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                     {/* Sidebar */}
-                    <div className="lg:col-span-1 space-y-4">
+                    <div className="lg:col-span-1 space-y-4 relative">
                         {tier && (
                             <motion.div
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 className={`rounded-xl shadow p-6 flex flex-col justify-center items-center ${tierStyle.gradient} ${tierStyle.color}`}
                             >
+                                <div>
+                                    <Link href="/tier-info"><InfoIcon className="h-5 w-5 text-black mb-2 mx-auto absolute right-3 top-2" /></Link>
+                                </div>
                                 <div className="flex items-center gap-2 mb-2">
                                     {tierStyle.icon}
                                     <h3 className="text-lg font-semibold">{tierStyle.label}</h3>
@@ -223,32 +230,47 @@ export default function LenderDashboard() {
                                         placeholder="Category"
                                         value={newProduct.category}
                                         onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
-                                        className="border rounded-lg p-2 "
+                                        className="border rounded-lg p-2"
                                     />
                                     <input
                                         type="number"
                                         placeholder="Daily Rate ($)"
                                         value={newProduct.dailyRate}
                                         onChange={(e) => setNewProduct({ ...newProduct, dailyRate: e.target.value })}
-                                        className="border rounded-lg p-2 "
+                                        className="border rounded-lg p-2"
+                                    />
+                                    <input
+                                        type="number"
+                                        placeholder="Retail Price ($)"
+                                        value={newProduct.retailPrice}
+                                        onChange={(e) => setNewProduct({ ...newProduct, retailPrice: e.target.value })}
+                                        className="border rounded-lg p-2"
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Available Sizes (e.g., S, M, L, XL)"
+                                        value={newProduct.sizes}
+                                        onChange={(e) => setNewProduct({ ...newProduct, sizes: e.target.value })}
+                                        className="border rounded-lg p-2"
                                     />
                                     <input
                                         type="text"
                                         placeholder="Pickup Location"
                                         value={newProduct.location}
                                         onChange={(e) => setNewProduct({ ...newProduct, location: e.target.value })}
-                                        className="border rounded-lg p-2 "
+                                        className="border rounded-lg p-2"
                                     />
                                     <textarea
                                         placeholder="Description"
                                         value={newProduct.description}
                                         onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
-                                        className="border rounded-lg p-2 col-span-2 "
+                                        className="border rounded-lg p-2 col-span-2"
                                     />
                                     <button className="col-span-2 px-4 py-2 bg-[#3d000c] hover:bg-[#570112] text-white rounded-lg">
                                         <Plus className="inline h-4 w-4 mr-1" /> List Product
                                     </button>
                                 </form>
+
                             )}
                         </div>
 

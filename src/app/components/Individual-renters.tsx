@@ -116,7 +116,7 @@ export function IndividualRenters() {
                 <p className="text-gray-700 font-bold py-3">By: {renter.name}</p>
 
                 {/* View Profile Button */}
-                <Link href="/rentersProfile">
+                <Link href="/lendersProfile">
                   <button className="mt-auto w-full py-2 px-4 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 text-sm font-medium transition">
                     View Profile
                   </button>
