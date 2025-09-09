@@ -25,11 +25,11 @@ type TierOrNone = Tier | "none";
 
 interface AuthorizedUser {
   id: string;
-  name: string;
+  name: { firstname: string; lastname: string };
   email: string;
   phone: string;
   address: string;
-  avatar: string;
+  // avatar: string;
   memberSince: string;
   totalRentals: number;
 }
@@ -228,17 +228,19 @@ export default function CustomerDashboard() {
           {/* Profile */}
           <div className="bg-[#3d000c8e] text-[#ffecd1] p-6 rounded-xl sticky top-4">
             <div className="flex flex-col items-center gap-3 mb-6">
-              <Image
+              {/* <Image
                 src={userProfile.avatar}
                 alt={userProfile.name}
                 className="h-32 w-32 rounded-full border-2 border-white/20"
                 width={128}
                 height={128}
-              />
+              /> */}
               <div className="text-center">
-                <h3 className="text-lg font-semibold">{userProfile.name}</h3>
+                <h3 className="text-lg font-semibold">
+                  {userProfile?.name.firstname} {userProfile?.name.lastname}
+                </h3>
                 <p className="text-sm text-gray-300">
-                  Member since {userProfile.memberSince}
+                  Member since {userProfile?.memberSince}
                 </p>
               </div>
             </div>
@@ -408,7 +410,13 @@ export default function CustomerDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 {[
-                  { label: "Full Name", value: userProfile.name },
+                  {
+                    label: "Full Name",
+                    value:
+                      userProfile.name.firstname +
+                      " " +
+                      userProfile.name.lastname,
+                  },
                   { label: "Email Address", value: userProfile.email },
                   { label: "Phone Number", value: userProfile.phone },
                 ].map((field, index) => (
