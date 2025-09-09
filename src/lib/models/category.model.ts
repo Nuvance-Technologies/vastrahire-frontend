@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const CATEGORY = ["women", "men", "kids"];
 
-const SUBCATEGORY = {
+/* const SUBCATEGORY = {
   women: [
     "clothes",
     "jewellery",
@@ -13,7 +13,7 @@ const SUBCATEGORY = {
   ],
   men: ["clothes", "shoes", "watches", "accessories"],
   kids: ["clothes", "toys", "footwear", "accessories"],
-};
+}; */
 
 const categorySchema = new mongoose.Schema(
   {

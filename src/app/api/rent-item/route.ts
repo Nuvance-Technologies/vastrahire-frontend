@@ -3,13 +3,15 @@ import { connectToDB } from "@/lib/db/db";
 import Product from "@/lib/models/product.model";
 import UserRentalItem from "@/lib/models/userRental.model";
 
+// to rent a product
+// check it once not checked properly
 export async function POST(request: NextRequest) {
   try {
     await connectToDB();
 
     const { productId, quantity, userId, rentalPeriod } = await request.json();
 
-    if (!productId || !quantity || !userId || !rentalPeriod) {
+    if (!productId || !userId || !rentalPeriod) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
@@ -34,12 +36,13 @@ export async function POST(request: NextRequest) {
     const rental = await UserRentalItem.create({
       userID: userId,
       productID: productId,
-      quantity,
       activeRentals: quantity,
       totalRentals: quantity,
       totalSpent: product.pPrice * quantity * rentalPeriod,
-      rentalPeriod,
-      rentalDate: new Date(),
+      rentalPeriod: {
+        from: rentalPeriod.from,
+        to: rentalPeriod.to,
+      },
     });
 
     return NextResponse.json(
@@ -59,6 +62,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// to fetch rentals by userID
 export async function GET(req: NextRequest) {
   const userId = req.nextUrl.searchParams.get("userId");
   if (userId) {

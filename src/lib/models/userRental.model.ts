@@ -15,7 +15,10 @@ const userRentalItemSchema = new mongoose.Schema(
     activeRentals: { type: Number, default: 0 },
     totalRentals: { type: Number, default: 0 },
     totalSpent: { type: Number, default: 0 },
-    rentalPeriod: { type: Number, default: 0 },
+    rentalPeriod: {
+      from: { type: Date, required: true },
+      to: { type: Date, required: true },
+    },
   },
   { timestamps: true }
 );

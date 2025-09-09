@@ -283,36 +283,6 @@ export function Header() {
                 Kids
               </Link>
               <Link
-                href="/category/shoes"
-                className="text-gray-700 hover:text-[#3d000c] transition"
-              >
-                Shoes
-              </Link>
-              <Link
-                href="/category/jewellery"
-                className="text-gray-700 hover:text-[#3d000c] transition"
-              >
-                Jewellery
-              </Link>
-              <Link
-                href="/category/bags"
-                className="text-gray-700 hover:text-[#3d000c] transition"
-              >
-                Bags
-              </Link>
-              <Link
-                href="/category/accessories"
-                className="text-gray-700 hover:text-[#3d000c] transition"
-              >
-                Accessories
-              </Link>
-              <Link
-                href="/branded"
-                className="text-[#3d000c] font-semibold px-3 py-1 rounded-xl bg-[#ffecd1] transition"
-              >
-                Explore Top Brands
-              </Link>
-              <Link
                 href="/earn-through-us"
                 className="text-gray-200 px-3 py-1 rounded-xl bg-[#3d000c] transition"
               >

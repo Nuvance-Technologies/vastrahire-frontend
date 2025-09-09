@@ -1,21 +1,16 @@
 import mongoose from "mongoose";
 
-const PRODUCT_SIZE = ["XS", "S", "M", "L", "XL", "XXL"];
-const PRODUCT_DIS = ["0%", "10%", "20%", "30%", "40%", "above 40%"];
-const PRODUCT_FABRIC = ["cotton", "silk", "georgette", "linen", "chiffon"];
-const PRODUCT_PATTERN = ["embroidered", "floral", "geometric", "abstract"];
-const PRODUCT_OCCASION = ["casual", "formal", "party", "ethnic", "festive"];
 const LENDER_AVAILABILITY = ["active", "rented"];
 
 const productSchema = new mongoose.Schema(
   {
     pName: { type: String, required: true },
-    pBrand: { type: String },
     pPrice: { type: Number, required: true },
     pDesc: { type: String },
 
-    pSize: { type: String, enum: PRODUCT_SIZE },
+    pSize: { type: String, required: true },
     pImages: [{ type: String }],
+    pColor: { type: String },
 
     category: {
       type: mongoose.Schema.Types.ObjectId,
@@ -27,10 +22,10 @@ const productSchema = new mongoose.Schema(
       required: true,
     },
 
-    pDiscount: { type: String, enum: PRODUCT_DIS },
-    pFabric: { type: String, enum: PRODUCT_FABRIC },
-    pPattern: { type: String, enum: PRODUCT_PATTERN },
-    pOccasion: { type: String, enum: PRODUCT_OCCASION },
+    pDiscount: { type: String },
+    pFabric: { type: String },
+    pPattern: { type: String },
+    pOccasion: { type: String },
 
     availability: {
       type: String,
