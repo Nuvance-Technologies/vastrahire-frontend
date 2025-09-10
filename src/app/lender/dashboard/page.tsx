@@ -64,6 +64,16 @@ const TIER_STYLES: Record<
     icon: <></>,
   },
 };
+const lendersProfile = {
+  name: "John Smith",
+  email: "john.smith@email.com",
+  phone: "+1 (555) 123-4567",
+  address: "123 Main St, New York, NY 10001",
+  memberSince: "January 2023",
+  totalRentals: 15,
+  totalSpent: "$2,450",
+  avatar: "/abstract-profile.png",
+}
 
 export default function LenderDashboard() {
   const [showAddForm, setShowAddForm] = useState(false);
@@ -158,6 +168,7 @@ export default function LenderDashboard() {
 
   const tier = getLenderTier();
   const tierStyle = TIER_STYLES[tier];
+  const uploadedUrls: string[] = [];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
@@ -370,6 +381,61 @@ export default function LenderDashboard() {
                   </div>
                 </div>
               ))}
+            </div>
+            {/* Personal Details */}
+            <div className="bg-white rounded-xl shadow p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Personal Details</h3>
+                  <p className="text-gray-500 text-sm">
+                    Your profile information and preferences
+                  </p>
+                </div>
+                <button className="px-4 py-2 rounded-md bg-[#3d000c] text-white hover:bg-[#710017] flex items-center gap-1">
+                  <Edit className="h-4 w-4" /> Edit Profile
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  {[
+                    { label: "Full Name", value: lendersProfile.name },
+                    { label: "Email Address", value: lendersProfile.email },
+                    { label: "Phone Number", value: lendersProfile.phone },
+                  ].map((field, index) => (
+                    <div key={index}>
+                      <label className="text-sm font-medium text-gray-500">
+                        {field.label}
+                      </label>
+                      <p className="text-gray-900 font-medium">{field.value}</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="space-y-4">
+                  {[
+                    { label: "Address", value: lendersProfile.address },
+                    { label: "Total Rentals", value: `${lendersProfile.totalRentals} items` },
+                    { label: "Member Since", value: lendersProfile.memberSince },
+                  ].map((field, index) => (
+                    <div key={index}>
+                      <label className="text-sm font-medium text-gray-500">
+                        {field.label}
+                      </label>
+                      <p className="text-gray-900 font-medium">{field.value}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <hr className="my-6" />
+              <div className="flex gap-3">
+                <button className="px-4 py-2 rounded-md bg-[#3d000c] text-white hover:bg-[#710017]">
+                  Save Changes
+                </button>
+                <button className="px-4 py-2 rounded-md border text-[#3d000c] hover:bg-gray-100">
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
         </div>

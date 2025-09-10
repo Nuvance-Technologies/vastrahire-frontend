@@ -344,12 +344,6 @@ export function Header() {
                   </div>
                 )}
               </div>
-
-              {/* Profile */}
-              <button className="flex items-center px-3 py-2 text-gray-700 hover:text-[#3d000c] rounded-md transition">
-                <User className="h-4 w-4 mr-1" />
-                Profile
-              </button>
               <Link href="/cart">
                 <button>
                   <ShoppingCart className="text-gray-800 h-6 w-6" />

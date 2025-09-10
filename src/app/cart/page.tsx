@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import Link from "next/link"
 import { useEffect, useMemo, useState } from "react"
 
 type CartItem = {
@@ -37,7 +38,7 @@ export default function CartPage() {
   useEffect(() => {
     try {
       localStorage.setItem("cart", JSON.stringify(items))
-    } catch {}
+    } catch { }
   }, [items])
 
   const totals = useMemo(() => {
@@ -144,9 +145,14 @@ export default function CartPage() {
                   <span className="text-slate-900 font-semibold">${totals.totalPrice.toFixed(2)}</span>
                 </div>
               </div>
-              <button className="mt-5 w-full rounded-lg bg-[#3d000c] text-white py-2.5 font-medium hover:bg-[#87001b] transition-colors">
-                Checkout
-              </button>
+              <div className="pt-5">
+                <Link
+                  href="/customer/payment"
+                  className="block w-full text-center bg-[#3d000c] text-white font-medium py-3 px-4 rounded-xl shadow hover:bg-[#5a0014] transition"
+                >
+                  Checkout
+                </Link>
+              </div>
             </div>
           </aside>
         </div>
@@ -163,9 +169,11 @@ export default function CartPage() {
                 <span className="text-slate-500 text-sm">({totals.totalItems} items)</span>
               </p>
             </div>
-            <button className="inline-flex items-center rounded-lg bg-[#3d000c] text-white px-4 py-2.5 font-medium hover:bg-[#87001b] transition-colors">
-              Checkout
-            </button>
+            <Link href="/customer/payment">
+              <button className="inline-flex items-center rounded-lg bg-[#3d000c] text-white px-4 py-2.5 font-medium hover:bg-[#87001b] transition-colors">
+                Checkout
+              </button>
+            </Link>
           </div>
         </div>
       </div>
