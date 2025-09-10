@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 
 export default function PaymentPage() {
@@ -14,10 +15,13 @@ export default function PaymentPage() {
 
                 {/* QR Code Section */}
                 <div className="mb-6 flex justify-center">
-                    <img
+                    <Image
                         src="/qr_code.jpg"
                         alt="Payment QR Code"
                         className="w-48 h-48 border rounded-xl shadow"
+                        width={192}
+                        height={192}
+                        priority
                     />
                 </div>
 
