@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { Zap } from "lucide-react"
-import Image from "next/image"
+import Link from "next/link";
+import { Zap } from "lucide-react";
+import Image from "next/image";
 
 export default function BusinessLenderSignupPage() {
   return (
@@ -18,12 +18,22 @@ export default function BusinessLenderSignupPage() {
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/">
-            <Image src="/vastrahire2.png" alt="Vastrahire Logo" width={150} height={50} className="mx-auto" />
+            <Image
+              src="/vastrahire2.png"
+              alt="Vastrahire Logo"
+              width={150}
+              height={50}
+              className="mx-auto"
+            />
           </Link>
-          <p className="text-gray-500 mt-2 text-lg">Partner with us and grow your brand</p>
+          <p className="text-gray-500 mt-2 text-lg">
+            Partner with us and grow your brand
+          </p>
           <div className="flex justify-center items-center gap-2 mt-3 text-[#3d000c]">
             <Zap className="w-5 h-5" />
-            <span className="text-sm font-medium">Seamless • Profitable • Secure</span>
+            <span className="text-sm font-medium">
+              Seamless • Profitable • Secure
+            </span>
           </div>
         </div>
 
@@ -33,24 +43,65 @@ export default function BusinessLenderSignupPage() {
           </h2>
 
           <div className="space-y-4 text-neutral-900">
-            <input placeholder="Company Name" className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md" />
+            <input
+              placeholder="Company Name"
+              className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
+            />
             <div className="grid grid-cols-2 gap-3">
-              <input placeholder="Contact Person Name" className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md" />
-              <input placeholder="Role / Title" className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md" />
+              <input
+                placeholder="Contact Person Name"
+                className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
+              />
+              <input
+                placeholder="Role / Title"
+                className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
+              />
             </div>
-            <input type="email" placeholder="Business Email" className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md" />
-            <input type="tel" placeholder="Phone Number" className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md" />
-            <textarea rows={2} placeholder="Business Address" className="w-full px-3 py-2 border-2 border-neutral-400 rounded-md"></textarea>
+            <input
+              type="email"
+              placeholder="Business Email"
+              className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
+            />
+            <input
+              type="tel"
+              placeholder="Phone Number"
+              className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
+            />
+            <textarea
+              rows={2}
+              placeholder="Business Address"
+              className="w-full px-3 py-2 border-2 border-neutral-400 rounded-md"
+            ></textarea>
             <div className="grid grid-cols-2 gap-3">
-              <input placeholder="Bank Account Number" className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md" />
-              <input placeholder="IFSC Code" className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md" />
+              <input
+                placeholder="Bank Account Number"
+                className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
+              />
+              <input
+                placeholder="IFSC Code"
+                className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
+              />
             </div>
-            <textarea rows={3} placeholder="Brand Bio" className="w-full px-3 py-2 border-2 border-neutral-400 rounded-md"></textarea>
-            <input type="file" className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md" />
+            <textarea
+              rows={3}
+              placeholder="Brand Bio"
+              className="w-full px-3 py-2 border-2 border-neutral-400 rounded-md"
+            ></textarea>
+            <input
+              type="file"
+              className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
+            />
 
-            <input type="password" placeholder="Create Password" className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md" />
-            <input type="password" placeholder="Confirm Password" className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md" />
-
+            <input
+              type="password"
+              placeholder="Create Password"
+              className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
+            />
+            <input
+              type="password"
+              placeholder="Confirm Password"
+              className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
+            />
             <button className="w-full h-12 bg-gradient-to-r from-[#3d000c] to-[#720017] text-white font-semibold rounded-md shadow-lg">
               Sign Up as Business
             </button>
@@ -58,12 +109,15 @@ export default function BusinessLenderSignupPage() {
 
           <p className="text-center text-sm text-gray-500 mt-6">
             Already a partner?{" "}
-            <Link href="/lender/login" className="text-[#3d000c] hover:text-[#9f0020] font-semibold">
+            <Link
+              href="/lender/login"
+              className="text-[#3d000c] hover:text-[#9f0020] font-semibold"
+            >
               Sign in
             </Link>
           </p>
         </div>
       </div>
     </div>
-  )
+  );
 }

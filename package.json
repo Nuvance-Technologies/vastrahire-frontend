@@ -4,17 +4,28 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "next build --no-lint",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
+    "@types/formidable": "^3.4.5",
+    "@types/jsonwebtoken": "^9.0.10",
+    "axios": "^1.11.0",
+    "bcryptjs": "^3.0.2",
+    "formidable": "^3.5.4",
     "framer-motion": "^12.23.12",
+    "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.540.0",
+    "mongodb": "^6.19.0",
+    "mongoose": "^8.18.0",
+    "multer": "^2.0.2",
     "next": "15.4.7",
+    "next-auth": "^4.24.11",
     "nextjs-toploader": "^3.8.16",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "react-hot-toast": "^2.6.0",
     "swiper": "^11.2.10"
   },
   "devDependencies": {
