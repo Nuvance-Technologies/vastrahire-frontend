@@ -366,6 +366,8 @@ export default function LenderDashboard() {
                     }
                     className="border rounded-lg p-2"
                   />
+
+                  {/* Available Sizes */}
                   <input
                     type="text"
                     placeholder="Available Sizes (e.g., S, M, L, XL)"
@@ -375,6 +377,8 @@ export default function LenderDashboard() {
                     }
                     className="border rounded-lg p-2"
                   />
+
+                  {/* Pickup Location */}
                   <input
                     type="text"
                     placeholder="Pickup Location"
