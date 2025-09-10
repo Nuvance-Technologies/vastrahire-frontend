@@ -77,16 +77,6 @@ const lendersProfile = {
 
 export default function LenderDashboard() {
   const [showAddForm, setShowAddForm] = useState(false);
-  const [newProduct, setNewProduct] = useState({
-    name: "",
-    category: "",
-    dailyRate: "",
-    description: "",
-    location: "",
-    retailPrice: "",
-    sizes: "",
-  });
-
   const lenderProducts = [
     {
       id: 1,
@@ -169,6 +159,25 @@ export default function LenderDashboard() {
   const tier = getLenderTier();
   const tierStyle = TIER_STYLES[tier];
   const uploadedUrls: string[] = [];
+
+  
+  const [newProduct, setNewProduct] = useState({
+    pName: "",
+    pPrice: "",
+    pSize: "",
+    pDesc: "",
+    pColor: "",
+    subcategory: "",
+    pDiscount: "",
+    pFabric: "",
+    pPattern: "",
+    pOccasion: "",
+    pLocation: "",
+    quantity: 1,
+    category: "",
+    ownerID: "",
+  });
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
@@ -262,81 +271,147 @@ export default function LenderDashboard() {
 
               {showAddForm && (
                 <form className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-black">
+                  {/* Product Name */}
                   <input
                     type="text"
                     placeholder="Product Name"
-                    value={newProduct.name}
-                    onChange={(e) =>
-                      setNewProduct({ ...newProduct, name: e.target.value })
-                    }
+                    value={newProduct.pName}
+                    onChange={(e) => setNewProduct({ ...newProduct, pName: e.target.value })}
                     className="border rounded-lg p-2"
                   />
+
+                  {/* Category */}
                   <input
                     type="text"
                     placeholder="Category"
                     value={newProduct.category}
+                    onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
+                    className="border rounded-lg p-2"
+                  />
+
+                  {/* Subcategory */}
+                  <input
+                    type="text"
+                    placeholder="Subcategory"
+                    value={newProduct.subcategory}
                     onChange={(e) =>
-                      setNewProduct({ ...newProduct, category: e.target.value })
+                      setNewProduct({ ...newProduct, subcategory: e.target.value })
                     }
                     className="border rounded-lg p-2"
                   />
+
+                  {/* Price */}
                   <input
                     type="number"
-                    placeholder="Daily Rate ($)"
-                    value={newProduct.dailyRate}
-                    onChange={(e) =>
-                      setNewProduct({
-                        ...newProduct,
-                        dailyRate: e.target.value,
-                      })
-                    }
+                    placeholder="Price ($)"
+                    value={newProduct.pPrice}
+                    onChange={(e) => setNewProduct({ ...newProduct, pPrice: e.target.value })}
                     className="border rounded-lg p-2"
                   />
+
+                  {/* Discount */}
                   <input
                     type="number"
-                    placeholder="Retail Price ($)"
-                    value={newProduct.retailPrice}
+                    placeholder="Discount (%)"
+                    value={newProduct.pDiscount}
                     onChange={(e) =>
-                      setNewProduct({
-                        ...newProduct,
-                        retailPrice: e.target.value,
-                      })
+                      setNewProduct({ ...newProduct, pDiscount: e.target.value })
                     }
                     className="border rounded-lg p-2"
                   />
+
+                  {/* Available Sizes */}
                   <input
                     type="text"
                     placeholder="Available Sizes (e.g., S, M, L, XL)"
-                    value={newProduct.sizes}
+                    value={newProduct.pSize}
+                    onChange={(e) => setNewProduct({ ...newProduct, pSize: e.target.value })}
+                    className="border rounded-lg p-2"
+                  />
+
+                  {/* Color */}
+                  <input
+                    type="text"
+                    placeholder="Color"
+                    value={newProduct.pColor}
+                    onChange={(e) => setNewProduct({ ...newProduct, pColor: e.target.value })}
+                    className="border rounded-lg p-2"
+                  />
+
+                  {/* Fabric */}
+                  <input
+                    type="text"
+                    placeholder="Fabric"
+                    value={newProduct.pFabric}
+                    onChange={(e) => setNewProduct({ ...newProduct, pFabric: e.target.value })}
+                    className="border rounded-lg p-2"
+                  />
+
+                  {/* Pattern */}
+                  <input
+                    type="text"
+                    placeholder="Pattern"
+                    value={newProduct.pPattern}
+                    onChange={(e) => setNewProduct({ ...newProduct, pPattern: e.target.value })}
+                    className="border rounded-lg p-2"
+                  />
+
+                  {/* Occasion */}
+                  <input
+                    type="text"
+                    placeholder="Occasion"
+                    value={newProduct.pOccasion}
                     onChange={(e) =>
-                      setNewProduct({ ...newProduct, sizes: e.target.value })
+                      setNewProduct({ ...newProduct, pOccasion: e.target.value })
                     }
                     className="border rounded-lg p-2"
                   />
+
+                  {/* Pickup Location */}
                   <input
                     type="text"
                     placeholder="Pickup Location"
-                    value={newProduct.location}
+                    value={newProduct.pLocation}
                     onChange={(e) =>
-                      setNewProduct({ ...newProduct, location: e.target.value })
+                      setNewProduct({ ...newProduct, pLocation: e.target.value })
                     }
                     className="border rounded-lg p-2"
                   />
+
+                  {/* Quantity */}
+                  <input
+                    type="number"
+                    placeholder="Quantity"
+                    value={newProduct.quantity}
+                    onChange={(e) =>
+                      setNewProduct({ ...newProduct, quantity: Number(e.target.value) })
+                    }
+                    className="border rounded-lg p-2"
+                  />
+
+                  {/* Owner ID */}
+                  <input
+                    type="text"
+                    placeholder="Owner ID"
+                    value={newProduct.ownerID}
+                    onChange={(e) => setNewProduct({ ...newProduct, ownerID: e.target.value })}
+                    className="border rounded-lg p-2"
+                  />
+
+                  {/* Description */}
                   <textarea
                     placeholder="Description"
-                    value={newProduct.description}
-                    onChange={(e) =>
-                      setNewProduct({
-                        ...newProduct,
-                        description: e.target.value,
-                      })
-                    }
+                    value={newProduct.pDesc}
+                    onChange={(e) => setNewProduct({ ...newProduct, pDesc: e.target.value })}
                     className="border rounded-lg p-2 col-span-2"
                   />
+
+                  {/* Submit */}
                   <button className="col-span-2 px-4 py-2 bg-[#3d000c] hover:bg-[#570112] text-white rounded-lg">
                     <Plus className="inline h-4 w-4 mr-1" /> List Product
                   </button>
                 </form>
+
               )}
             </div>
 
@@ -443,3 +518,4 @@ export default function LenderDashboard() {
     </div>
   );
 }
+
