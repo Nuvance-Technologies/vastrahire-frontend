@@ -249,13 +249,13 @@ export default function LenderProfilePage() {
       {/* 🔍 Desktop Search Bar */}
       <section className="container mx-auto px-4 mt-6 hidden md:block">
         <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-800" />
           <input
             type="text"
             placeholder="Search products..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3d000c] focus:border-[#3d000c]"
+            className="w-full pl-10 pr-4 py-2 border rounded-xl text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#3d000c] focus:border-[#3d000c]"
           />
         </div>
       </section>
@@ -283,6 +283,12 @@ export default function LenderProfilePage() {
               )
             }
           )}
+          <div className="text-neutral-800 bg-[#ffecd1] font-bold px-3 py-1.5 rounded-xl text-sm">
+            <button>
+              Explore branded section
+            </button>
+
+          </div>
         </div>
 
         {/* desktop categories */}

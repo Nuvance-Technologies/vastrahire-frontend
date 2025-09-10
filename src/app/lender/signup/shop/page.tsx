@@ -221,11 +221,7 @@ export default function BusinessLenderSignupPage() {
               }
               className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
             />
-
-            <button
-              type="submit"
-              className="w-full h-12 bg-gradient-to-r from-[#3d000c] to-[#720017] text-white font-semibold rounded-md shadow-lg"
-            >
+            <button className="w-full h-12 bg-gradient-to-r from-[#3d000c] to-[#720017] text-white font-semibold rounded-md shadow-lg">
               Sign Up as Business
             </button>
           </form>
