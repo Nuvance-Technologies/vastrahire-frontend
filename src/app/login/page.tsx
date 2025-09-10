@@ -18,12 +18,12 @@ export default function CustomerLoginPage() {
 
   const router = useRouter();
   useEffect(() => {
-    if(session?.user){
-      if (session?.user?.role == 'customer') {
-      router.push("/customer/dashboard");
-    } else {
-      router.push("/lender/dashboard");
-    }
+    if (session?.user) {
+      if (session?.user?.role == "customer") {
+        router.push("/customer/dashboard");
+      } else {
+        router.push("/lender/dashboard");
+      }
     }
   }, [session?.user?.role, router]);
 

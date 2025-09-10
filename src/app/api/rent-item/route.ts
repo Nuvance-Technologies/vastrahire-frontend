@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectToDB } from "@/lib/db/db";
 import Product from "@/lib/models/product.model";
 import UserRentalItem from "@/lib/models/userRental.model";
+import LenderItem from "@/lib/models/lenderItem.model";
 
 // to rent a product
 // check it once not checked properly
@@ -33,7 +34,7 @@ export async function POST(request: NextRequest) {
     product.quantity -= quantity;
     const updatedProduct = await product.save();
 
-    const rental = await UserRentalItem.create({
+    const userRental = await UserRentalItem.create({
       userID: userId,
       productID: productId,
       activeRentals: quantity,
@@ -45,10 +46,19 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    const lenderRental = await LenderItem.create({
+      userID: userId,
+      productID: productId,
+      activeRentals: quantity,
+      totalEarnings: product.pPrice * quantity * rentalPeriod,
+      avgRating: product.avgRating,
+    });
+
     return NextResponse.json(
       {
         message: "Rental successful",
-        rental,
+        userRental,
+        lenderRental,
         updatedProduct,
       },
       { status: 200 }
