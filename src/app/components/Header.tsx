@@ -375,42 +375,6 @@ export function Header() {
               >
                 Kids
               </Link>
-              <Link
-                href="/category/shoes"
-                className="text-gray-700 hover:text-[#3d000c]"
-              >
-                Shoes
-              </Link>
-              <Link
-                href="/category/jewellery"
-                className="text-gray-700 hover:text-[#3d000c]"
-              >
-                Jewellery
-              </Link>
-              <Link
-                href="/category/bags"
-                className="text-gray-700 hover:text-[#3d000c]"
-              >
-                Bags
-              </Link>
-              <Link
-                href="/category/watches"
-                className="text-gray-700 hover:text-[#3d000c]"
-              >
-                Watches
-              </Link>
-              <Link
-                href="/earn-through-us"
-                className="text-gray-700 hover:text-[#3d000c]"
-              >
-                Unlock Your earning through us
-              </Link>
-              <Link
-                href="/category/branded"
-                className="text-gray-700 hover:text-[#3d000c]"
-              >
-                Explore top brands
-              </Link>
 
               {/* More Button for mobile */}
               <div className="relative" ref={dropdownRef}>
