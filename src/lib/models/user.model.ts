@@ -8,14 +8,6 @@ const ROLE = {
   },
 };
 
-const BUSINESS_TYPE = {
-  INDIVIDUAL_SELLER: "individual_seller",
-  BOUTIQUE_STORE: "boutique_store",
-  FASHION_DESIGNER: "fashion_designer",
-  RENTAL_BUSINESS: "rental_business",
-  OTHERS: "others",
-};
-
 const userSchema = new mongoose.Schema({
   name: {
     firstname: {
@@ -26,7 +18,6 @@ const userSchema = new mongoose.Schema({
     },
     lastname: {
       type: String,
-      required: [true, "lastname is required!"],
       min: [3, "lastname must be at least 3 characters long"],
       max: [30, "lastname must be at most 30 characters long"],
     },
@@ -49,15 +40,26 @@ const userSchema = new mongoose.Schema({
     type: String,
     max: [10, "phone number must be at most 10 characters long"],
   },
-  businessType: {
+  companyName: {
     type: String,
-    enum: [
-      BUSINESS_TYPE.INDIVIDUAL_SELLER,
-      BUSINESS_TYPE.BOUTIQUE_STORE,
-      BUSINESS_TYPE.FASHION_DESIGNER,
-      BUSINESS_TYPE.RENTAL_BUSINESS,
-      BUSINESS_TYPE.OTHERS,
-    ],
+    max: [50, "company name must be at most 50 characters long"],
+  },
+  address: {
+    type: String,
+    max: [100, "address must be at most 100 characters long"],
+  },
+  bankDetails: {
+    accountNumber: {
+      type: String,
+      max: [20, "account number must be at most 20 characters long"],
+    },
+    ifscCode: {
+      type: String,
+      max: [11, "IFSC code must be at most 11 characters long"],
+    },
+  },
+  brandBio: {
+    type: String,
   },
 });
 

@@ -3,8 +3,82 @@
 import Link from "next/link";
 import { Zap } from "lucide-react";
 import Image from "next/image";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import axios from "axios";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function BusinessLenderSignupPage() {
+  const [formData, setFormData] = useState({
+    companyName: "",
+    contactPersonFirstName: "",
+    contactPersonLastName: "",
+    role: "",
+    businessEmail: "",
+    phoneNumber: "",
+    businessAddress: "",
+    bankAccNo: "",
+    ifscCode: "",
+    brandBio: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const router = useRouter();
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords do not match!");
+      return;
+    }
+
+    try {
+      const res = await axios.post("/api/signup", {
+        firstname: formData.contactPersonFirstName,
+        lastname: formData.contactPersonLastName,
+        email: formData.businessEmail,
+        password: formData.confirmPassword,
+        role: "business",
+        phoneNumber: formData.phoneNumber,
+        companyName: formData.companyName,
+        address: formData.businessAddress,
+        bankAccNo: formData.bankAccNo,
+        ifscCode: formData.ifscCode,
+        brandBio: formData.brandBio,
+      });
+      if (res.status === 201) {
+        const result = await signIn("credentials", {
+          redirect: false,
+          email: formData.businessEmail,
+          password: formData.confirmPassword,
+        });
+        if (result?.ok) {
+          toast.success("Signup successful! Please log in.");
+          setFormData({
+            companyName: "",
+            contactPersonFirstName: "",
+            contactPersonLastName: "",
+            role: "",
+            businessEmail: "",
+            phoneNumber: "",
+            businessAddress: "",
+            bankAccNo: "",
+            ifscCode: "",
+            brandBio: "",
+            password: "",
+            confirmPassword: "",
+          });
+          router.push("/lender/dashboard");
+        }
+      }
+    } catch (error) {
+      console.error("Signup failed:", error);
+      toast.error("Signup failed. Please try again.");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 relative">
       {/* Background */}
@@ -42,76 +116,124 @@ export default function BusinessLenderSignupPage() {
             Business / Boutique Signup
           </h2>
 
-          <div className="space-y-4 text-neutral-900">
+          <form onSubmit={handleSignup} className="space-y-4 text-neutral-900">
             <input
               placeholder="Company Name"
+              value={formData.companyName}
+              onChange={(e) =>
+                setFormData({ ...formData, companyName: e.target.value })
+              }
               className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
             />
             <div className="grid grid-cols-2 gap-3">
               <input
-                placeholder="Contact Person Name"
+                placeholder="Contact Person First Name"
+                value={formData.contactPersonFirstName}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    contactPersonFirstName: e.target.value,
+                  })
+                }
                 className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
               />
               <input
-                placeholder="Role / Title"
+                placeholder="Contact Person Last Name"
+                value={formData.contactPersonLastName}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    contactPersonLastName: e.target.value,
+                  })
+                }
                 className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
               />
             </div>
             <input
               type="email"
               placeholder="Business Email"
+              value={formData.businessEmail}
+              onChange={(e) =>
+                setFormData({ ...formData, businessEmail: e.target.value })
+              }
               className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
             />
             <input
               type="tel"
               placeholder="Phone Number"
+              value={formData.phoneNumber}
+              onChange={(e) =>
+                setFormData({ ...formData, phoneNumber: e.target.value })
+              }
               className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
             />
             <textarea
               rows={2}
               placeholder="Business Address"
+              value={formData.businessAddress}
+              onChange={(e) =>
+                setFormData({ ...formData, businessAddress: e.target.value })
+              }
               className="w-full px-3 py-2 border-2 border-neutral-400 rounded-md"
             ></textarea>
             <div className="grid grid-cols-2 gap-3">
               <input
                 placeholder="Bank Account Number"
+                value={formData.bankAccNo}
+                onChange={(e) =>
+                  setFormData({ ...formData, bankAccNo: e.target.value })
+                }
                 className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
               />
               <input
                 placeholder="IFSC Code"
+                value={formData.ifscCode}
+                onChange={(e) =>
+                  setFormData({ ...formData, ifscCode: e.target.value })
+                }
                 className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
               />
             </div>
             <textarea
               rows={3}
               placeholder="Brand Bio"
+              value={formData.brandBio}
+              onChange={(e) =>
+                setFormData({ ...formData, brandBio: e.target.value })
+              }
               className="w-full px-3 py-2 border-2 border-neutral-400 rounded-md"
             ></textarea>
             <input
-              type="file"
-              className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
-            />
-
-            <input
               type="password"
               placeholder="Create Password"
+              value={formData.password}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
               className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
             />
             <input
               type="password"
               placeholder="Confirm Password"
+              value={formData.confirmPassword}
+              onChange={(e) =>
+                setFormData({ ...formData, confirmPassword: e.target.value })
+              }
               className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
             />
 
-            <button className="w-full h-12 bg-gradient-to-r from-[#3d000c] to-[#720017] text-white font-semibold rounded-md shadow-lg">
+            <button
+              type="submit"
+              className="w-full h-12 bg-gradient-to-r from-[#3d000c] to-[#720017] text-white font-semibold rounded-md shadow-lg"
+            >
               Sign Up as Business
             </button>
-          </div>
+          </form>
 
           <p className="text-center text-sm text-gray-500 mt-6">
             Already a partner?{" "}
             <Link
-              href="/lender/login"
+              href="/login"
               className="text-[#3d000c] hover:text-[#9f0020] font-semibold"
             >
               Sign in

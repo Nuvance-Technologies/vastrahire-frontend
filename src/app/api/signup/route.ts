@@ -15,10 +15,12 @@ export async function POST(req: NextRequest) {
       password,
       role,
       phoneNumber,
-      businessType,
+      companyName,
+      address,
+      bankAccNo,
+      ifscCode,
+      brandBio,
     } = body;
-
-    console.log(businessType);
 
     if (!firstname || !email || !password) {
       return NextResponse.json(
@@ -43,7 +45,13 @@ export async function POST(req: NextRequest) {
       email,
       password: hashedPassword,
       phoneNumber,
-      businessType,
+      companyName,
+      address,
+      bankDetails: {
+        accountNumber: bankAccNo,
+        ifscCode,
+      },
+      brandBio,
     });
     await newUser.save();
 

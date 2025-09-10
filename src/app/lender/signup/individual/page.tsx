@@ -3,8 +3,76 @@
 import Link from "next/link";
 import { Zap } from "lucide-react";
 import Image from "next/image";
+import toast from "react-hot-toast";
+import { signIn } from "next-auth/react";
+import axios from "axios";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function IndividualLenderSignupPage() {
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    role: "",
+    email: "",
+    phoneNumber: "",
+    address: "",
+    bankAccNo: "",
+    ifscCode: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const router = useRouter();
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords do not match!");
+      return;
+    }
+
+    try {
+      const res = await axios.post("/api/signup", {
+        firstname: formData.firstName,
+        lastname: formData.lastName,
+        email: formData.email,
+        password: formData.confirmPassword,
+        role: "business",
+        phoneNumber: formData.phoneNumber,
+        address: formData.address,
+        bankAccNo: formData.bankAccNo,
+        ifscCode: formData.ifscCode,
+      });
+      if (res.status === 201) {
+        const result = await signIn("credentials", {
+          redirect: false,
+          email: formData.email,
+          password: formData.confirmPassword,
+        });
+        if (result?.ok) {
+          toast.success("Signup successful! Please log in.");
+          setFormData({
+            firstName: "",
+            lastName: "",
+            role: "",
+            email: "",
+            phoneNumber: "",
+            address: "",
+            bankAccNo: "",
+            ifscCode: "",
+            password: "",
+            confirmPassword: "",
+          });
+          router.push("/lender/dashboard");
+        }
+      }
+    } catch (error) {
+      console.error("Signup failed:", error);
+      toast.error("Signup failed. Please try again.");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 relative">
       {/* Background */}
@@ -40,68 +108,101 @@ export default function IndividualLenderSignupPage() {
             Individual Lender Signup
           </h2>
 
-          <div className="space-y-4 text-neutral-800">
-            <input
-              placeholder="Full Name"
-              className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
-            />
-            <input
-              type="date"
-              className="w-full h-12 px-3 text-neutral-500 border-2 border-neutral-400 rounded-md"
-            />
+          <form onSubmit={handleSignup} className="space-y-4 text-neutral-800">
+            <div className="grid grid-cols-2 gap-3">
+              <input
+                placeholder="First Name"
+                value={formData.firstName}
+                onChange={(e) =>
+                  setFormData({ ...formData, firstName: e.target.value })
+                }
+                className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
+              />
+              <input
+                placeholder="Last Name"
+                value={formData.lastName}
+                onChange={(e) =>
+                  setFormData({ ...formData, lastName: e.target.value })
+                }
+                className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
+              />
+            </div>
             <input
               type="email"
+              value={formData.email}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
               placeholder="Email"
               className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
             />
             <input
               type="tel"
               placeholder="Phone Number"
+              value={formData.phoneNumber}
+              onChange={(e) =>
+                setFormData({ ...formData, phoneNumber: e.target.value })
+              }
               className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
             />
             <textarea
               rows={2}
               placeholder="Residential Address"
+              value={formData.address}
+              onChange={(e) =>
+                setFormData({ ...formData, address: e.target.value })
+              }
               className="w-full px-3 py-2 border-2 border-neutral-400 rounded-md"
             ></textarea>
-            <input
-              type="file"
-              className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
-            />
-            <div className="grid grid-cols-3 gap-3">
-              <input
-                placeholder="Account Holder Name"
-                className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
-              />
+            <div className="grid grid-cols-2 gap-3">
               <input
                 placeholder="Account Number"
+                value={formData.bankAccNo}
+                onChange={(e) =>
+                  setFormData({ ...formData, bankAccNo: e.target.value })
+                }
                 className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
               />
               <input
                 placeholder="IFSC Code"
+                value={formData.ifscCode}
+                onChange={(e) =>
+                  setFormData({ ...formData, ifscCode: e.target.value })
+                }
                 className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
               />
             </div>
             <input
               type="password"
               placeholder="Create Password"
+              value={formData.password}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
               className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
             />
             <input
               type="password"
               placeholder="Confirm Password"
+              value={formData.confirmPassword}
+              onChange={(e) =>
+                setFormData({ ...formData, confirmPassword: e.target.value })
+              }
               className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
             />
 
-            <button className="w-full h-12 bg-gradient-to-r from-[#3d000c] to-[#720017] text-white font-semibold rounded-md shadow-lg">
+            <button
+              type="submit"
+              className="w-full h-12 bg-gradient-to-r from-[#3d000c] to-[#720017] text-white font-semibold rounded-md shadow-lg"
+            >
               Sign Up as Individual
             </button>
-          </div>
+          </form>
 
           <p className="text-center text-sm text-gray-500 mt-6">
             Already a lender?{" "}
             <Link
-              href="/lender/login"
+              href="/login"
               className="text-[#3d000c] hover:text-[#9f0020] font-semibold"
             >
               Sign in
