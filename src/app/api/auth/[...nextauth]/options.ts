@@ -36,13 +36,7 @@ export const authOptions: NextAuthOptions = {
           email: updatedUser?.email as string,
           role: updatedUser?.role as "individual" | "business" | "customer",
           phoneNumber: updatedUser?.phoneNumber as string,
-          businessType: updatedUser?.businessType as
-            | "individual_seller"
-            | "boutique_store"
-            | "fashion_designer"
-            | "rental_business"
-            | "others"
-            | undefined,
+          address: updatedUser?.address as string,
         };
       },
     }),
@@ -58,7 +52,7 @@ export const authOptions: NextAuthOptions = {
         token.name = user.name;
         token.role = user.role;
         token.phoneNumber = user.phoneNumber;
-        token.businessType = user.businessType;
+        token.address = user.address;
       }
       return token;
     },
@@ -69,7 +63,6 @@ export const authOptions: NextAuthOptions = {
       session.user.name = token.name as { firstname: string; lastname: string };
       session.user.role = token.role as string;
       session.user.phoneNumber = token.phoneNumber as string;
-      session.user.businessType = token.businessType as string;
       return session;
     },
   },

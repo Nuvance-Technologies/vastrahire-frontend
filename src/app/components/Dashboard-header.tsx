@@ -7,7 +7,7 @@ import { useState } from "react";
 
 interface DashboardHeaderProps {
   userType: "customer" | "lender";
-  userName: string;
+  userName: string | undefined;
   userAvatar?: string;
   title: string;
   description?: string;
@@ -16,7 +16,7 @@ interface DashboardHeaderProps {
 export function DashboardHeader({
   userType,
   userName,
-  userAvatar,
+  // userAvatar,
   title,
   description,
 }: DashboardHeaderProps) {
@@ -44,7 +44,7 @@ export function DashboardHeader({
               )}
             </div>
           </div>
-          </div>
+        </div>
       </div>
     </header>
   );

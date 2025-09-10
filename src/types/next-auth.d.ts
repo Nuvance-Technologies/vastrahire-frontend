@@ -10,7 +10,7 @@ declare module "next-auth" {
     email: string;
     role: string;
     phoneNumber?: string;
-    businessType?: string;
+    address?: string;
   }
 
   interface Session {
@@ -24,7 +24,7 @@ declare module "next-auth" {
       role: string;
       jwt: string;
       phoneNumber?: string;
-      businessType?: string;
+      address?: string;
     };
   }
 }
@@ -40,6 +40,6 @@ declare module "next-auth/jwt" {
     role: string;
     jwt: string;
     phoneNumber?: string;
-    businessType?: string;
+    address?: string;
   }
 }

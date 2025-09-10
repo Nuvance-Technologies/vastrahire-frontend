@@ -68,16 +68,6 @@ const TIER_STYLES: Record<
     icon: <></>,
   },
 };
-const lendersProfile = {
-  name: "John Smith",
-  email: "john.smith@email.com",
-  phone: "+1 (555) 123-4567",
-  address: "123 Main St, New York, NY 10001",
-  memberSince: "January 2023",
-  totalRentals: 15,
-  totalSpent: "$2,450",
-  avatar: "/abstract-profile.png",
-};
 
 export default function LenderDashboard() {
   const [showAddForm, setShowAddForm] = useState(false);
@@ -96,11 +86,88 @@ export default function LenderDashboard() {
     quantity: 0,
     category: "",
     ownerID: "",
-    pImages: [""],
+    pImages: [] as (string | File)[],
+  });
+  // inside LenderDashboard component (state + handlers at the top)
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [lenderProducts, setLenderProducts] = useState<ProductI[]>([]);
+  const [lenderProfile, setLenderProfile] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneNumber: "",
+    address: "",
   });
 
   const { data: session } = useSession();
-  const [lenderProducts, setLenderProducts] = useState<ProductI[]>([]);
+
+  const fetchLenderProfile = async () => {
+    try {
+      const res = await axios.get(
+        `/api/get-user?userId=${session?.user?.id || ""}`
+      );
+
+      if (res.status === 200) {
+        setLenderProfile({
+          firstName: res.data.name.firstname,
+          lastName: res.data.name.lastname,
+          email: res.data.email,
+          phoneNumber: res.data.phoneNumber,
+          address: res.data.address,
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+    }
+  };
+  useEffect(() => {
+    if (session?.user) {
+      setLenderProfile({
+        firstName: session.user?.name?.firstname || "",
+        lastName: session.user?.name?.lastname || "",
+        email: session.user?.email || "",
+        phoneNumber: session.user?.phoneNumber || "",
+        address: session.user?.address || "",
+      });
+      fetchLenderProfile();
+    }
+  }, [session?.user]);
+
+  const handleProfileSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const data = {
+        firstname: lenderProfile.firstName,
+        lastname: lenderProfile.lastName,
+        email: lenderProfile.email,
+        phoneNumber: lenderProfile.phoneNumber,
+        address: lenderProfile.address,
+      };
+      const res = await axios.put(
+        `/api/update-user?userId=${session?.user?.id}`,
+        data
+      );
+      if (res.status === 200) {
+        setIsEditingProfile(false);
+        setLenderProfile({
+          firstName: res.data.user.name.firstname,
+          lastName: res.data.user.name.lastname,
+          email: res.data.user.email,
+          phoneNumber: res.data.user.phoneNumber,
+          address: res.data.user.address,
+        });
+        toast.success("Profile updated successfully");
+      }
+    } catch (error) {
+      console.error("error: ", error);
+    }
+  };
+
+  const handleCancel = () => {
+    setIsEditingProfile(false);
+    // Optionally: refetch original profile from API here to reset unsaved changes
+  };
+
   const fetchProducts = async () => {
     try {
       const res = await axios.get(`/api/product/${session?.user?.id}`);
@@ -121,10 +188,8 @@ export default function LenderDashboard() {
       const formData = new FormData();
 
       Object.entries(newProduct).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          value.forEach((item, index) => {
-            formData.append(`${key}[${index}]`, item);
-          });
+        if (key === "pImages" && Array.isArray(value)) {
+          value.forEach((file) => formData.append("pImages", file));
         } else {
           formData.append(key, value as string | Blob);
         }
@@ -191,18 +256,6 @@ export default function LenderDashboard() {
     }
   }, [session?.user?.id]);
 
-  const lenderProfile = {
-    name: "Mike Johnson",
-    email: "mike.johnson@email.com",
-    phone: "+1 (555) 987-6543",
-    address: "456 Business Ave, Los Angeles, CA 90210",
-    memberSince: "March 2022",
-    totalProducts: 12,
-    totalEarnings: "$3,450",
-    activeRentals: 5,
-    avatar: "/abstract-profile.png",
-  };
-
   const stats = [
     {
       label: "Total Products",
@@ -242,8 +295,8 @@ export default function LenderDashboard() {
       <Header />
       <DashboardHeader
         userType="lender"
-        userName={lenderProfile.name}
-        userAvatar={lenderProfile.avatar}
+        userName={lenderProfile.firstName}
+        // userAvatar={lenderProfile.avatar}
         title="Lender Dashboard"
         description="Manage your products and track earnings"
       />
@@ -292,20 +345,13 @@ export default function LenderDashboard() {
             )}
             <div className="bg-[#3d000c8e] text-[#ffecd1] p-6 rounded-xl sticky top-4">
               <div className="flex items-center gap-3 mb-4">
-                <Image
-                  src={lenderProfile.avatar}
-                  alt={lenderProfile.name}
-                  className="h-12 w-12 rounded-full border-2 border-white/20"
-                  width={48}
-                  height={48}
-                />
+                <div className="h-12 w-12 bg-[#ffecd1] text-[#3d000c] rounded-full flex items-center justify-center text-xl font-bold">
+                  {session?.user?.name?.firstname.charAt(0).toUpperCase()}
+                </div>
                 <div>
                   <h3 className="text-lg font-semibold">
-                    {lenderProfile.name}
+                    {lenderProfile.firstName} {lenderProfile.lastName}
                   </h3>
-                  <p className="text-sm text-gray-300">
-                    Lender since {lenderProfile.memberSince}
-                  </p>
                 </div>
               </div>
               <DashboardNav userType="lender" />
@@ -492,18 +538,14 @@ export default function LenderDashboard() {
                   {/* Images upload can be added here */}
                   <input
                     type="file"
-                    // accept="image/*"
                     multiple
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      if (!e.target.files) return;
                       setNewProduct({
                         ...newProduct,
-                        pImages: e.target.files
-                          ? Array.from(e.target.files).map((file) =>
-                              URL.createObjectURL(file)
-                            )
-                          : [""],
-                      })
-                    }
+                        pImages: Array.from(e.target.files), // store File objects
+                      });
+                    }}
                     className="border rounded-lg p-2"
                   />
                   <button
@@ -573,60 +615,176 @@ export default function LenderDashboard() {
                     Personal Details
                   </h3>
                   <p className="text-gray-500 text-sm">
-                    Your profile information and preferences
+                    Your profile information
                   </p>
                 </div>
-                <button className="px-4 py-2 rounded-md bg-[#3d000c] text-white hover:bg-[#710017] flex items-center gap-1">
-                  <Edit className="h-4 w-4" /> Edit Profile
-                </button>
+                {!isEditingProfile && (
+                  <button
+                    onClick={() => setIsEditingProfile(true)}
+                    className="px-4 py-2 rounded-md bg-[#3d000c] text-white hover:bg-[#710017] flex items-center gap-1"
+                  >
+                    <Edit className="h-4 w-4" /> Edit Profile
+                  </button>
+                )}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  {[
-                    { label: "Full Name", value: lendersProfile.name },
-                    { label: "Email Address", value: lendersProfile.email },
-                    { label: "Phone Number", value: lendersProfile.phone },
-                  ].map((field, index) => (
-                    <div key={index}>
+              <form onSubmit={handleProfileSave}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Left column */}
+                  <div className="space-y-4">
+                    {/* Full Name */}
+                    <div>
                       <label className="text-sm font-medium text-gray-500">
-                        {field.label}
+                        First Name
                       </label>
-                      <p className="text-gray-900 font-medium">{field.value}</p>
+                      {isEditingProfile ? (
+                        <input
+                          id="firstName"
+                          value={lenderProfile.firstName}
+                          onChange={(e) => {
+                            setLenderProfile({
+                              ...lenderProfile,
+                              firstName: e.target.value,
+                            });
+                          }}
+                          className="h-12 w-full px-3 text-gray-700 rounded-md border-2 border-gray-300 focus:border-[#3d000c] outline-none"
+                        />
+                      ) : (
+                        <p className="text-gray-900 font-medium">
+                          {lenderProfile.firstName}
+                        </p>
+                      )}
                     </div>
-                  ))}
-                </div>
-                <div className="space-y-4">
-                  {[
-                    { label: "Address", value: lendersProfile.address },
-                    {
-                      label: "Total Rentals",
-                      value: `${lendersProfile.totalRentals} items`,
-                    },
-                    {
-                      label: "Member Since",
-                      value: lendersProfile.memberSince,
-                    },
-                  ].map((field, index) => (
-                    <div key={index}>
+                    <div>
                       <label className="text-sm font-medium text-gray-500">
-                        {field.label}
+                        Last Name
                       </label>
-                      <p className="text-gray-900 font-medium">{field.value}</p>
+                      {isEditingProfile ? (
+                        <input
+                          id="lastName"
+                          value={lenderProfile.lastName}
+                          onChange={(e) => {
+                            setLenderProfile({
+                              ...lenderProfile,
+                              lastName: e.target.value,
+                            });
+                          }}
+                          className="h-12 w-full px-3 text-gray-700 rounded-md border-2 border-gray-300 focus:border-[#3d000c] outline-none"
+                        />
+                      ) : (
+                        <p className="text-gray-900 font-medium">
+                          {lenderProfile.lastName}
+                        </p>
+                      )}
                     </div>
-                  ))}
-                </div>
-              </div>
 
-              <hr className="my-6" />
-              <div className="flex gap-3">
-                <button className="px-4 py-2 rounded-md bg-[#3d000c] text-white hover:bg-[#710017]">
-                  Save Changes
-                </button>
-                <button className="px-4 py-2 rounded-md border text-[#3d000c] hover:bg-gray-100">
-                  Cancel
-                </button>
-              </div>
+                    {/* Email */}
+                    <div>
+                      <label className="text-sm font-medium text-gray-500">
+                        Email Address
+                      </label>
+                      {isEditingProfile ? (
+                        <input
+                          id="email"
+                          type="email"
+                          value={lenderProfile.email}
+                          onChange={(e) => {
+                            setLenderProfile({
+                              ...lenderProfile,
+                              email: e.target.value,
+                            });
+                          }}
+                          className="h-12 w-full px-3 text-gray-700 rounded-md border-2 border-gray-300 focus:border-[#3d000c] outline-none"
+                        />
+                      ) : (
+                        <p className="text-gray-900 font-medium">
+                          {lenderProfile.email}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Phone */}
+                    <div>
+                      <label className="text-sm font-medium text-gray-500">
+                        Phone Number
+                      </label>
+                      {isEditingProfile ? (
+                        <input
+                          id="phoneNumber"
+                          value={lenderProfile.phoneNumber}
+                          onChange={(e) =>
+                            setLenderProfile({
+                              ...lenderProfile,
+                              phoneNumber: e.target.value,
+                            })
+                          }
+                          className="h-12 w-full px-3 text-gray-700 rounded-md border-2 border-gray-300 focus:border-[#3d000c] outline-none"
+                        />
+                      ) : (
+                        <p className="text-gray-900 font-medium">
+                          {lenderProfile.phoneNumber}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Right column */}
+                  <div className="space-y-4">
+                    {/* Address */}
+                    <div>
+                      <label className="text-sm font-medium text-gray-500">
+                        Address
+                      </label>
+                      {isEditingProfile ? (
+                        <input
+                          id="address"
+                          value={lenderProfile.address}
+                          onChange={(e) => {
+                            setLenderProfile({
+                              ...lenderProfile,
+                              address: e.target.value,
+                            });
+                          }}
+                          className="h-12 w-full px-3 text-gray-700 rounded-md border-2 border-gray-300 focus:border-[#3d000c] outline-none"
+                        />
+                      ) : (
+                        <p className="text-gray-900 font-medium">
+                          {lenderProfile.address}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Total Rentals (read-only) */}
+                    {/* <div>
+                      <label className="text-sm font-medium text-gray-500">
+                        Total Rentals
+                      </label>
+                      <p className="text-gray-900 font-medium">
+                        {lenderProfile.totalRentals} items
+                      </p>
+                    </div> */}
+                  </div>
+                </div>
+
+                <hr className="my-6" />
+                {isEditingProfile && (
+                  <div className="flex gap-3">
+                    <button
+                      type="submit"
+                      className="px-4 py-2 rounded-md bg-[#3d000c] text-white hover:bg-[#710017]"
+                    >
+                      Save Changes
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleCancel}
+                      className="px-4 py-2 rounded-md border text-[#3d000c] hover:bg-gray-100"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                )}
+              </form>
             </div>
           </div>
         </div>

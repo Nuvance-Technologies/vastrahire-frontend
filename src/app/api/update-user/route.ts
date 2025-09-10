@@ -6,12 +6,15 @@ import { isValidEmail } from "@/util/emailValidator";
 export async function PUT(req: NextRequest) {
   await connectToDB();
   const body = await req.json();
-  const { firstname, lastname, email } = body;
+  const { firstname, lastname, email, phoneNumber, address } = body;
   const userId = req.nextUrl.searchParams.get("userId");
 
-//   Optional: Validate email if being updated
+  //   Optional: Validate email if being updated
   if (email && !isValidEmail(email)) {
-    return NextResponse.json({ error: "Invalid email address" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid email address" },
+      { status: 400 }
+    );
   }
 
   try {
@@ -21,14 +24,23 @@ export async function PUT(req: NextRequest) {
     }
     const updateResult = await User.updateOne(
       { _id: userId },
-      { $set: { name: { firstname, lastname }, email } }
+      { $set: { name: { firstname, lastname }, email, phoneNumber, address } }
     );
     if (updateResult.modifiedCount === 0) {
-      return NextResponse.json({ error: "No changes made to user" }, { status: 400 });
+      return NextResponse.json(
+        { error: "No changes made to user" },
+        { status: 400 }
+      );
     }
     const updatedUser = await User.findById(userId);
-    return NextResponse.json({ message: "User updated successfully", user: updatedUser }, { status: 200 });
+    return NextResponse.json(
+      { message: "User updated successfully", user: updatedUser },
+      { status: 200 }
+    );
   } catch (error) {
-    return NextResponse.json({ error: "Failed to update user", details: error }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to update user", details: error },
+      { status: 500 }
+    );
   }
 }
