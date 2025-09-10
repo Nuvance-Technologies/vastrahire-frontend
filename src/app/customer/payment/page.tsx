@@ -15,7 +15,7 @@ export default function PaymentPage() {
                 {/* QR Code Section */}
                 <div className="mb-6 flex justify-center">
                     <img
-                        src="/your-qr-code.png"
+                        src="/qr_code.jpg"
                         alt="Payment QR Code"
                         className="w-48 h-48 border rounded-xl shadow"
                     />
