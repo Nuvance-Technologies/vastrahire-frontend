@@ -3,6 +3,7 @@ import Product from "@/lib/models/product.model";
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import Category from "@/lib/models/category.model";
 
 // to add products
 export async function POST(req: Request) {
@@ -32,6 +33,13 @@ export async function POST(req: Request) {
     );
   }
 
+  // get the category ID from the category name
+  const categoryData = await Category.findOne({ name: category });
+  if (!categoryData) {
+    return NextResponse.json({ message: "Invalid category" }, { status: 400 });
+  }
+  const categoryId = categoryData._id;
+
   const files = formData.getAll("pImages") as File[];
   const uploadedUrls: string[] = [];
 
@@ -59,7 +67,7 @@ export async function POST(req: Request) {
     pImages: uploadedUrls,
     pDesc,
     pColor,
-    category,
+    category: categoryId,
     subcategory,
     pDiscount,
     pFabric,
@@ -88,6 +96,32 @@ export async function GET(req: NextRequest) {
     });
     return NextResponse.json(
       { message: "Products fetched successfully", products },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json(
+      { message: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}
+
+// delete product by ID
+export async function DELETE(req: NextRequest) {
+  const productId = req.nextUrl.searchParams.get("productId");
+  if (!productId) {
+    return NextResponse.json(
+      { message: "Product ID is required" },
+      { status: 400 }
+    );
+  }
+
+  try {
+    await connectToDB();
+    await Product.findByIdAndDelete(productId);
+    return NextResponse.json(
+      { message: "Product deleted successfully" },
       { status: 200 }
     );
   } catch (error) {

@@ -5,10 +5,9 @@ import { NextRequest, NextResponse } from "next/server";
 // to fetch products by ownerID
 export async function GET(req: NextRequest) {
   const ownerID = req.url.split("/")[req.url.split("/").length - 1];
-  console.log(ownerID);
   try {
     await connectToDB();
-    const products = await Product.find({ ownerID }).populate("category");
+    const products = await Product.find({ ownerID });
     return NextResponse.json(
       { message: "Products fetched successfully", products },
       { status: 200 }

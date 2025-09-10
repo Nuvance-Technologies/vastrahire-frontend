@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Edit,
   Plus,
@@ -19,6 +19,10 @@ import { DashboardNav } from "@/app/components/Dashboard-nav";
 import { Header } from "@/app/components/Header";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { useSession } from "next-auth/react";
+import toast from "react-hot-toast";
+import axios from "axios";
+import { ProductI } from "@/app/category/women/page";
 
 type Tier = "Golden" | "Platinum" | "Diamond";
 type TierOrNone = Tier | "none";
@@ -73,55 +77,119 @@ const lendersProfile = {
   totalRentals: 15,
   totalSpent: "$2,450",
   avatar: "/abstract-profile.png",
-}
+};
 
 export default function LenderDashboard() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [newProduct, setNewProduct] = useState({
-    name: "",
+    pName: "",
+    pPrice: "",
+    pSize: "",
+    pDesc: "",
+    pColor: "",
+    subcategory: "",
+    pDiscount: "",
+    pFabric: "",
+    pPattern: "",
+    pOccasion: "",
+    pLocation: "",
+    quantity: 0,
     category: "",
-    dailyRate: "",
-    description: "",
-    location: "",
-    retailPrice: "",
-    sizes: "",
+    ownerID: "",
+    pImages: [""],
   });
 
-  const lenderProducts = [
-    {
-      id: 1,
-      name: "Canon EOS R5 Camera",
-      category: "Photography",
-      dailyRate: "$30",
-      status: "rented",
-      currentRenter: "John Smith",
-      rentedUntil: "2024-01-20",
-      totalEarnings: "$450",
-      image: "/vintage-camera-still-life.png",
-    },
-    {
-      id: 2,
-      name: "MacBook Pro 16-inch",
-      category: "Electronics",
-      dailyRate: "$50",
-      status: "available",
-      currentRenter: null,
-      rentedUntil: null,
-      totalEarnings: "$800",
-      image: "/modern-laptop-workspace.png",
-    },
-    {
-      id: 3,
-      name: "Mountain Bike",
-      category: "Sports",
-      dailyRate: "$25",
-      status: "rented",
-      currentRenter: "Sarah Johnson",
-      rentedUntil: "2024-01-28",
-      totalEarnings: "$300",
-      image: "/mountain-bike-trail.png",
-    },
-  ];
+  const { data: session } = useSession();
+  const [lenderProducts, setLenderProducts] = useState<ProductI[]>([]);
+  const fetchProducts = async () => {
+    try {
+      const res = await axios.get(`/api/product/${session?.user?.id}`);
+      if (res.status === 200) {
+        toast.success("Products fetched successfully!");
+        setLenderProducts(res.data.products);
+      }
+    } catch (error) {
+      console.error("Failed to fetch products:", error);
+      toast.error("Failed to fetch products. Please try again.");
+    }
+  };
+
+  const handleProductSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const formData = new FormData();
+
+      Object.entries(newProduct).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          value.forEach((item, index) => {
+            formData.append(`${key}[${index}]`, item);
+          });
+        } else {
+          formData.append(key, value as string | Blob);
+        }
+      });
+
+      formData.set("ownerID", session?.user?.id || "");
+
+      const res = await axios.post("/api/product", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (res.status === 201) {
+        toast.success("Product added successfully!");
+        setShowAddForm(false);
+        setNewProduct({
+          pName: "",
+          pPrice: "",
+          pSize: "",
+          pDesc: "",
+          pColor: "",
+          subcategory: "",
+          pDiscount: "",
+          pFabric: "",
+          pPattern: "",
+          pOccasion: "",
+          pLocation: "",
+          quantity: 0,
+          category: "",
+          ownerID: "",
+          pImages: [""],
+        });
+        fetchProducts();
+      }
+    } catch (error) {
+      console.error("Failed to add product:", error);
+      toast.error("Failed to add product. Please try again.");
+    }
+  };
+
+  const handleDelete = async (productId: string) => {
+    if (!confirm("Are you sure you want to delete this product?")) return;
+
+    try {
+      const res = await axios.delete(
+        `/api/product?productId=${encodeURIComponent(productId)}`
+      );
+      if (res.status === 200) {
+        toast.success("Product deleted successfully!");
+        setLenderProducts((prev) =>
+          prev.filter((product) => product._id !== productId)
+        );
+      }
+    } catch (error) {
+      console.error("Failed to delete product:", error);
+      toast.error("Failed to delete product. Please try again.");
+    }
+  };
+
+  useEffect(() => {
+    if (session?.user?.id) {
+      fetchProducts();
+    }
+  }, [session?.user?.id]);
 
   const lenderProfile = {
     name: "Mike Johnson",
@@ -168,7 +236,6 @@ export default function LenderDashboard() {
 
   const tier = getLenderTier();
   const tierStyle = TIER_STYLES[tier];
-  const uploadedUrls: string[] = [];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
@@ -261,45 +328,40 @@ export default function LenderDashboard() {
               </div>
 
               {showAddForm && (
-                <form className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-black">
+                <form
+                  onSubmit={handleProductSubmit}
+                  className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-black"
+                >
                   <input
                     type="text"
                     placeholder="Product Name"
-                    value={newProduct.name}
+                    value={newProduct.pName}
                     onChange={(e) =>
-                      setNewProduct({ ...newProduct, name: e.target.value })
+                      setNewProduct({ ...newProduct, pName: e.target.value })
                     }
                     className="border rounded-lg p-2"
                   />
-                  <input
-                    type="text"
-                    placeholder="Category"
+                  {/* Category ID by category name */}
+                  <select
                     value={newProduct.category}
                     onChange={(e) =>
                       setNewProduct({ ...newProduct, category: e.target.value })
                     }
                     className="border rounded-lg p-2"
-                  />
+                  >
+                    <option value="">Select Category</option>
+                    <option value="women">Women</option>
+                    <option value="men">Men</option>
+                    <option value="kids">Kids</option>
+                  </select>
                   <input
                     type="number"
                     placeholder="Daily Rate ($)"
-                    value={newProduct.dailyRate}
+                    value={newProduct.pPrice}
                     onChange={(e) =>
                       setNewProduct({
                         ...newProduct,
-                        dailyRate: e.target.value,
-                      })
-                    }
-                    className="border rounded-lg p-2"
-                  />
-                  <input
-                    type="number"
-                    placeholder="Retail Price ($)"
-                    value={newProduct.retailPrice}
-                    onChange={(e) =>
-                      setNewProduct({
-                        ...newProduct,
-                        retailPrice: e.target.value,
+                        pPrice: e.target.value,
                       })
                     }
                     className="border rounded-lg p-2"
@@ -307,33 +369,143 @@ export default function LenderDashboard() {
                   <input
                     type="text"
                     placeholder="Available Sizes (e.g., S, M, L, XL)"
-                    value={newProduct.sizes}
+                    value={newProduct.pSize}
                     onChange={(e) =>
-                      setNewProduct({ ...newProduct, sizes: e.target.value })
+                      setNewProduct({ ...newProduct, pSize: e.target.value })
                     }
                     className="border rounded-lg p-2"
                   />
                   <input
                     type="text"
                     placeholder="Pickup Location"
-                    value={newProduct.location}
-                    onChange={(e) =>
-                      setNewProduct({ ...newProduct, location: e.target.value })
-                    }
-                    className="border rounded-lg p-2"
-                  />
-                  <textarea
-                    placeholder="Description"
-                    value={newProduct.description}
+                    value={newProduct.pLocation}
                     onChange={(e) =>
                       setNewProduct({
                         ...newProduct,
-                        description: e.target.value,
+                        pLocation: e.target.value,
+                      })
+                    }
+                    className="border rounded-lg p-2 w-full col-span-2"
+                  />
+                  <textarea
+                    placeholder="Description"
+                    value={newProduct.pDesc}
+                    onChange={(e) =>
+                      setNewProduct({
+                        ...newProduct,
+                        pDesc: e.target.value,
                       })
                     }
                     className="border rounded-lg p-2 col-span-2"
                   />
-                  <button className="col-span-2 px-4 py-2 bg-[#3d000c] hover:bg-[#570112] text-white rounded-lg">
+                  <input
+                    type="text"
+                    placeholder="Color"
+                    value={newProduct.pColor}
+                    onChange={(e) =>
+                      setNewProduct({ ...newProduct, pColor: e.target.value })
+                    }
+                    className="border rounded-lg p-2"
+                  />
+                  <select
+                    value={newProduct.subcategory}
+                    onChange={(e) =>
+                      setNewProduct({
+                        ...newProduct,
+                        subcategory: e.target.value,
+                      })
+                    }
+                    className="border rounded-lg p-2"
+                  >
+                    <option value="">Select Subcategory</option>
+                    <option value="clothes">Clothes</option>
+                    <option value="accessories">Accessories</option>
+                    <option value="footwear">Footwear</option>
+                    <option value="jewellery">Jewellery</option>
+                    <option value="handbags">Hand Bags</option>
+                    <option value="watches">Watches</option>
+                  </select>
+                  <input
+                    type="number"
+                    placeholder="Discount (%)"
+                    value={newProduct.pDiscount}
+                    onChange={(e) =>
+                      setNewProduct({
+                        ...newProduct,
+                        pDiscount: e.target.value,
+                      })
+                    }
+                    className="border rounded-lg p-2"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Fabric"
+                    value={newProduct.pFabric}
+                    onChange={(e) =>
+                      setNewProduct({
+                        ...newProduct,
+                        pFabric: e.target.value,
+                      })
+                    }
+                    className="border rounded-lg p-2"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Pattern"
+                    value={newProduct.pPattern}
+                    onChange={(e) =>
+                      setNewProduct({
+                        ...newProduct,
+                        pPattern: e.target.value,
+                      })
+                    }
+                    className="border rounded-lg p-2"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Occasion"
+                    value={newProduct.pOccasion}
+                    onChange={(e) =>
+                      setNewProduct({
+                        ...newProduct,
+                        pOccasion: e.target.value,
+                      })
+                    }
+                    className="border rounded-lg p-2"
+                  />
+                  <input
+                    type="number"
+                    placeholder="Quantity Available"
+                    value={newProduct.quantity}
+                    onChange={(e) =>
+                      setNewProduct({
+                        ...newProduct,
+                        quantity: parseInt(e.target.value, 10),
+                      })
+                    }
+                    className="border rounded-lg p-2"
+                  />
+                  {/* Images upload can be added here */}
+                  <input
+                    type="file"
+                    // accept="image/*"
+                    multiple
+                    onChange={(e) =>
+                      setNewProduct({
+                        ...newProduct,
+                        pImages: e.target.files
+                          ? Array.from(e.target.files).map((file) =>
+                              URL.createObjectURL(file)
+                            )
+                          : [""],
+                      })
+                    }
+                    className="border rounded-lg p-2"
+                  />
+                  <button
+                    type="submit"
+                    className="col-span-2 px-4 py-2 bg-[#3d000c] hover:bg-[#570112] text-white rounded-lg"
+                  >
                     <Plus className="inline h-4 w-4 mr-1" /> List Product
                   </button>
                 </form>
@@ -347,25 +519,29 @@ export default function LenderDashboard() {
               </h2>
               {lenderProducts.map((p) => (
                 <div
-                  key={p.id}
+                  key={p._id}
                   className="flex items-center gap-4 border rounded-lg p-4 mb-3 hover:shadow"
                 >
                   <Image
-                    src={p.image}
-                    alt={p.name}
+                    src={p.pImages[0] || "/placeholder.png"}
+                    alt={p.pName}
                     className="h-16 w-16 object-cover rounded-lg"
                     width={64}
                     height={64}
                   />
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-800">{p.name}</h3>
-                    <p className="text-sm text-gray-500">
-                      {p.category} • {p.dailyRate}/day
+                    <h3 className="font-semibold text-gray-800">{p.pName}</h3>
+                    <p className="text-sm capitalize text-gray-500">
+                      {p.subcategory} • ₹{p.pPrice}/day
                     </p>
-                    {p.status === "rented" && (
-                      <p className="text-xs text-gray-500">
-                        Rented by {p.currentRenter} until {p.rentedUntil}
-                      </p>
+                    {p.quantity === 0 ? (
+                      <span className="text-xs text-red-600 font-medium">
+                        Out of Stock
+                      </span>
+                    ) : (
+                      <span className="text-xs text-green-600 font-medium">
+                        In Stock: {p.quantity}
+                      </span>
                     )}
                   </div>
                   <div className="flex gap-2">
@@ -375,7 +551,10 @@ export default function LenderDashboard() {
                     <button className="p-2 border rounded hover:bg-gray-100">
                       <Edit className="h-4 w-4" />
                     </button>
-                    <button className="p-2 border rounded text-red-600 hover:bg-red-50">
+                    <button
+                      onClick={() => handleDelete(p._id)}
+                      className="p-2 border rounded text-red-600 hover:bg-red-50"
+                    >
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
@@ -386,7 +565,9 @@ export default function LenderDashboard() {
             <div className="bg-white rounded-xl shadow p-6">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Personal Details</h3>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Personal Details
+                  </h3>
                   <p className="text-gray-500 text-sm">
                     Your profile information and preferences
                   </p>
@@ -414,8 +595,14 @@ export default function LenderDashboard() {
                 <div className="space-y-4">
                   {[
                     { label: "Address", value: lendersProfile.address },
-                    { label: "Total Rentals", value: `${lendersProfile.totalRentals} items` },
-                    { label: "Member Since", value: lendersProfile.memberSince },
+                    {
+                      label: "Total Rentals",
+                      value: `${lendersProfile.totalRentals} items`,
+                    },
+                    {
+                      label: "Member Since",
+                      value: lendersProfile.memberSince,
+                    },
                   ].map((field, index) => (
                     <div key={index}>
                       <label className="text-sm font-medium text-gray-500">
