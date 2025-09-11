@@ -64,7 +64,7 @@ export default function IndividualLenderSignupPage() {
             password: "",
             confirmPassword: "",
           });
-          router.push("/lender/dashboard");
+          router.push("/");
         }
       }
     } catch (error) {

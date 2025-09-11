@@ -64,7 +64,7 @@ export default function CustomerSignupPage() {
         });
         if (result?.ok) {
           toast.success("Signup and login successful!");
-          router.push("/customer/dashboard");
+          router.push("/");
           emptyFields();
           return;
         }

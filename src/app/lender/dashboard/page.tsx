@@ -13,6 +13,7 @@ import {
   Star,
   Crown,
   Gem,
+  InfoIcon,
 } from "lucide-react";
 import { DashboardHeader } from "@/app/components/Dashboard-header";
 import { DashboardNav } from "@/app/components/Dashboard-nav";
@@ -23,6 +24,7 @@ import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { ProductI } from "@/app/category/women/page";
+import Link from "next/link";
 
 type Tier = "Golden" | "Platinum" | "Diamond";
 type TierOrNone = Tier | "none";
@@ -328,20 +330,19 @@ export default function LenderDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Sidebar */}
           <div className="lg:col-span-1 space-y-4">
-            {tier && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className={`rounded-xl shadow p-6 flex flex-col justify-center items-center ${tierStyle.gradient} ${tierStyle.color}`}
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  {tierStyle.icon}
-                  <h3 className="text-lg font-semibold">{tierStyle.label}</h3>
-                </div>
-                <p className="text-sm opacity-80">
-                  Your current membership tier
-                </p>
-              </motion.div>
+            {tier !== "none" && (
+              <Link href="/tier-info">
+                <motion.div
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`rounded-2xl shadow-lg p-6 py-12 flex flex-col items-center text-center mb-5 ${tierStyle.gradient}`}
+                >
+                  <InfoIcon className="h-5 w-5 text-black mb-2 mx-auto absolute right-3 top-2" />
+                  <p className={`text-md ${tierStyle.color} font-bold`}>
+                    View Vastrahire's membership program
+                  </p>
+                </motion.div>
+              </Link>
             )}
             <div className="bg-[#3d000c8e] text-[#ffecd1] p-6 rounded-xl sticky top-4">
               <div className="flex items-center gap-3 mb-4">

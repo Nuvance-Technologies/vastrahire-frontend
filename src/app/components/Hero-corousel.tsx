@@ -26,6 +26,41 @@ const slides = [
     subtitle: "Find the perfect accessories for any occasion",
     cta: "Browse Accessories",
   },
+  {
+    id: 4,
+    image: "/slide 3.png",
+    title: "Complete Your Look",
+    subtitle: "Find the perfect accessories for any occasion",
+    cta: "Browse Accessories",
+  },
+  {
+    id: 5,
+    image: "/slide 4.png",
+    title: "Complete Your Look",
+    subtitle: "Find the perfect accessories for any occasion",
+    cta: "Browse Accessories",
+  },
+  {
+    id: 6,
+    image: "/slide 5.png",
+    title: "Complete Your Look",
+    subtitle: "Find the perfect accessories for any occasion",
+    cta: "Browse Accessories",
+  },
+  {
+    id: 7,
+    image: "/slide 6.png",
+    title: "Complete Your Look",
+    subtitle: "Find the perfect accessories for any occasion",
+    cta: "Browse Accessories",
+  },
+  {
+    id: 8,
+    image: "/slide 8.png",
+    title: "Complete Your Look",
+    subtitle: "Find the perfect accessories for any occasion",
+    cta: "Browse Accessories",
+  },
 ]
 
 export function HeroCarousel() {
@@ -48,28 +83,42 @@ export function HeroCarousel() {
 
   return (
     <div className="relative h-[600px] overflow-hidden bg-gray-50">
-      {slides.map((slide, index) => (
-        <div
-          key={slide.id}
-          className={`absolute inset-0 transition-transform duration-500 ease-in-out ${
-            index === currentSlide ? "translate-x-0" : index < currentSlide ? "-translate-x-full" : "translate-x-full"
-          }`}
-        >
-          <div className="relative h-full">
-            <Image src={slide.image || "/placeholder.svg"} alt={slide.title} className="w-full h-full object-cover" width={384} height={384} />
-            <div className="absolute inset-0 bg-black/30" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-center text-white max-w-2xl px-4">
-                <h2 className="text-5xl font-bold mb-4">{slide.title}</h2>
-                <p className="text-xl mb-8">{slide.subtitle}</p>
-                <button className="bg-[#3b000c] hover:bg-[#680015] px-3 py-2 rounded-xl">
-                  {slide.cta}
-                </button>
+      {slides.map((slide, index) => {
+        let position = "translate-x-full"; // default: off to the right
+        if (index === currentSlide) {
+          position = "translate-x-0"; // active slide
+        } else if (index === (currentSlide - 1 + slides.length) % slides.length) {
+          position = "-translate-x-full"; // previous slide (off to the left)
+        }
+
+        return (
+          <div
+            key={slide.id}
+            className={`absolute inset-0 transition-transform duration-500 ease-in-out ${position}`}
+          >
+            <div className="relative h-full">
+              <Image
+                src={slide.image || "/placeholder.svg"}
+                alt={slide.title}
+                className="w-full h-full object-cover"
+                width={384}
+                height={384}
+              />
+              <div className="absolute inset-0 bg-black/30" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-center text-white max-w-2xl px-4">
+                  <h2 className="text-5xl font-bold mb-4">{slide.title}</h2>
+                  <p className="text-xl mb-8">{slide.subtitle}</p>
+                  <button className="bg-[#3b000c] hover:bg-[#680015] px-3 py-2 rounded-xl">
+                    {slide.cta}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
+
 
       {/* Navigation buttons */}
       <button
@@ -96,5 +145,6 @@ export function HeroCarousel() {
         ))}
       </div>
     </div>
+
   )
 }

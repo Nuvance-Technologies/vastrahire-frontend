@@ -70,7 +70,7 @@ export default function BusinessLenderSignupPage() {
             password: "",
             confirmPassword: "",
           });
-          router.push("/lender/dashboard");
+          router.push("/");
         }
       }
     } catch (error) {

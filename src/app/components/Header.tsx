@@ -144,12 +144,12 @@ export function Header() {
             <button
               onClick={() => {
                 if (session?.user?.role === "customer") {
-                  router.push("/customer/dashboard");
+                  router.push("/");
                 } else if (
                   session?.user?.role === "business" ||
                   session?.user?.role === "individual"
                 ) {
-                  router.push("/lender/dashboard");
+                  router.push("/");
                 }
               }}
               className="flex items-center px-3 py-2 bg-[#3d000c] text-white rounded-md hover:bg-[#87001b] gap-1"
@@ -240,12 +240,12 @@ export function Header() {
                     <button
                       onClick={() => {
                         if (session?.user?.role === "customer") {
-                          router.push("/customer/dashboard");
+                          router.push("/");
                         } else if (
                           session?.user?.role === "business" ||
                           session?.user?.role === "individual"
                         ) {
-                          router.push("/lender/dashboard");
+                          router.push("/");
                         }
                       }}
                       className="drop-down block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"

@@ -8,6 +8,7 @@ import { BecomeLender } from "./Become-lender";
 import { ShopsGrid } from "./Shops-grid";
 import { IndividualRenters } from "./Individual-renters";
 import MovingAnnouncement from "./Moving-announcement";
+import NewArrivals from "./New-arrival";
 
 export default function HomePage() {
   return (
@@ -18,6 +19,7 @@ export default function HomePage() {
       <main>
         <HeroCarousel />
         <HowItWorks />
+        <NewArrivals />
         <BecomeLender />
         <ShopsGrid />
         <IndividualRenters />
