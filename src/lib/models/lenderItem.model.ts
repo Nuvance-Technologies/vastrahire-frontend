@@ -7,6 +7,11 @@ const lenderItemSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    ownerID: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     productID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Product",

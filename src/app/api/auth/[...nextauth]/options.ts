@@ -14,6 +14,7 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials): Promise<Authorized | null> {
+        console.log("Credentials received:", credentials);
         if (!credentials?.email || !credentials?.password) return null;
         await connectToDB();
 
