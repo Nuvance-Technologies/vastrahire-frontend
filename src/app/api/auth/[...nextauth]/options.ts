@@ -18,7 +18,6 @@ export const authOptions: NextAuthOptions = {
         await connectToDB();
 
         const user = await User.findOne({ email: credentials.email });
-        console.log("User found:", user);
 
         if (!user) return null;
 
@@ -37,6 +36,12 @@ export const authOptions: NextAuthOptions = {
           role: updatedUser?.role as "individual" | "business" | "customer",
           phoneNumber: updatedUser?.phoneNumber as string,
           address: updatedUser?.address as string,
+          companyName: updatedUser?.companyName as string,
+          bankDetails: updatedUser?.bankDetails as {
+            accountNumber: string;
+            ifscCode: string;
+          },
+          brandBio: updatedUser?.brandBio as string,
         };
       },
     }),

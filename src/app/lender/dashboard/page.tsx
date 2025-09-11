@@ -25,6 +25,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { ProductI } from "@/app/category/women/page";
 import Link from "next/link";
+import { UserRentalI } from "@/app/customer/dashboard/page";
 
 type Tier = "Golden" | "Platinum" | "Diamond";
 type TierOrNone = Tier | "none";
@@ -100,6 +101,8 @@ export default function LenderDashboard() {
     phoneNumber: "",
     address: "",
   });
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [totalEarnings, setTotalEarnings] = useState(0);
 
   const { data: session } = useSession();
 
@@ -252,40 +255,40 @@ export default function LenderDashboard() {
     }
   };
 
+  const fetchLenderRentalItems = async () => {
+    try {
+      const res = await axios.get(
+        `/api/lender-rent?ownerId=${session?.user?.id}`
+      );
+      if (res.status === 200) {
+        setTotalProducts(res.data.lenderRentals.length);
+        setTotalEarnings(res.data.totalEarningOfAllProducts);
+      }
+    } catch (error) {
+      console.error("Failed to fetch rental items:", error);
+      toast.error("Failed to fetch rental items. Please try again.");
+    }
+  };
+
   useEffect(() => {
     if (session?.user?.id) {
       fetchProducts();
+      fetchLenderRentalItems();
     }
   }, [session?.user?.id]);
 
   const stats = [
     {
       label: "Total Products",
-      value: "12",
+      value: totalProducts,
       icon: Package,
       color: "text-blue-600",
-      trend: "+2 this month",
-    },
-    {
-      label: "Active Rentals",
-      value: "5",
-      icon: Users,
-      color: "text-green-600",
-      trend: "+1 this week",
     },
     {
       label: "Total Earnings",
-      value: "$3,450",
+      value: `₹${totalEarnings}`,
       icon: DollarSign,
       color: "text-purple-600",
-      trend: "+$450 this month",
-    },
-    {
-      label: "Avg Rating",
-      value: "4.9",
-      icon: Star,
-      color: "text-yellow-600",
-      trend: "Excellent",
     },
   ];
 
@@ -304,7 +307,7 @@ export default function LenderDashboard() {
       />
 
       <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           {stats.map((stat, i) => {
             const Icon = stat.icon;
             return (
@@ -321,7 +324,6 @@ export default function LenderDashboard() {
                   </div>
                   <Icon className={`h-8 w-8 ${stat.color}`} />
                 </div>
-                <p className="text-xs text-gray-500">{stat.trend}</p>
               </div>
             );
           })}

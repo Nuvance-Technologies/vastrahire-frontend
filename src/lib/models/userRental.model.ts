@@ -12,7 +12,6 @@ const userRentalItemSchema = new mongoose.Schema(
       ref: "Product",
       required: true,
     },
-    activeRentals: { type: Number, default: 0 },
     totalRentals: { type: Number, default: 0 },
     totalSpent: { type: Number, default: 0 },
     rentalPeriod: {

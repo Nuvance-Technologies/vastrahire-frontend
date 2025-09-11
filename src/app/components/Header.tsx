@@ -18,19 +18,20 @@ export function Header() {
   const { data: session } = useSession();
   const router = useRouter();
 
-
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       const target = event.target as Element;
       console.log(target.className);
       // Don't close if clicking on a link or button inside the dropdown
-      if (target.className.includes('drop-down')) {
+      if (target.className.includes("drop-down")) {
         return;
       }
 
       // Check if click is outside both login and signup elements
-      const isOutsideLogin = loginRef.current && !loginRef.current.contains(target);
-      const isOutsideSignup = signupRef.current && !signupRef.current.contains(target);
+      const isOutsideLogin =
+        loginRef.current && !loginRef.current.contains(target);
+      const isOutsideSignup =
+        signupRef.current && !signupRef.current.contains(target);
 
       // Only close if click is outside both elements
       if (isOutsideLogin && isOutsideSignup) {
@@ -144,12 +145,12 @@ export function Header() {
             <button
               onClick={() => {
                 if (session?.user?.role === "customer") {
-                  router.push("/");
+                  router.push("/customer/dashboard");
                 } else if (
                   session?.user?.role === "business" ||
                   session?.user?.role === "individual"
                 ) {
-                  router.push("/");
+                  router.push("/lender/dashboard");
                 }
               }}
               className="flex items-center px-3 py-2 bg-[#3d000c] text-white rounded-md hover:bg-[#87001b] gap-1"
@@ -225,7 +226,9 @@ export function Header() {
                   <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg py-1 z-50">
                     <button
                       onClick={() => {
-                        const conf = confirm("Are you sure you want to logout?");
+                        const conf = confirm(
+                          "Are you sure you want to logout?"
+                        );
                         if (conf) {
                           signOut({ callbackUrl: "/" });
                         }
@@ -240,12 +243,12 @@ export function Header() {
                     <button
                       onClick={() => {
                         if (session?.user?.role === "customer") {
-                          router.push("/");
+                          router.push("/customer/dashboard");
                         } else if (
                           session?.user?.role === "business" ||
                           session?.user?.role === "individual"
                         ) {
-                          router.push("/");
+                          router.push("/lender/dashboard");
                         }
                       }}
                       className="drop-down block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
@@ -302,10 +305,13 @@ export function Header() {
             onClick={() => setMobileMenu(!mobileMenu)}
             className="md:hidden p-2 text-gray-700"
           >
-            {mobileMenu ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            {mobileMenu ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
           </button>
         </div>
-
       </div>
 
       <nav className="border-t border-gray-200">
