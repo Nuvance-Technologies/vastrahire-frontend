@@ -91,8 +91,7 @@ export async function POST(request: NextRequest) {
     const userRental = await UserRentalItem.create({
       userID: userId,
       productID: productId,
-      activeRentals: 1,
-      totalRentals: 1,
+      totalRentals: quantity,
       totalSpent: totalCost,
       rentalPeriod: {
         from: new Date(from),
@@ -105,7 +104,6 @@ export async function POST(request: NextRequest) {
       userID: userId,
       ownerID: product.ownerID,
       productID: productId,
-      activeRentals: 1,
       totalEarnings: totalCost,
       avgRating: product.avgRating,
     });
@@ -137,22 +135,3 @@ export async function POST(request: NextRequest) {
 }
 
 // to fetch rentals by userID
-export async function GET(req: NextRequest) {
-  const userId = req.nextUrl.searchParams.get("userId");
-  if (userId) {
-    try {
-      const rentals = await UserRentalItem.find({ userID: userId }).populate({
-        path: "productID",
-        select: "activeRentals", // Add any other fields you want from the product
-      });
-      console.log(rentals);
-      return NextResponse.json(rentals, { status: 200 });
-    } catch (error) {
-      console.error("Error fetching rentals:", error);
-      return NextResponse.json(
-        { error: "Failed to fetch rentals" },
-        { status: 500 }
-      );
-    }
-  }
-}

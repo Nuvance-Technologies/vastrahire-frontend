@@ -5,4 +5,10 @@ export interface AuthorizedUser {
   role: "individual" | "business" | "customer";
   phoneNumber?: string;
   address?: string;
+  companyName?: string;
+  bankDetails?: {
+    accountNumber: string;
+    ifscCode: string;
+  };
+  brandBio?: string;
 }

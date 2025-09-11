@@ -135,7 +135,7 @@ export interface ProductI {
   pName: string;
   pPrice: number;
   pDesc: string;
-  pSize: string;
+  pSize: string[];
   pImages: string[];
   pColor: string;
   category: string;

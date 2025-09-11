@@ -1,184 +1,189 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect, useMemo } from "react"
-import { Star, Heart, ShoppingCart, ShoppingBag, Ruler, Truck, RotateCcw, X } from "lucide-react"
-import Link from "next/link"
-import ReviewCard, { type Review as ReviewModel } from "../components/reviews/review-card"
-import Image from "next/image"
-import ReviewForm from "../components/reviews/review-form"
+import { useState, useRef, useEffect, useMemo } from "react";
+import {
+  Star,
+  Heart,
+  ShoppingCart,
+  ShoppingBag,
+  Ruler,
+  Truck,
+  RotateCcw,
+  X,
+} from "lucide-react";
+import Link from "next/link";
+import ReviewCard, {
+  type Review as ReviewModel,
+} from "../components/reviews/review-card";
+import Image from "next/image";
+import ReviewForm from "../components/reviews/review-form";
+import { ProductI } from "../category/women/page";
+import toast from "react-hot-toast";
+import axios from "axios";
+import { useSession } from "next-auth/react";
 
-interface Product {
-  id: number
-  name: string
-  brand: string
-  price: string // e.g. "$30/day"
-  originalPrice: string
-  rating: number
-  reviews: number
-  images: string[]
-  description: string
-  details: {
-    material: string
-    embroidery: string
-    care: string
-    origin: string
-    season: string
-    occasion: string
-  }
-  sizes: string[]
-  sizeChart: Record<string, { bust: string; waist: string; hips: string }>
-  availability: string
-  category: string
-}
+export function ProductDetail({ product }: { product: ProductI }) {
+  const [selectedImage, setSelectedImage] = useState(0);
+  const [selectedSize, setSelectedSize] = useState("");
+  const [showSizeChart, setShowSizeChart] = useState(false);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [feedbackReason, setFeedbackReason] = useState("");
+  const [feedbackComments, setFeedbackComments] = useState("");
+  const [swipeStartX, setSwipeStartX] = useState(0);
+  const [swipeStartY, setSwipeStartY] = useState(0);
+  const [isSwipeActive, setIsSwipeActive] = useState(false);
+  const [activeTab, setActiveTab] = useState<"details" | "reviews" | "care">(
+    "details"
+  );
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+  const [quantity, setQuantity] = useState(1);
 
-interface ProductDetailProps {
-  product: Product
-}
+  const [reviews, setReviews] = useState<ReviewModel[]>([]);
+  const productRef = useRef<HTMLDivElement>(null);
 
-export function ProductDetail({ product }: ProductDetailProps) {
-  const [selectedImage, setSelectedImage] = useState(0)
-  const [selectedSize, setSelectedSize] = useState("")
-  const [showSizeChart, setShowSizeChart] = useState(false)
-  const [showFeedbackModal, setShowFeedbackModal] = useState(false)
-  const [feedbackReason, setFeedbackReason] = useState("")
-  const [feedbackComments, setFeedbackComments] = useState("")
-  const [swipeStartX, setSwipeStartX] = useState(0)
-  const [swipeStartY, setSwipeStartY] = useState(0)
-  const [isSwipeActive, setIsSwipeActive] = useState(false)
-  const [activeTab, setActiveTab] = useState<"details" | "reviews" | "care">("details")
-  const [reviews, setReviews] = useState<ReviewModel[]>([])
-  const productRef = useRef<HTMLDivElement>(null)
-
-  // --- Date range states ---
-  const [fromDate, setFromDate] = useState("")
-  const [toDate, setToDate] = useState("")
-
-  // Parse pricePerDay from product.price string like "$30/day"
-  const pricePerDay = useMemo(() => {
-    const n = parseInt(product.price.replace(/\D/g, ""), 10)
-    return Number.isFinite(n) ? n : 0
-  }, [product.price])
-
-  // Compute rental days (inclusive) from date range
-  const rentalDays = useMemo(() => {
-    if (!fromDate || !toDate) return 0
-    const start = new Date(fromDate)
-    const end = new Date(toDate)
-    const diff = (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
-    return diff >= 0 ? Math.floor(diff) + 1 : 0
-  }, [fromDate, toDate])
-
-  const totalPrice = useMemo(() => rentalDays * pricePerDay, [rentalDays, pricePerDay])
+  const { data: session } = useSession();
 
   // --- Swipe-to-feedback listeners ---
   useEffect(() => {
     const handleTouchStart = (e: TouchEvent) => {
-      setSwipeStartX(e.touches[0].clientX)
-      setSwipeStartY(e.touches[0].clientY)
-      setIsSwipeActive(true)
-    }
+      setSwipeStartX(e.touches[0].clientX);
+      setSwipeStartY(e.touches[0].clientY);
+      setIsSwipeActive(true);
+    };
     const handleTouchMove = (e: TouchEvent) => {
-      if (!isSwipeActive) return
-      const currentX = e.touches[0].clientX
-      const currentY = e.touches[0].clientY
-      const diffX = swipeStartX - currentX
-      const diffY = swipeStartY - currentY
+      if (!isSwipeActive) return;
+      const currentX = e.touches[0].clientX;
+      const currentY = e.touches[0].clientY;
+      const diffX = swipeStartX - currentX;
+      const diffY = swipeStartY - currentY;
       if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
-        e.preventDefault()
+        e.preventDefault();
       }
-    }
+    };
     const handleTouchEnd = (e: TouchEvent) => {
-      if (!isSwipeActive) return
-      const endX = e.changedTouches[0].clientX
-      const endY = e.changedTouches[0].clientY
-      const diffX = swipeStartX - endX
-      const diffY = swipeStartY - endY
+      if (!isSwipeActive) return;
+      const endX = e.changedTouches[0].clientX;
+      const endY = e.changedTouches[0].clientY;
+      const diffX = swipeStartX - endX;
+      const diffY = swipeStartY - endY;
       if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 100) {
-        if (diffX < 0) setShowFeedbackModal(true)
+        if (diffX < 0) setShowFeedbackModal(true);
       }
-      setIsSwipeActive(false)
-    }
+      setIsSwipeActive(false);
+    };
     const handleMouseDown = (e: MouseEvent) => {
-      setSwipeStartX(e.clientX)
-      setSwipeStartY(e.clientY)
-      setIsSwipeActive(true)
-    }
+      setSwipeStartX(e.clientX);
+      setSwipeStartY(e.clientY);
+      setIsSwipeActive(true);
+    };
     const handleMouseMove = () => {
-      if (!isSwipeActive) return
-    }
+      if (!isSwipeActive) return;
+    };
     const handleMouseUp = (e: MouseEvent) => {
-      if (!isSwipeActive) return
-      const diffX = swipeStartX - e.clientX
-      const diffY = swipeStartY - e.clientY
+      if (!isSwipeActive) return;
+      const diffX = swipeStartX - e.clientX;
+      const diffY = swipeStartY - e.clientY;
       if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 100) {
-        if (diffX < 0) setShowFeedbackModal(true)
+        if (diffX < 0) setShowFeedbackModal(true);
       }
-      setIsSwipeActive(false)
-    }
+      setIsSwipeActive(false);
+    };
 
-    const el = productRef.current
+    const el = productRef.current;
     if (el) {
-      el.addEventListener("touchstart", handleTouchStart, { passive: false })
-      el.addEventListener("touchmove", handleTouchMove, { passive: false })
-      el.addEventListener("touchend", handleTouchEnd)
-      el.addEventListener("mousedown", handleMouseDown)
-      el.addEventListener("mousemove", handleMouseMove)
-      el.addEventListener("mouseup", handleMouseUp)
+      el.addEventListener("touchstart", handleTouchStart, { passive: false });
+      el.addEventListener("touchmove", handleTouchMove, { passive: false });
+      el.addEventListener("touchend", handleTouchEnd);
+      el.addEventListener("mousedown", handleMouseDown);
+      el.addEventListener("mousemove", handleMouseMove);
+      el.addEventListener("mouseup", handleMouseUp);
     }
     return () => {
       if (el) {
-        el.removeEventListener("touchstart", handleTouchStart)
-        el.removeEventListener("touchmove", handleTouchMove)
-        el.removeEventListener("touchend", handleTouchEnd)
-        el.removeEventListener("mousedown", handleMouseDown)
-        el.removeEventListener("mousemove", handleMouseMove)
-        el.removeEventListener("mouseup", handleMouseUp)
+        el.removeEventListener("touchstart", handleTouchStart);
+        el.removeEventListener("touchmove", handleTouchMove);
+        el.removeEventListener("touchend", handleTouchEnd);
+        el.removeEventListener("mousedown", handleMouseDown);
+        el.removeEventListener("mousemove", handleMouseMove);
+        el.removeEventListener("mouseup", handleMouseUp);
       }
-    }
-  }, [swipeStartX, swipeStartY, isSwipeActive])
+    };
+  }, [swipeStartX, swipeStartY, isSwipeActive]);
 
   // Reviews localStorage persistence
   useEffect(() => {
     try {
-      const raw = typeof window !== "undefined" ? window.localStorage.getItem(`reviews:product:${product.id}`) : null
-      if (raw) setReviews(JSON.parse(raw) as ReviewModel[])
+      const raw =
+        typeof window !== "undefined"
+          ? window.localStorage.getItem(`reviews:product:${product._id}`)
+          : null;
+      if (raw) setReviews(JSON.parse(raw) as ReviewModel[]);
     } catch {}
-  }, [product.id])
+  }, [product._id]);
 
   useEffect(() => {
-    if (reviews.length === 0) setActiveTab("reviews")
-  }, [reviews.length])
+    if (reviews.length === 0) setActiveTab("reviews");
+  }, [reviews.length]);
 
   useEffect(() => {
     try {
       if (typeof window !== "undefined") {
-        window.localStorage.setItem(`reviews:product:${product.id}`, JSON.stringify(reviews))
+        window.localStorage.setItem(
+          `reviews:product:${product._id}`,
+          JSON.stringify(reviews)
+        );
       }
     } catch {}
-  }, [reviews, product.id])
+  }, [reviews, product._id]);
 
   const handleFeedbackSubmit = () => {
     if ((feedbackReason || feedbackComments).trim()) {
       console.log("[v0] Feedback submitted:", {
-        productId: product.id,
+        productId: product._id,
         reason: feedbackReason || null,
         comments: feedbackComments || null,
         timestamp: new Date().toISOString(),
-      })
-      setShowFeedbackModal(false)
-      setFeedbackReason("")
-      setFeedbackComments("")
-      alert("Thank you for your feedback! We'll use this to improve our recommendations.")
+      });
+      setShowFeedbackModal(false);
+      setFeedbackReason("");
+      setFeedbackComments("");
+      alert(
+        "Thank you for your feedback! We'll use this to improve our recommendations."
+      );
     }
-  }
+  };
+
+  const handleRent = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post("/api/rent-item", {
+        quantity,
+        from,
+        to,
+        userId: session?.user?.id,
+        productId: product._id,
+      });
+      if (res.status === 200) {
+        toast.success("Product rented successfully!");
+      }
+    } catch (error) {
+      console.error("Error renting the item: ", error);
+      toast.error("Error renting item!");
+    }
+  };
 
   return (
     <>
-      <main ref={productRef} className="mx-auto px-4 sm:px-6 lg:px-8 py-8 select-none bg-gray-50">
+      <main
+        ref={productRef}
+        className="mx-auto px-4 sm:px-6 lg:px-8 py-8 select-none bg-gray-50"
+      >
         {/* Tip Banner */}
         <div className="mb-4 md:hidden p-3 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-lg border border-gray-200">
           <p className="text-sm text-gray-700 text-center">
-            💡 <strong>Tip:</strong> Swipe right on the product if you're not satisfied to give us feedback
+            💡 <strong>Tip:</strong> Swipe right on the product if you&apos;re
+            not satisfied to give us feedback
           </p>
         </div>
 
@@ -186,25 +191,27 @@ export function ProductDetail({ product }: ProductDetailProps) {
           <div className="space-y-4">
             <div className="aspect-[4/5] overflow-hidden rounded-lg border border-gray-200">
               <Image
-                src={product.images[selectedImage] || "/placeholder.svg"}
-                alt={product.name}
+                src={product.pImages[0] || "/placeholder.svg"}
+                alt={product.pName}
                 className="w-full h-full object-cover"
                 width={400}
                 height={500}
               />
             </div>
             <div className="grid grid-cols-4 gap-2">
-              {product.images.map((image, index) => (
+              {product.pImages.map((image, index) => (
                 <button
                   key={index}
                   onClick={() => setSelectedImage(index)}
                   className={`aspect-square overflow-hidden rounded-md border-2 ${
-                    selectedImage === index ? "border-indigo-500" : "border-gray-200"
+                    selectedImage === index
+                      ? "border-indigo-500"
+                      : "border-gray-200"
                   }`}
                 >
                   <Image
                     src={image || "/placeholder.svg"}
-                    alt={`${product.name} ${index + 1}`}
+                    alt={`${product.pName} ${index + 1}`}
                     className="w-full h-full object-cover"
                     width={100}
                     height={100}
@@ -217,73 +224,54 @@ export function ProductDetail({ product }: ProductDetailProps) {
           {/* Product Information */}
           <div className="space-y-6">
             <div>
-              <p className="text-sm text-gray-500 mb-1">{product.brand}</p>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">{product.name}</h1>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                {product.pName}
+              </h1>
 
-              <div className="flex items-center gap-4 mb-4">
+              {/* <div className="flex items-center gap-4 mb-4">
                 <div className="flex items-center gap-1">
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className={`h-4 w-4 ${i < Math.floor(product.rating) ? "fill-yellow-500 text-yellow-500" : "text-gray-300"}`}
+                      className={`h-4 w-4 ${
+                        i < Math.floor(product.rating)
+                          ? "fill-yellow-500 text-yellow-500"
+                          : "text-gray-300"
+                      }`}
                     />
                   ))}
                 </div>
                 <span className="text-sm text-gray-500 ml-1">
-                  {product.rating} ({(reviews?.length ?? 0) || product.reviews} reviews)
+                  {product.rating} ({(reviews?.length ?? 0) || product.reviews}{" "}
+                  reviews)
                 </span>
-              </div>
+              </div> */}
 
               {/* Price */}
               <div className="flex items-center gap-4">
                 <span className="text-2xl font-bold flex text-[#3d000c]">
-                  <p className="text-gray-600">Rented Price:&nbsp;</p> {product.price}
+                  <p className="text-gray-600">Rented Price:&nbsp;</p> ₹
+                  {product.pPrice}
                 </span>
-                <span className="text-lg text-gray-400 line-through">{product.originalPrice}</span>
-                <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">{product.availability}</span>
+                <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+                  {product.availability}
+                </span>
               </div>
               <div className="flex items-center gap-4">
                 <span className="text-xl flex font-bold text-[#3d000c]">
-                  <p className="text-gray-600">Retail price:&nbsp;</p>
-                  {product.price}
+                  <p className="text-gray-600 ">Retail price:&nbsp;</p>
+                  <span className="line-through">
+                    ₹{product.pPrice + product.pPrice * 0.1}
+                  </span>
                 </span>
               </div>
             </div>
 
             {/* Description */}
-            <p className="text-gray-700 leading-relaxed">{product.description}</p>
-
-            {/* Size Selection */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-gray-900">Size</h3>
-                <button
-                  onClick={() => setShowSizeChart(!showSizeChart)}
-                  className="text-sm text-indigo-600 hover:text-indigo-500 flex items-center gap-1"
-                >
-                  <Ruler className="h-4 w-4" />
-                  Size Chart
-                </button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {product.sizes.map((size) => (
-                  <button
-                    key={size}
-                    onClick={() => setSelectedSize(size)}
-                    className={`px-4 py-2 border rounded-md transition-colors ${
-                      selectedSize === size
-                        ? "border-[#3d000c] bg-[#3d000c] text-white"
-                        : "border-gray-200 hover:border-[#3d000c] text-black"
-                    }`}
-                  >
-                    {size}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <p className="text-gray-700 leading-relaxed">{product.pDesc}</p>
 
             {/* Size Chart Modal */}
-            {showSizeChart && (
+            {/* {showSizeChart && (
               <div className="p-4 bg-white border border-gray-200 rounded-lg">
                 <h4 className="font-semibold mb-3 text-gray-900">Size Chart</h4>
                 <div className="overflow-x-auto">
@@ -297,76 +285,90 @@ export function ProductDetail({ product }: ProductDetailProps) {
                       </tr>
                     </thead>
                     <tbody>
-                      {Object.entries(product.sizeChart).map(([size, measurements]) => (
-                        <tr key={size} className="border-b border-gray-200 text-gray-800">
-                          <td className="py-2 font-medium">{size}</td>
-                          <td className="py-2">{measurements.bust}</td>
-                          <td className="py-2">{measurements.waist}</td>
-                          <td className="py-2">{measurements.hips}</td>
-                        </tr>
-                      ))}
+                      {Object.entries(product.sizeChart).map(
+                        ([size, measurements]) => (
+                          <tr
+                            key={size}
+                            className="border-b border-gray-200 text-gray-800"
+                          >
+                            <td className="py-2 font-medium">{size}</td>
+                            <td className="py-2">{measurements.bust}</td>
+                            <td className="py-2">{measurements.waist}</td>
+                            <td className="py-2">{measurements.hips}</td>
+                          </tr>
+                        )
+                      )}
                     </tbody>
                   </table>
                 </div>
               </div>
-            )}
+            )} */}
 
             {/* Rental Duration - Date Range */}
             <div className="space-y-3">
               <h3 className="font-semibold text-gray-900">Rental Duration</h3>
 
-              <div className="flex flex-col sm:flex-row items-center gap-4 text-gray-700">
-                {/* From Date */}
-                <label className="flex flex-col text-sm font-medium text-gray-700">
-                  From
-                  <input
-                    type="date"
-                    value={fromDate}
-                    onChange={(e) => {
-                      const v = e.target.value
-                      setFromDate(v)
-                      if (toDate && new Date(v) > new Date(toDate)) setToDate("")
-                    }}
-                    min={new Date().toISOString().slice(0, 10)}
-                    className="mt-1 px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                  />
-                </label>
-
-                {/* To Date */}
-                <label className="flex flex-col text-sm font-medium text-gray-700">
-                  To
-                  <input
-                    type="date"
-                    value={toDate}
-                    min={fromDate || new Date().toISOString().slice(0, 10)}
-                    onChange={(e) => setToDate(e.target.value)}
-                    className="mt-1 px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                  />
-                </label>
-              </div>
-
-              {/* Show duration & price */}
-              {fromDate && toDate ? (
-                <div>
-                  <p className="text-lg text-neutral-800 font-medium">{rentalDays} {rentalDays === 1 ? "day" : "days"}</p>
-                  <p className="text-sm text-gray-500">
-                    Total: <span className="font-semibold text-gray-900">${totalPrice}</span>
-                  </p>
+              <form
+                onSubmit={handleRent}
+                className=" sm:flex-row items-center gap-4 text-gray-700"
+              >
+                {/* Size Selection */}
+                <div className="space-y-3 mb-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-semibold text-gray-900">Size</h3>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {product.pSize.map((size) => (
+                      <div key={size} className="flex items-center">
+                        {size}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              ) : (
-                <p className="text-sm text-gray-500">Please select both dates.</p>
-              )}
+                {/* From Date */}
+                <div>
+                  <label className="flex flex-col text-sm font-medium text-gray-700 mb-4">
+                    From
+                    <input
+                      type="date"
+                      value={from}
+                      onChange={(e) => setFrom(e.target.value)}
+                      className="mt-1 px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    />
+                  </label>
+
+                  {/* To Date */}
+                  <label className="flex flex-col text-sm font-medium text-gray-700">
+                    To
+                    <input
+                      type="date"
+                      value={to}
+                      onChange={(e) => setTo(e.target.value)}
+                      className="mt-1 px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    />
+                  </label>
+                  <label className="flex flex-col text-sm font-medium text-gray-700 mt-4">
+                    Quantity
+                    <input
+                      value={quantity}
+                      onChange={(e) => setQuantity(Number(e.target.value))}
+                      className="mt-1 px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                      type="number"
+                    />
+                  </label>
+                </div>
+                <button
+                  type="submit"
+                  className="w-full my-4 py-3 bg-[#3d000c] text-white rounded-lg font-semibold hover:bg-[#85021c] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  <ShoppingBag className="h-5 w-5" />
+                  Rent Now
+                </button>
+              </form>
             </div>
 
             {/* Action Buttons */}
             <div className="space-y-3">
-              <button
-                disabled={!selectedSize || rentalDays === 0}
-                className="w-full py-3 bg-[#3d000c] text-white rounded-lg font-semibold hover:bg-[#85021c] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-              >
-                <ShoppingBag className="h-5 w-5" />
-                Rent Now
-              </button>
               <div className="flex gap-3 text-gray-700">
                 <button className="flex-1 py-3 border border-gray-200 rounded-lg font-semibold hover:bg-gray-100 flex items-center justify-center gap-2">
                   <Heart className="h-5 w-5" />
@@ -413,23 +415,29 @@ export function ProductDetail({ product }: ProductDetailProps) {
               <button
                 onClick={() => setActiveTab("details")}
                 className={`py-4 px-1 border-b-2 ${
-                  activeTab === "details" ? "border-gray-900 text-gray-900" : "border-transparent text-gray-500 hover:text-gray-900"
+                  activeTab === "details"
+                    ? "border-gray-900 text-gray-900"
+                    : "border-transparent text-gray-500 hover:text-gray-900"
                 }`}
               >
                 Details
               </button>
-              <button
+              {/* <button
                 onClick={() => setActiveTab("reviews")}
                 className={`py-4 px-1 border-b-2 ${
-                  activeTab === "reviews" ? "border-gray-900 text-gray-900" : "border-transparent text-gray-500 hover:text-gray-900"
+                  activeTab === "reviews"
+                    ? "border-gray-900 text-gray-900"
+                    : "border-transparent text-gray-500 hover:text-gray-900"
                 }`}
               >
                 Reviews ({(reviews?.length ?? 0) || product.reviews})
-              </button>
+              </button> */}
               <button
                 onClick={() => setActiveTab("care")}
                 className={`py-4 px-1 border-b-2 ${
-                  activeTab === "care" ? "border-gray-900 text-gray-900" : "border-transparent text-gray-500 hover:text-gray-900"
+                  activeTab === "care"
+                    ? "border-gray-900 text-gray-900"
+                    : "border-transparent text-gray-500 hover:text-gray-900"
                 }`}
               >
                 Care Instructions
@@ -441,36 +449,40 @@ export function ProductDetail({ product }: ProductDetailProps) {
             {activeTab === "details" && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-4">Product Details</h3>
+                  <h3 className="font-semibold text-gray-900 mb-4">
+                    Product Details
+                  </h3>
                   <dl className="space-y-3">
                     <div>
-                      <dt className="text-sm font-medium text-gray-500">Material</dt>
-                      <dd className="text-sm text-gray-900">{product.details.material}</dd>
+                      <dt className="text-sm font-medium text-gray-500">
+                        Material
+                      </dt>
+                      <dd className="text-sm text-gray-900">
+                        {product.pFabric}
+                      </dd>
                     </div>
                     <div>
-                      <dt className="text-sm font-medium text-gray-500">Embroidery</dt>
-                      <dd className="text-sm text-gray-900">{product.details.embroidery}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-sm font-medium text-gray-500">Care Instructions</dt>
-                      <dd className="text-sm text-gray-900">{product.details.care}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-sm font-medium text-gray-500">Origin</dt>
-                      <dd className="text-sm text-gray-900">{product.details.origin}</dd>
+                      <dt className="text-sm font-medium text-gray-500">
+                        Embroidery
+                      </dt>
+                      <dd className="text-sm text-gray-900">
+                        {product.pPattern}
+                      </dd>
                     </div>
                   </dl>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-4">Styling Information</h3>
+                  <h3 className="font-semibold text-gray-900 mb-4">
+                    Styling Information
+                  </h3>
                   <dl className="space-y-3">
                     <div>
-                      <dt className="text-sm font-medium text-gray-500">Season</dt>
-                      <dd className="text-sm text-gray-900">{product.details.season}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-sm font-medium text-gray-500">Best For</dt>
-                      <dd className="text-sm text-gray-900">{product.details.occasion}</dd>
+                      <dt className="text-sm font-medium text-gray-500">
+                        Best For
+                      </dt>
+                      <dd className="text-sm text-gray-900">
+                        {product.pOccasion}
+                      </dd>
                     </div>
                   </dl>
                 </div>
@@ -479,7 +491,10 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
             {activeTab === "reviews" && (
               <div className="grid gap-8 md:grid-cols-2">
-                <section aria-label="Reviews" className="order-2 md:order-1 grid gap-4">
+                <section
+                  aria-label="Reviews"
+                  className="order-2 md:order-1 grid gap-4"
+                >
                   {reviews.length === 0 ? (
                     <div className="rounded-lg border border-dashed border-border bg-card p-6 text-center text-sm text-muted-foreground">
                       No reviews yet. Be the first to write one!
@@ -495,8 +510,8 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 <div className="order-1 md:order-2">
                   <ReviewForm
                     onAdd={(r) => {
-                      console.log("[v0] Review added:", r)
-                      setReviews((prev) => [r, ...prev])
+                      console.log("[v0] Review added:", r);
+                      setReviews((prev) => [r, ...prev]);
                     }}
                   />
                 </div>
@@ -506,21 +521,41 @@ export function ProductDetail({ product }: ProductDetailProps) {
             {activeTab === "care" && (
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="rounded-lg border border-gray-600 bg-card p-6">
-                  <h3 className="font-semibold text-gray-800 mb-4">Care Instructions</h3>
+                  <h3 className="font-semibold text-gray-800 mb-4">
+                    Care Instructions
+                  </h3>
                   <ul className="list-disc pl-5 space-y-2 text-sm text-gray-700">
-                    <li>{product.details.care}</li>
-                    <li>Store in a cool, dry place away from direct sunlight.</li>
-                    <li>Avoid contact with sharp objects and abrasive surfaces.</li>
-                    <li>Use a garment bag during transport to prevent damage.</li>
+                    {/* <li>{product.details.care}</li> */}
+                    <li>
+                      Store in a cool, dry place away from direct sunlight.
+                    </li>
+                    <li>
+                      Avoid contact with sharp objects and abrasive surfaces.
+                    </li>
+                    <li>
+                      Use a garment bag during transport to prevent damage.
+                    </li>
                   </ul>
                 </div>
                 <div className="rounded-lg border border-gray-600 bg-card p-6">
-                  <h3 className="font-semibold text-gray-800 mb-4">Rental Tips</h3>
+                  <h3 className="font-semibold text-gray-800 mb-4">
+                    Rental Tips
+                  </h3>
                   <ul className="list-disc pl-5 space-y-2 text-sm text-gray-700">
-                    <li>Try on your selected size as soon as you receive the item.</li>
-                    <li>Contact support immediately if sizing isn’t right—we’ll help.</li>
-                    <li>Use included care instructions to keep the item pristine.</li>
-                    <li>Return on time to avoid late fees and help the next renter.</li>
+                    <li>
+                      Try on your selected size as soon as you receive the item.
+                    </li>
+                    <li>
+                      Contact support immediately if sizing isn’t right—we’ll
+                      help.
+                    </li>
+                    <li>
+                      Use included care instructions to keep the item pristine.
+                    </li>
+                    <li>
+                      Return on time to avoid late fees and help the next
+                      renter.
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -530,7 +565,9 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
         {/* Related Products */}
         <div className="mt-16">
-          <h2 className="text-2xl font-bold text-gray-900 mb-8">You Might Also Like</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-8">
+            You Might Also Like
+          </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[1, 2, 3, 4].map((i) => (
               <Link key={i} href={`/product/${i + 10}`}>
@@ -545,10 +582,14 @@ export function ProductDetail({ product }: ProductDetailProps) {
                     />
                   </div>
                   <div className="p-4">
-                    <h3 className="font-semibold text-gray-900 mb-1">Related Product {i}</h3>
+                    <h3 className="font-semibold text-gray-900 mb-1">
+                      Related Product {i}
+                    </h3>
                     <p className="text-sm text-gray-500 mb-2">Brand Name</p>
                     <div className="flex items-center justify-between">
-                      <span className="text-lg font-bold text-indigo-600">$30/day</span>
+                      <span className="text-lg font-bold text-indigo-600">
+                        $30/day
+                      </span>
                       <div className="flex items-center gap-1">
                         <span className="text-yellow-500">★</span>
                         <span className="text-sm text-gray-500">4.7 (89)</span>
@@ -567,30 +608,43 @@ export function ProductDetail({ product }: ProductDetailProps) {
         <div className="fixed inset-0 bg-gray-900/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg border border-gray-200 max-w-md w-full p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Help Us Improve</h3>
-              <button onClick={() => setShowFeedbackModal(false)} className="text-gray-500 hover:text-gray-900">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Help Us Improve
+              </h3>
+              <button
+                onClick={() => setShowFeedbackModal(false)}
+                className="text-gray-500 hover:text-gray-900"
+              >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
             <p className="text-sm text-gray-500 mb-4">
-              We noticed you're not satisfied with this product. Could you tell us why?
+              We noticed you&apos;re not satisfied with this product. Could you
+              tell us why?
             </p>
 
             <div className="space-y-3 mb-6">
-              {["Not my style", "Poor quality", "Wrong size information", "Too expensive", "Better options available", "Misleading photos"].map(
-                (reason) => (
-                  <button
-                    key={reason}
-                    onClick={() => setFeedbackReason(reason)}
-                    className={`w-full text-left p-3 rounded-lg border transition-colors ${
-                      feedbackReason === reason ? "border-indigo-500 bg-indigo-50 text-indigo-600" : "border-gray-200 hover:border-indigo-300"
-                    }`}
-                  >
-                    {reason}
-                  </button>
-                )
-              )}
+              {[
+                "Not my style",
+                "Poor quality",
+                "Wrong size information",
+                "Too expensive",
+                "Better options available",
+                "Misleading photos",
+              ].map((reason) => (
+                <button
+                  key={reason}
+                  onClick={() => setFeedbackReason(reason)}
+                  className={`w-full text-left p-3 rounded-lg border transition-colors ${
+                    feedbackReason === reason
+                      ? "border-indigo-500 bg-indigo-50 text-indigo-600"
+                      : "border-gray-200 hover:border-indigo-300"
+                  }`}
+                >
+                  {reason}
+                </button>
+              ))}
             </div>
 
             <textarea
@@ -601,7 +655,10 @@ export function ProductDetail({ product }: ProductDetailProps) {
             />
 
             <div className="flex gap-3 mt-6">
-              <button onClick={() => setShowFeedbackModal(false)} className="flex-1 py-2 px-4 border border-gray-200 rounded-lg text-gray-900 hover:bg-gray-100 transition-colors">
+              <button
+                onClick={() => setShowFeedbackModal(false)}
+                className="flex-1 py-2 px-4 border border-gray-200 rounded-lg text-gray-900 hover:bg-gray-100 transition-colors"
+              >
                 Cancel
               </button>
               <button
@@ -616,5 +673,5 @@ export function ProductDetail({ product }: ProductDetailProps) {
         </div>
       )}
     </>
-  )
+  );
 }

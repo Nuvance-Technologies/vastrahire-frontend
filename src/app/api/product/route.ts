@@ -13,7 +13,10 @@ export async function POST(req: Request) {
 
   const pName = formData.get("pName");
   const pPrice = formData.get("pPrice");
-  const pSize = formData.get("pSize");
+
+  const rawPSize = formData.get("pSize") as string;
+  const pSize = rawPSize ? rawPSize.split(",").map((s) => s.trim()) : [];
+
   const pDesc = formData.get("pDesc") || "";
   const pColor = formData.get("pColor") || "";
   const subcategory = formData.get("subcategory") || "";
@@ -22,18 +25,17 @@ export async function POST(req: Request) {
   const pPattern = formData.get("pPattern") || "";
   const pOccasion = formData.get("pOccasion") || "";
   const pLocation = formData.get("pLocation") || "";
-  const quantity = formData.get("quantity") || 1;
+  const quantity = Number(formData.get("quantity")) || 1;
   const category = formData.get("category");
   const ownerID = formData.get("ownerID");
 
-  if (!pName || !pPrice || !pSize || !category || !ownerID) {
+  if (!pName || !pPrice || !pSize.length || !category || !ownerID) {
     return NextResponse.json(
       { message: "Please provide all required fields" },
       { status: 400 }
     );
   }
 
-  // get the category ID from the category name
   const categoryData = await Category.findOne({ name: category });
   if (!categoryData) {
     return NextResponse.json({ message: "Invalid category" }, { status: 400 });
@@ -48,7 +50,6 @@ export async function POST(req: Request) {
     const filename = `${Date.now()}-${file.name}`;
     const uploadDir = path.join(process.cwd(), "public/uploads");
 
-    // Ensure folder exists
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
@@ -62,7 +63,7 @@ export async function POST(req: Request) {
   const newProduct = new Product({
     pName,
     pPrice,
-    pSize,
+    pSize, // ✅ saved as ["M","L","XL"]
     ownerID,
     pImages: uploadedUrls,
     pDesc,

@@ -202,13 +202,28 @@ export function Header() {
         )}
         <div className="flex">
           <div className="relative md:hidden ">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="flex items-center px-3 py-2 bg-[#3d000c] text-white rounded-md hover:bg-[#87001b]"
-            >
-              Login
-              <ChevronDown className="h-3 w-3" />
-            </button>
+            {session?.user ? (
+              <button
+                onClick={() => {
+                  const conf = confirm("Are you sure you want to logout?");
+                  if (conf) {
+                    signOut({ callbackUrl: "/" });
+                  }
+                }}
+                className="flex items-center px-3 py-2 bg-[#3d000c] text-white rounded-md hover:bg-[#87001b] gap-1"
+              >
+                Logout
+                <ChevronDown className="h-3 w-3" />
+              </button>
+            ) : (
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="flex items-center px-3 py-2 bg-[#3d000c] text-white rounded-md hover:bg-[#87001b]"
+              >
+                Login
+                <ChevronDown className="h-3 w-3" />
+              </button>
+            )}
 
             {isOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg py-1 z-50">
