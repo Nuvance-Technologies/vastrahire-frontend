@@ -18,19 +18,28 @@ export function Header() {
   const { data: session } = useSession();
   const router = useRouter();
 
-  // click outside logic
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (
-        loginRef.current &&
-        !loginRef.current.contains(event.target as Node) &&
-        signupRef.current &&
-        !signupRef.current.contains(event.target as Node)
-      ) {
+      const target = event.target as Element;
+      console.log(target.className);
+      // Don't close if clicking on a link or button inside the dropdown
+      if (target.className.includes("drop-down")) {
+        return;
+      }
+
+      // Check if click is outside both login and signup elements
+      const isOutsideLogin =
+        loginRef.current && !loginRef.current.contains(target);
+      const isOutsideSignup =
+        signupRef.current && !signupRef.current.contains(target);
+
+      // Only close if click is outside both elements
+      if (isOutsideLogin && isOutsideSignup) {
         setIsOpen(false);
         setIsOpen1(false);
       }
     }
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -200,65 +209,95 @@ export function Header() {
             </div>
           </div>
         )}
-        <div className="flex">
-          <div className="relative md:hidden ">
+        <div className="flex md:hidden">
+          {/* ✅ Mobile Auth Menu */}
+          <div className="relative">
             {session?.user ? (
-              <button
-                onClick={() => {
-                  const conf = confirm("Are you sure you want to logout?");
-                  if (conf) {
-                    signOut({ callbackUrl: "/" });
-                  }
-                }}
-                className="flex items-center px-3 py-2 bg-[#3d000c] text-white rounded-md hover:bg-[#87001b] gap-1"
-              >
-                Logout
-                <ChevronDown className="h-3 w-3" />
-              </button>
-            ) : (
-              <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center px-3 py-2 bg-[#3d000c] text-white rounded-md hover:bg-[#87001b]"
-              >
-                Login
-                <ChevronDown className="h-3 w-3" />
-              </button>
-            )}
+              <>
+                <button
+                  onClick={() => setIsOpen(!isOpen)}
+                  className="flex items-center px-3 py-2 bg-[#3d000c] text-white rounded-md hover:bg-[#87001b]"
+                >
+                  Account
+                  <ChevronDown className="h-3 w-3" />
+                </button>
 
-            {isOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg py-1 z-50">
-                <Link
-                  href="/customer/login"
-                  className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                {isOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg py-1 z-50">
+                    <button
+                      onClick={() => {
+                        const conf = confirm(
+                          "Are you sure you want to logout?"
+                        );
+                        if (conf) {
+                          signOut({ callbackUrl: "/" });
+                        }
+                      }}
+                      className="drop-down block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    >
+                      Logout
+                    </button>
+
+                    <div className="border-t border-gray-200 my-1"></div>
+
+                    <button
+                      onClick={() => {
+                        if (session?.user?.role === "customer") {
+                          router.push("/customer/dashboard");
+                        } else if (
+                          session?.user?.role === "business" ||
+                          session?.user?.role === "individual"
+                        ) {
+                          router.push("/lender/dashboard");
+                        }
+                      }}
+                      className="drop-down block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    >
+                      Go to Dashboard
+                    </button>
+                  </div>
+                )}
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => setIsOpen(!isOpen)}
+                  className="flex items-center px-3 py-2 bg-[#3d000c] text-white rounded-md hover:bg-[#87001b]"
                 >
-                  Customer Login
-                </Link>
-                <Link
-                  href="/lender/login"
-                  className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                >
-                  Lender Login
-                </Link>
-                <div className="border-t border-gray-200 my-1"></div>
-                <Link
-                  href="/customer/signup"
-                  className="block px-4 py-2 text-gray-500 hover:bg-gray-100"
-                >
-                  Signup as a customer
-                </Link>
-                <Link
-                  href="/lender/signup"
-                  className="block px-4 py-2 text-gray-500 hover:bg-gray-100"
-                >
-                  Register as a Shop
-                </Link>
-                <Link
-                  href="/lender/signup"
-                  className="block px-4 py-2 text-gray-500 hover:bg-gray-100"
-                >
-                  Register as an Individual Lender
-                </Link>
-              </div>
+                  Login / Register
+                  <ChevronDown className="h-3 w-3" />
+                </button>
+
+                {isOpen && (
+                  <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-md shadow-lg py-1 z-50">
+                    <Link
+                      href="/login"
+                      className="drop-down block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    >
+                      Login
+                    </Link>
+                    <div className="border-t border-gray-200 my-1"></div>
+                    <Link
+                      href="/customer/signup"
+                      className="drop-down block px-4 py-2 text-gray-500 hover:bg-gray-100"
+                    >
+                      Signup as a Customer
+                    </Link>
+                    <Link
+                      href="/lender/signup/shop"
+                      className="drop-down block px-4 py-2 text-gray-500 hover:bg-gray-100"
+                    >
+                      Register as a Shop
+                    </Link>
+                    <Link
+                      href="/lender/signup/individual"
+                      className="drop-down block px-4 py-2 text-gray-500 hover:bg-gray-100"
+                    >
+                      Register as an Individual Lender
+                    </Link>
+                  </div>
+                )}
+              </>
             )}
           </div>
 
