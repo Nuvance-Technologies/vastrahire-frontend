@@ -24,8 +24,6 @@ import { useSession } from "next-auth/react";
 
 export function ProductDetail({ product }: { product: ProductI }) {
   const [selectedImage, setSelectedImage] = useState(0);
-  const [selectedSize, setSelectedSize] = useState("");
-  const [showSizeChart, setShowSizeChart] = useState(false);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [feedbackReason, setFeedbackReason] = useState("");
   const [feedbackComments, setFeedbackComments] = useState("");
@@ -155,6 +153,10 @@ export function ProductDetail({ product }: { product: ProductI }) {
   };
 
   const handleRent = async (e: React.FormEvent<HTMLFormElement>) => {
+    if (!session?.user) {
+      toast.error("Please sign in to proceed!");
+      return;
+    }
     e.preventDefault();
     try {
       const res = await axios.post("/api/rent-item", {

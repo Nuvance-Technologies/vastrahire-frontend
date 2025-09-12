@@ -6,7 +6,6 @@ import { HeroCarousel } from "./Hero-corousel";
 import { HowItWorks } from "./How-it-works";
 import { BecomeLender } from "./Become-lender";
 import { ShopsGrid } from "./Shops-grid";
-import { IndividualRenters } from "./Individual-renters";
 import MovingAnnouncement from "./Moving-announcement";
 import NewArrivals from "./New-arrival";
 
@@ -22,7 +21,6 @@ export default function HomePage() {
         <NewArrivals />
         <BecomeLender />
         <ShopsGrid />
-        <IndividualRenters />
       </main>
     </div>
   );

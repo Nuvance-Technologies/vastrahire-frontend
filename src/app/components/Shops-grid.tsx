@@ -1,27 +1,60 @@
 "use client"
+// Product type for fetched products
+interface Product {
+  id?: string | number;
+  _id?: string;
+  pName: string;
+  image?: string;
+  pPrice: number;
+  rating?: number;
+  category: string;
+}
 
-import { useState } from "react"
-import { Star } from "lucide-react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
+import axios from "axios"
 
-const shops = [
-  { id: 1, name: "Batra's Brother", image: "/luxury-boutique-storefront.png", items: 156, rating: 4.9, category: "Cloths" },
-  { id: 2, name: "Ramesh Collection", image: "/modern-urban-fashion-store.png", items: 89, rating: 4.7, category: "Accessories" },
-  { id: 3, name: "Vintage Treasures", image: "/vintage-clothing-store.png", items: 234, rating: 4.8, category: "Cloths" },
-  { id: 4, name: "Vijay Cutpiece", image: "/elegant-formal-wear.png", items: 67, rating: 4.9, category: "Jewellery" },
-  { id: 5, name: "Accessory Haven", image: "/placeholder.png", items: 312, rating: 4.6, category: "Bags" },
-  { id: 6, name: "Eco Fashion", image: "/sustainable-eco-fashion.png", items: 98, rating: 4.8, category: "Shoes" },
-]
-
-const categories = ["All", "Cloths", "Bags", "Shoes", "Jewellery", "Accessories"]
+interface CategoryOption {
+  _id: string;
+  name: string;
+}
 
 export function ShopsGrid() {
-  const [activeCategory, setActiveCategory] = useState("All")
+  const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<CategoryOption[]>([]);
 
-  const filteredShops =
-    activeCategory === "All"
-      ? shops
-      : shops.filter((shop) => shop.category === activeCategory)
+  const filteredProducts =
+    activeCategoryId === null
+      ? products
+      : products.filter((product) => product.category === activeCategoryId);
+
+  const getProductsAndCategories = async () => {
+    try {
+      const response = await axios.get('/api/product/categories');
+      // response.data is array of categories, e.g. [{_id, name}]
+      const fetchedCategories: CategoryOption[] = response.data;
+      setCategories(fetchedCategories);
+      let allProducts: Product[] = [];
+      for (const cat of fetchedCategories) {
+        const productRes = await axios.get(`/api/product?catId=${cat._id}`);
+        // Ensure each product has category field set to cat._id and image set to first pImages
+        const productsWithCategoryId = productRes.data.products.map((p: any) => ({
+          ...p,
+          category: cat._id,
+          image: Array.isArray(p.pImages) && p.pImages.length > 0 ? p.pImages[0] : "/placeholder.svg"
+        }));
+        allProducts.push(...productsWithCategoryId);
+      }
+      setProducts(allProducts);
+    } catch (error) {
+      console.error("Error fetching categories and products:", error);
+    }
+  };
+
+  useEffect(() => {
+    getProductsAndCategories();
+  }, []);
 
   return (
     <section className="py-16 bg-gray-50">
@@ -30,60 +63,65 @@ export function ShopsGrid() {
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">Featured Shops</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-2">Featured Products</h2>
             <p className="text-gray-600 text-lg">
               Discover curated collections from our top-rated partners
             </p>
           </div>
-          <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition">
-            See All Shops
-          </button>
         </div>
 
         {/* Category Filter Bar */}
         <div className="flex space-x-4 overflow-x-auto pb-4 mb-8">
+          <button
+            key="all"
+            onClick={() => setActiveCategoryId(null)}
+            className={`px-4 py-2 rounded-full border text-sm font-medium transition ${
+              activeCategoryId === null
+                ? "bg-[#3d000c] text-white border-[#3d000c]"
+                : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+            }`}
+          >
+            All
+          </button>
           {categories.map((cat) => (
             <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
+              key={cat._id}
+              onClick={() => setActiveCategoryId(cat._id)}
               className={`px-4 py-2 rounded-full border text-sm font-medium transition ${
-                activeCategory === cat
+                activeCategoryId === cat._id
                   ? "bg-[#3d000c] text-white border-[#3d000c]"
                   : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
               }`}
             >
-              {cat}
+              {cat.name}
             </button>
           ))}
         </div>
 
         {/* Shops Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredShops.map((shop) => (
+          {filteredProducts.map((product, idx) => (
             <div
-              key={shop.id}
+              key={product._id ?? product.id ?? idx}
               className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-gray-200"
             >
               <div className="relative">
                 <Image
-                  src={shop.image || "/placeholder.svg"}
-                  alt={shop.name}
+                  src={product.image || "/placeholder.svg"}
+                  alt={product.pName}
                   className="w-full h-48 object-cover rounded-t-lg"
                   width={100}
                   height={100}
                 />
                 <span className="absolute top-3 left-3 bg-white/90 text-gray-800 text-sm px-2 py-1 rounded">
-                  {shop.category}
+                  {/* Show category name for product */}
+                  {categories.find((cat) => cat._id === product.category)?.name}
                 </span>
               </div>
               <div className="p-6">
-                <h3 className="font-semibold text-gray-900 mb-2">{shop.name}</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">{product.pName}</h3>
                 <div className="flex justify-between items-center text-sm text-gray-600">
-                  <span>{shop.items} items</span>
-                  <span className="flex items-center gap-1">
-                    <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                    {shop.rating}
-                  </span>
+                  <span>&#8377; {product.pPrice}/day</span>
                 </div>
               </div>
             </div>
