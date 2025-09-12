@@ -405,7 +405,7 @@ export default function LenderDashboard() {
                   </select>
                   <input
                     type="number"
-                    placeholder="Daily Rate ($)"
+                    placeholder="Daily Rate (₹)"
                     value={newProduct.pPrice}
                     onChange={(e) =>
                       setNewProduct({
@@ -440,16 +440,17 @@ export default function LenderDashboard() {
                     }
                     className="border rounded-lg p-2 w-full col-span-2"
                   />
-                  <textarea
-                    placeholder="Description"
-                    value={newProduct.pDesc}
+                  <input
+                    type="number"
+                    placeholder="Quantity Available"
+                    value={newProduct.quantity}
                     onChange={(e) =>
                       setNewProduct({
                         ...newProduct,
-                        pDesc: e.target.value,
+                        quantity: parseInt(e.target.value, 10),
                       })
                     }
-                    className="border rounded-lg p-2 col-span-2"
+                    className="border rounded-lg p-2"
                   />
                   <input
                     type="text"
@@ -526,31 +527,52 @@ export default function LenderDashboard() {
                     }
                     className="border rounded-lg p-2"
                   />
-                  <input
-                    type="number"
-                    placeholder="Quantity Available"
-                    value={newProduct.quantity}
+                 <textarea
+                    placeholder="Description"
+                    value={newProduct.pDesc}
                     onChange={(e) =>
                       setNewProduct({
                         ...newProduct,
-                        quantity: parseInt(e.target.value, 10),
+                        pDesc: e.target.value,
                       })
                     }
-                    className="border rounded-lg p-2"
+                    className="border rounded-lg p-2 col-span-1"
                   />
-                  {/* Images upload can be added here */}
-                  <input
-                    type="file"
-                    multiple
-                    onChange={(e) => {
-                      if (!e.target.files) return;
-                      setNewProduct({
-                        ...newProduct,
-                        pImages: Array.from(e.target.files), // store File objects
-                      });
-                    }}
-                    className="border rounded-lg p-2"
-                  />
+                  {/* Compact Image Upload */}
+                  <div className="flex flex-col gap-1 border rounded-md p-2 bg-white/10 backdrop-blur-sm shadow-sm w-fit">
+                    <label className="text-sm font-medium text-gray-700">
+                      Upload Images
+                    </label>
+                    <p className="text-xs text-gray-500">
+                      Max: 2 MB • Brighter images recommended
+                    </p>
+
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={(e) => {
+                        if (!e.target.files) return;
+
+                        const validFiles = Array.from(e.target.files).filter(
+                          (file) => file.size <= 2 * 1024 * 1024 // 2 MB
+                        );
+
+                        if (validFiles.length !== e.target.files.length) {
+                          alert("Some files were too large (max 2 MB).");
+                        }
+
+                        setNewProduct({
+                          ...newProduct,
+                          pImages: validFiles,
+                        });
+                      }}
+                      className="mt-1 border border-dashed border-gray-400 rounded-md p-1 text-xs text-gray-600 
+               file:mr-2 file:rounded-md file:border-none file:bg-[#3d000c] 
+               file:px-2 file:py-1 file:text-white hover:file:bg-[#650014]"
+                    />
+                  </div>
+
                   <button
                     type="submit"
                     className="col-span-2 px-4 py-2 bg-[#3d000c] hover:bg-[#570112] text-white rounded-lg"

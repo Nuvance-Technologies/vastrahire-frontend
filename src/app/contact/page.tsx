@@ -56,7 +56,7 @@ export default function ContactPage() {
               {/* Contact shortcuts */}
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
-                  href="mailto:support@rentstyle.example"
+                  href="mailto:vastrahire@gmail.com"
                   className="inline-flex items-center gap-2 rounded-md border border-gray-300 px-4 py-2 text-sm hover:bg-gray-100 transition"
                 >
                   <Mail className="h-4 w-4" />
@@ -70,7 +70,7 @@ export default function ContactPage() {
                   Send a message
                 </Link>
                 <Link
-                  href="tel:+11234567890"
+                  href="tel:+917723881896"
                   className="inline-flex items-center gap-2 rounded-md border border-gray-300 px-4 py-2 text-sm hover:bg-gray-100 transition"
                 >
                   <Phone className="h-4 w-4" />
@@ -183,13 +183,13 @@ export default function ContactPage() {
             <div className="p-6 bg-gray-50 rounded-lg shadow-sm">
               <h3 className="text-base font-semibold">Prefer a different channel?</h3>
               <div className="mt-4 space-y-3 text-sm">
-                <Link href="mailto:support@rentstyle.example" className="flex items-center gap-3 hover:text-[#690216] transition">
+                <Link href="mailto:vastrahire@gmail.com" className="flex items-center gap-3 hover:text-[#690216] transition">
                   <Mail className="h-4 w-4 text-[#690216]" />
-                  support@rentstyle.example
+                  vastrahire@gmail.com
                 </Link>
-                <Link href="tel:+11234567890" className="flex items-center gap-3 hover:text-[#690216] transition">
+                <Link href="tel:+917723881896" className="flex items-center gap-3 hover:text-[#690216] transition">
                   <Phone className="h-4 w-4 text-[#690216]" />
-                  +1 (123) 456-7890
+                  +917723881896
                 </Link>
                 <Link href="#contact-form" className="flex items-center gap-3 hover:text-[#690216] transition">
                   <MessageSquare className="h-4 w-4 text-[#690216]" />
