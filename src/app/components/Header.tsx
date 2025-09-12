@@ -1,4 +1,5 @@
 "use client";
+import axios from "axios";
 import { Search, User, ChevronDown, ShoppingCart, Menu, X } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
@@ -7,6 +8,37 @@ import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 
 export function Header() {
+  const [allProducts, setAllProducts] = useState<any[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  useEffect(() => {
+    console.log('All products:', allProducts);
+  }, [allProducts]);
+
+  const filteredProducts: any[] = searchQuery.trim()
+    ? allProducts.filter((p: any) =>
+      p.pName && p.pName.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    : allProducts;
+
+  useEffect(() => {
+    console.log('Filtered products:', filteredProducts);
+  }, [filteredProducts]);
+
+  useEffect(() => {
+    const fetchAllProducts = async () => {
+      setLoadingProducts(true);
+      try {
+        const response = await axios.get('/api/product/allProducts');
+        setAllProducts(response.data.products || []);
+      } catch (error) {
+        console.error('Error fetching all products:', error);
+      } finally {
+        setLoadingProducts(false);
+      }
+    };
+    fetchAllProducts();
+  }, []);
   const [isOpen, setIsOpen] = useState(false);
   const [isOpen1, setIsOpen1] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
@@ -350,6 +382,8 @@ export function Header() {
                   type="text"
                   placeholder="Search items..."
                   className="pl-10 w-64 h-10 border rounded-md text-gray-700 border-gray-300 focus:ring-2 focus:ring-[#3d000c] focus:outline-none"
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
                   onFocus={() => setSearchOpen(true)}
                 />
                 {searchOpen && (
@@ -366,31 +400,20 @@ export function Header() {
                     </button>
 
                     <div className="mt-8 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-6 max-w-8xl mx-auto">
-                      {[
-                        { name: "Gown", img: "/elegant-black-gown.png" },
-                        { name: "Handbag", img: "/luxury-quilted-handbag.png" },
-                        { name: "Shoes", img: "/shoes.png" },
-                        { name: "Jewelry", img: "/jewelry.png" },
-                        { name: "Saree", img: "/saree.png" },
-                        { name: "Blazer", img: "/blazer.png" },
-                        { name: "Watch", img: "/watch.png" },
-                        { name: "Kids Wear", img: "/kids.png" },
-                        { name: "Heels", img: "/heels.png" },
-                        { name: "Accessories", img: "/accessories.png" },
-                      ].map((item, i) => (
+                      {filteredProducts.map((item, i) => (
                         <div
                           key={i}
                           className="flex flex-col items-center text-center"
                         >
                           <Image
-                            src={item.img}
-                            alt={item.name}
+                            src={item.imgage}
+                            alt={item.pName}
                             className="w-20 h-20 object-cover rounded-full border shadow-sm hover:scale-105 transition"
                             width={80}
                             height={80}
                           />
                           <p className="mt-2 text-sm font-medium text-gray-700">
-                            {item.name}
+                            {item.pName}
                           </p>
                         </div>
                       ))}
@@ -475,6 +498,8 @@ export function Header() {
           type="text"
           placeholder="Search..."
           className="pl-10 w-full h-10 border rounded-md text-gray-700 border-gray-300 focus:ring-2 focus:ring-[#3d000c] focus:outline-none"
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
           onFocus={() => setSearchOpen(true)} // 👈 opens overlay in mobile
         />
         {searchOpen && (
@@ -489,30 +514,19 @@ export function Header() {
               <X className="h-6 w-6" />
             </button>
 
-            {/* Circular Suggestions */}
+            {/* Circular Suggestions - filtered products */}
             <div className="mt-8 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-6 max-w-6xl mx-auto">
-              {[
-                { name: "Gown", img: "/elegant-black-gown.png" },
-                { name: "Handbag", img: "/luxury-quilted-handbag.png" },
-                { name: "Shoes", img: "/shoes.png" },
-                { name: "Jewelry", img: "/jewelry.png" },
-                { name: "Saree", img: "/saree.png" },
-                { name: "Blazer", img: "/blazer.png" },
-                { name: "Watch", img: "/watch.png" },
-                { name: "Kids Wear", img: "/kids.png" },
-                { name: "Heels", img: "/heels.png" },
-                { name: "Accessories", img: "/accessories.png" },
-              ].map((item, i) => (
-                <div key={i} className="flex flex-col items-center text-center">
+              {filteredProducts.map((product, i) => (
+                <div key={product._id ?? product.id ?? i} className="flex flex-col items-center text-center">
                   <Image
-                    src={item.img}
-                    alt={item.name}
+                    src={product.image || (Array.isArray(product.pImages) && product.pImages.length > 0 ? product.pImages[0] : "/placeholder.svg")}
+                    alt={product.pName}
                     className="w-20 h-20 object-cover rounded-full border shadow-sm hover:scale-105 transition"
                     width={80}
                     height={80}
                   />
                   <p className="mt-2 text-sm font-medium text-gray-700">
-                    {item.name}
+                    {product.pName}
                   </p>
                 </div>
               ))}

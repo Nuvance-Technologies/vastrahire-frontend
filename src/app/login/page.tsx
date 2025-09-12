@@ -20,9 +20,9 @@ export default function CustomerLoginPage() {
   useEffect(() => {
     if (session?.user) {
       if (session?.user?.role == "customer") {
-        router.push("/customer/dashboard");
+        router.push("/");
       } else {
-        router.push("/lender/dashboard");
+        router.push("/");
       }
     }
   }, [session?.user?.role, router]);

@@ -95,6 +95,7 @@ export async function GET(req: NextRequest) {
       category: catId,
       availability: "active",
     });
+    console.log(products);
     return NextResponse.json(
       { message: "Products fetched successfully", products },
       { status: 200 }
