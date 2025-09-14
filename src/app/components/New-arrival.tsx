@@ -19,12 +19,10 @@ export default function NewArrivals() {
     try {
       const res = await axios.get(`/api/product/${session?.user?.id}`);
       if (res.status === 200) {
-        toast.success("Products fetched successfully!");
         setSlides(res.data.products);
       }
     } catch (error) {
       console.error("Failed to fetch products:", error);
-      toast.error("Failed to fetch products. Please try again.");
     }
   };
 

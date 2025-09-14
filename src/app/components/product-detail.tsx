@@ -39,8 +39,26 @@ export function ProductDetail({ product }: { product: ProductI }) {
 
   const [reviews, setReviews] = useState<ReviewModel[]>([]);
   const productRef = useRef<HTMLDivElement>(null);
+  const [slides, setSlides] = useState<ProductI[]>([]);
 
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+
+  const fetchProducts = async () => {
+    try {
+      const res = await axios.get(`/api/product/${session?.user?.id}`);
+      if (res.status === 200) {
+        setSlides(res.data.products);
+      }
+    } catch (error) {
+      console.error("Failed to fetch products:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (status === "authenticated" && session?.user?.id) {
+      fetchProducts();
+    }
+  }, [status, session?.user?.id]);
 
   // --- Swipe-to-feedback listeners ---
   useEffect(() => {
@@ -564,12 +582,12 @@ export function ProductDetail({ product }: { product: ProductI }) {
             You Might Also Like
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[1, 2, 3, 4].map((i) => (
-              <Link key={i} href={`/product/${i + 10}`}>
+            {slides.map((p, i) => (
+              <Link key={i} href={`/product/${p._id}`}>
                 <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
                   <div className="aspect-[4/5] overflow-hidden">
                     <Image
-                      src="/placeholder.svg?height=300&width=250"
+                      src={p.pImages[0] || "/placeholder.svg"}
                       alt="Related product"
                       className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                       width={400}
@@ -578,17 +596,14 @@ export function ProductDetail({ product }: { product: ProductI }) {
                   </div>
                   <div className="p-4">
                     <h3 className="font-semibold text-gray-900 mb-1">
-                      Related Product {i}
+                      {p.pName.length > 40
+                        ? p.pName.slice(0, 37) + "..."
+                        : p.pName}
                     </h3>
-                    <p className="text-sm text-gray-500 mb-2">Brand Name</p>
                     <div className="flex items-center justify-between">
                       <span className="text-lg font-bold text-indigo-600">
-                        ₹30/day
+                        ₹{p.pPrice}
                       </span>
-                      <div className="flex items-center gap-1">
-                        <span className="text-yellow-500">★</span>
-                        <span className="text-sm text-gray-500">4.7 (89)</span>
-                      </div>
                     </div>
                   </div>
                 </div>

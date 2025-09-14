@@ -7,7 +7,6 @@ export async function GET(req: NextRequest) {
   try {
     await connectToDB();
     const products = await Product.find();
-    console.log(products[0]);
     return NextResponse.json(
       { message: "Products fetched successfully", products },
       { status: 200 }

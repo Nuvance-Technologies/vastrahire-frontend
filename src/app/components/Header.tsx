@@ -6,33 +6,35 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
+import { ProductI } from "../category/women/page";
 
 export function Header() {
-  const [allProducts, setAllProducts] = useState<any[]>([]);
+  const [allProducts, setAllProducts] = useState<ProductI[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   useEffect(() => {
-    console.log('All products:', allProducts);
+    console.log("All products:", allProducts);
   }, [allProducts]);
 
-  const filteredProducts: any[] = searchQuery.trim()
-    ? allProducts.filter((p: any) =>
-      p.pName && p.pName.toLowerCase().includes(searchQuery.toLowerCase())
-    )
+  const filteredProducts: ProductI[] = searchQuery.trim()
+    ? allProducts.filter(
+        (p: ProductI) =>
+          p.pName && p.pName.toLowerCase().includes(searchQuery.toLowerCase())
+      )
     : allProducts;
 
   useEffect(() => {
-    console.log('Filtered products:', filteredProducts);
+    console.log("Filtered products:", filteredProducts);
   }, [filteredProducts]);
 
   useEffect(() => {
     const fetchAllProducts = async () => {
       setLoadingProducts(true);
       try {
-        const response = await axios.get('/api/product/allProducts');
+        const response = await axios.get("/api/product/allProducts");
         setAllProducts(response.data.products || []);
       } catch (error) {
-        console.error('Error fetching all products:', error);
+        console.error("Error fetching all products:", error);
       } finally {
         setLoadingProducts(false);
       }
@@ -53,7 +55,6 @@ export function Header() {
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       const target = event.target as Element;
-      console.log(target.className);
       // Don't close if clicking on a link or button inside the dropdown
       if (target.className.includes("drop-down")) {
         return;
@@ -383,7 +384,7 @@ export function Header() {
                   placeholder="Search items..."
                   className="pl-10 w-64 h-10 border rounded-md text-gray-700 border-gray-300 focus:ring-2 focus:ring-[#3d000c] focus:outline-none"
                   value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={() => setSearchOpen(true)}
                 />
                 {searchOpen && (
@@ -406,7 +407,7 @@ export function Header() {
                           className="flex flex-col items-center text-center"
                         >
                           <Image
-                            src={item.imgage}
+                            src={item.pImages[0] || "/placeholder.svg"}
                             alt={item.pName}
                             className="w-20 h-20 object-cover rounded-full border shadow-sm hover:scale-105 transition"
                             width={80}
@@ -499,7 +500,7 @@ export function Header() {
           placeholder="Search..."
           className="pl-10 w-full h-10 border rounded-md text-gray-700 border-gray-300 focus:ring-2 focus:ring-[#3d000c] focus:outline-none"
           value={searchQuery}
-          onChange={e => setSearchQuery(e.target.value)}
+          onChange={(e) => setSearchQuery(e.target.value)}
           onFocus={() => setSearchOpen(true)} // 👈 opens overlay in mobile
         />
         {searchOpen && (
@@ -517,9 +518,12 @@ export function Header() {
             {/* Circular Suggestions - filtered products */}
             <div className="mt-8 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-6 max-w-6xl mx-auto">
               {filteredProducts.map((product, i) => (
-                <div key={product._id ?? product.id ?? i} className="flex flex-col items-center text-center">
+                <div
+                  key={product._id ?? product._id ?? i}
+                  className="flex flex-col items-center text-center"
+                >
                   <Image
-                    src={product.image || (Array.isArray(product.pImages) && product.pImages.length > 0 ? product.pImages[0] : "/placeholder.svg")}
+                    src={product.pImages[0] || "/placeholder.svg"}
                     alt={product.pName}
                     className="w-20 h-20 object-cover rounded-full border shadow-sm hover:scale-105 transition"
                     width={80}

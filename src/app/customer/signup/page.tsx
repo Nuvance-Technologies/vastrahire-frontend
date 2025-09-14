@@ -241,7 +241,6 @@ export default function CustomerSignupPage() {
             </button>
           </form>
 
-         
           {/* Welcome offer */}
           <div className="bg-gradient-to-r from-[#fbcfe8] to-[#e0f2fe] rounded-lg p-4 space-y-2">
             <div className="flex items-center gap-2 text-sm font-semibold text-[#3d000c]">
