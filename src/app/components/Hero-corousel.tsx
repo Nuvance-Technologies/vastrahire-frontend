@@ -42,7 +42,7 @@ const slides = [
   },
   {
     id: 6,
-    image: "/images/slide3.png",
+    image: "/images/slide3.jpg",
     title: "Complete Your Look",
     subtitle: "Find the perfect accessories for any occasion",
     cta: "Browse Accessories",
