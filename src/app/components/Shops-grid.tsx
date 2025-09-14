@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import axios from "axios";
 import { ProductI } from "../category/women/page";
+import Link from "next/link";
 
 interface CategoryOption {
   _id: string;
@@ -74,11 +75,10 @@ export function ShopsGrid() {
           <button
             key="all"
             onClick={() => setActiveCategoryId(null)}
-            className={`px-4 py-2 rounded-full border text-sm font-medium transition ${
-              activeCategoryId === null
+            className={`px-4 py-2 rounded-full border text-sm font-medium transition ${activeCategoryId === null
                 ? "bg-[#3d000c] text-white border-[#3d000c]"
                 : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
-            }`}
+              }`}
           >
             All
           </button>
@@ -86,11 +86,10 @@ export function ShopsGrid() {
             <button
               key={cat._id}
               onClick={() => setActiveCategoryId(cat._id)}
-              className={`px-4 py-2 rounded-full border text-sm font-medium transition ${
-                activeCategoryId === cat._id
+              className={`px-4 py-2 rounded-full border text-sm font-medium transition ${activeCategoryId === cat._id
                   ? "bg-[#3d000c] text-white border-[#3d000c]"
                   : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
-              }`}
+                }`}
             >
               {cat.name}
             </button>
@@ -100,32 +99,34 @@ export function ShopsGrid() {
         {/* Shops Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProducts.map((product, idx) => (
-            <div
-              key={product._id ?? product._id ?? idx}
-              className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-gray-200"
-            >
-              <div className="relative">
-                <Image
-                  src={product.pImages[0] || "/placeholder.svg"}
-                  alt={product.pName}
-                  className="w-full h-48 object-cover rounded-t-lg"
-                  width={100}
-                  height={100}
-                />
-                <span className="absolute top-3 left-3 bg-white/90 text-gray-800 text-sm px-2 py-1 rounded">
-                  {/* Show category name for product */}
-                  {categories.find((cat) => cat._id === product.category)?.name}
-                </span>
-              </div>
-              <div className="p-6">
-                <h3 className="font-semibold text-gray-900 mb-2">
-                  {product.pName}
-                </h3>
-                <div className="flex justify-between items-center text-sm text-gray-600">
-                  <span>&#8377; {product.pPrice}/day</span>
+            <Link href={`/product/${product._id}`}>
+              <div
+                key={product._id ?? product._id ?? idx}
+                className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-gray-200"
+              >
+                <div className="relative">
+                  <Image
+                    src={product.pImages[0] || "/placeholder.svg"}
+                    alt={product.pName}
+                    className="w-full h-48 object-cover rounded-t-lg"
+                    width={100}
+                    height={100}
+                  />
+                  <span className="absolute top-3 left-3 bg-white/90 text-gray-800 text-sm px-2 py-1 rounded">
+                    {/* Show category name for product */}
+                    {categories.find((cat) => cat._id === product.category)?.name}
+                  </span>
+                </div>
+                <div className="p-6">
+                  <h3 className="font-semibold text-gray-900 mb-2">
+                    {product.pName}
+                  </h3>
+                  <div className="flex justify-between items-center text-sm text-gray-600">
+                    <span>&#8377; {product.pPrice}/day</span>
+                  </div>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
