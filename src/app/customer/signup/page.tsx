@@ -11,6 +11,15 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { isValidEmail } from "@/util/emailValidator";
 
+export interface ErrorI {
+  status: number;
+  response: {
+    data: {
+      message: string;
+    };
+  };
+}
+
 export default function CustomerSignupPage() {
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
@@ -71,7 +80,13 @@ export default function CustomerSignupPage() {
           return;
         }
       }
-    } catch (error) {
+    } catch (err: unknown) {
+      const error = err as ErrorI;
+      // console.log(error);
+      if (error?.status === 400) {
+        toast.error(error?.response?.data.message || "User already exists!");
+        return;
+      }
       toast.error("Signup failed. Please try again.");
       console.error("Signup error:", error);
     } finally {

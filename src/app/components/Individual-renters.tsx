@@ -61,11 +61,12 @@ const imageUrls = [
   "/fashion-accessories-jewelry-shoes-lifestyle.png",
 ];
 
-interface UserI {
+export interface UserI {
   _id: string;
   name: { firstname: string; lastname: string };
   email: string;
   role: string;
+  address: string;
 }
 
 export function IndividualRenters() {
@@ -118,7 +119,7 @@ export function IndividualRenters() {
                 By: {renter.name.firstname} {renter.name.lastname}
               </p>
               {/* View Profile Button */}
-              <Link href="/rentersProfile">
+              <Link href={`/rentersProfile?ownerId=${renter._id}`}>
                 <button className="mt-auto w-full py-2 px-4 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 text-sm font-medium transition">
                   View Profile
                 </button>

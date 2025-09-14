@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { ErrorI } from "@/app/customer/signup/page";
 
 export default function BusinessLenderSignupPage() {
   const [formData, setFormData] = useState({
@@ -75,12 +76,17 @@ export default function BusinessLenderSignupPage() {
           router.push("/");
         }
       }
-    } catch (error) {
+    } catch (err: unknown) {
+      const error = err as ErrorI;
+      // console.log(error);
+      if (error?.status === 400) {
+        toast.error(error?.response?.data.message || "User already exists!");
+        return;
+      }
       console.error("Signup failed:", error);
       toast.error("Signup failed. Please try again.");
     }
   };
-
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 relative">

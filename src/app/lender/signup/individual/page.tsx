@@ -8,6 +8,7 @@ import { signIn } from "next-auth/react";
 import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ErrorI } from "@/app/customer/signup/page";
 
 export default function IndividualLenderSignupPage() {
   const [formData, setFormData] = useState({
@@ -69,7 +70,13 @@ export default function IndividualLenderSignupPage() {
           router.push("/");
         }
       }
-    } catch (error) {
+    } catch (err: unknown) {
+      const error = err as ErrorI;
+      // console.log(error);
+      if (error?.status === 400) {
+        toast.error(error?.response?.data.message || "User already exists!");
+        return;
+      }
       console.error("Signup failed:", error);
       toast.error("Signup failed. Please try again.");
     }

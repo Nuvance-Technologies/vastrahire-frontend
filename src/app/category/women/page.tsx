@@ -148,6 +148,7 @@ export interface ProductI {
   ownerID: string;
   pLocation: string;
   quantity: number;
+  createdAt?: Date;
 }
 
 export default function ClothingPage() {
