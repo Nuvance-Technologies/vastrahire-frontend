@@ -388,7 +388,7 @@ export default function LenderDashboard() {
                     onChange={(e) =>
                       setNewProduct({ ...newProduct, pName: e.target.value })
                     }
-                    className="border rounded-lg p-2"
+                    className="border rounded-lg p-2 col-span-2 md:col-span-1"
                   />
                   {/* Category ID by category name */}
                   <select
@@ -396,7 +396,7 @@ export default function LenderDashboard() {
                     onChange={(e) =>
                       setNewProduct({ ...newProduct, category: e.target.value })
                     }
-                    className="border rounded-lg p-2"
+                    className="border rounded-lg p-2 col-span-2 md:col-span-1"
                   >
                     <option value="">Select Category</option>
                     <option value="women">Women</option>
@@ -413,7 +413,7 @@ export default function LenderDashboard() {
                         pPrice: e.target.value,
                       })
                     }
-                    className="border rounded-lg p-2"
+                    className="border rounded-lg p-2 col-span-2 md:col-span-1"
                   />
 
                   {/* Available Sizes */}
@@ -424,7 +424,7 @@ export default function LenderDashboard() {
                     onChange={(e) =>
                       setNewProduct({ ...newProduct, pSize: e.target.value })
                     }
-                    className="border rounded-lg p-2"
+                    className="border rounded-lg p-2 col-span-2 md:col-span-1"
                   />
 
                   {/* Pickup Location */}
@@ -450,7 +450,7 @@ export default function LenderDashboard() {
                         quantity: parseInt(e.target.value, 10),
                       })
                     }
-                    className="border rounded-lg p-2"
+                    className="border rounded-lg p-2 col-span-2 md:col-span-1"
                   />
                   <input
                     type="text"
@@ -459,7 +459,7 @@ export default function LenderDashboard() {
                     onChange={(e) =>
                       setNewProduct({ ...newProduct, pColor: e.target.value })
                     }
-                    className="border rounded-lg p-2"
+                    className="border rounded-lg p-2 col-span-2 md:col-span-1"
                   />
                   <select
                     value={newProduct.subcategory}
@@ -469,7 +469,7 @@ export default function LenderDashboard() {
                         subcategory: e.target.value,
                       })
                     }
-                    className="border rounded-lg p-2"
+                    className="border rounded-lg p-2 col-span-2 md:col-span-1"
                   >
                     <option value="">Select Subcategory</option>
                     <option value="clothes">Clothes</option>
@@ -489,7 +489,7 @@ export default function LenderDashboard() {
                         pDiscount: e.target.value,
                       })
                     }
-                    className="border rounded-lg p-2"
+                    className="border rounded-lg p-2 col-span-2 md:col-span-1"
                   />
                   <input
                     type="text"
@@ -501,7 +501,7 @@ export default function LenderDashboard() {
                         pFabric: e.target.value,
                       })
                     }
-                    className="border rounded-lg p-2"
+                    className="border rounded-lg p-2 col-span-2 md:col-span-1"
                   />
                   <input
                     type="text"
@@ -513,7 +513,7 @@ export default function LenderDashboard() {
                         pPattern: e.target.value,
                       })
                     }
-                    className="border rounded-lg p-2"
+                    className="border rounded-lg p-2 col-span-2 md:col-span-1"
                   />
                   <input
                     type="text"
@@ -525,7 +525,7 @@ export default function LenderDashboard() {
                         pOccasion: e.target.value,
                       })
                     }
-                    className="border rounded-lg p-2"
+                    className="border rounded-lg p-2 col-span-2 md:col-span-1"
                   />
                  <textarea
                     placeholder="Description"
@@ -536,7 +536,7 @@ export default function LenderDashboard() {
                         pDesc: e.target.value,
                       })
                     }
-                    className="border rounded-lg p-2 col-span-1"
+                    className="border rounded-lg p-2 col-span-2"
                   />
                   {/* Compact Image Upload */}
                   <div className="flex flex-col gap-1 border rounded-md p-2 bg-white/10 backdrop-blur-sm shadow-sm w-fit">
