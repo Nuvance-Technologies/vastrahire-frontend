@@ -24,6 +24,8 @@ export default function BusinessLenderSignupPage() {
     password: "",
     confirmPassword: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const router = useRouter();
 
@@ -79,8 +81,6 @@ export default function BusinessLenderSignupPage() {
     }
   };
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 relative">

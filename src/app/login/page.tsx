@@ -15,6 +15,7 @@ export default function CustomerLoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { data: session } = useSession();
+    const [showPassword, setShowPassword] = useState(false);
 
   const router = useRouter();
   useEffect(() => {
@@ -58,8 +59,6 @@ export default function CustomerLoginPage() {
   if (loading) {
     return <SpinnerLoader />;
   }
-
-  const [showPassword, setShowPassword] = useState(false);
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 relative">
       {/* Background decorative elements */}

@@ -25,7 +25,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { ProductI } from "@/app/category/women/page";
 import Link from "next/link";
-import { UserRentalI } from "@/app/customer/dashboard/page";
+import { uploadImageToCloudinary } from "@/util/uploadImage";
 
 type Tier = "Golden" | "Platinum" | "Diamond";
 type TierOrNone = Tier | "none";
@@ -89,7 +89,7 @@ export default function LenderDashboard() {
     quantity: 0,
     category: "",
     ownerID: "",
-    pImages: [] as (string | File)[],
+    pImages: [] as string[], // store Cloudinary URLs only
   });
   // inside LenderDashboard component (state + handlers at the top)
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -103,8 +103,48 @@ export default function LenderDashboard() {
   });
   const [totalProducts, setTotalProducts] = useState(0);
   const [totalEarnings, setTotalEarnings] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
 
   const { data: session } = useSession();
+
+  const handleProductImageChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    setIsUploading(true);
+
+    try {
+      const uploadedUrls: string[] = [];
+
+      for (const file of Array.from(files)) {
+        const validTypes = ["image/jpg", "image/jpeg", "image/png", "image/gif"];
+        if (!validTypes.includes(file.type)) {
+          toast.error("Invalid file type. Please upload JPG/JPEG/PNG/GIF.");
+          continue;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+          toast.error("Image must be less than 5MB.");
+          continue;
+        }
+
+        const data = await uploadImageToCloudinary(file);
+        uploadedUrls.push(data.secure_url);
+      }
+
+      setNewProduct((prev) => ({
+        ...prev,
+        pImages: [...uploadedUrls],
+      }));
+      toast.success("Images uploaded successfully!");
+    } catch (err) {
+      console.error("Upload error:", err);
+      toast.error("Failed to upload images. Try again.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const fetchLenderProfile = async () => {
     try {
@@ -190,23 +230,12 @@ export default function LenderDashboard() {
     e.preventDefault();
 
     try {
-      const formData = new FormData();
+      const productData = {
+        ...newProduct,
+        ownerID: session?.user?.id || "",
+      };
 
-      Object.entries(newProduct).forEach(([key, value]) => {
-        if (key === "pImages" && Array.isArray(value)) {
-          value.forEach((file) => formData.append("pImages", file));
-        } else {
-          formData.append(key, value as string | Blob);
-        }
-      });
-
-      formData.set("ownerID", session?.user?.id || "");
-
-      const res = await axios.post("/api/product", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const res = await axios.post("/api/product", productData);
 
       if (res.status === 201) {
         toast.success("Product added successfully!");
@@ -226,7 +255,7 @@ export default function LenderDashboard() {
           quantity: 0,
           category: "",
           ownerID: "",
-          pImages: [""],
+          pImages: [],
         });
         fetchProducts();
       }
@@ -527,7 +556,7 @@ export default function LenderDashboard() {
                     }
                     className="border rounded-lg p-2 col-span-2 md:col-span-1"
                   />
-                 <textarea
+                  <textarea
                     placeholder="Description"
                     value={newProduct.pDesc}
                     onChange={(e) =>
@@ -538,41 +567,17 @@ export default function LenderDashboard() {
                     }
                     className="border rounded-lg p-2 col-span-2"
                   />
-                  {/* Compact Image Upload */}
-                  <div className="flex flex-col gap-1 border rounded-md p-2 bg-white/10 backdrop-blur-sm shadow-sm w-fit">
-                    <label className="text-sm font-medium text-gray-700">
-                      Upload Images
-                    </label>
-                    <p className="text-xs text-gray-500">
-                      Max: 2 MB • Brighter images recommended
-                    </p>
 
-                    <input
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      onChange={(e) => {
-                        if (!e.target.files) return;
+                  <input
+                    type="file"
+                    multiple
+                    onChange={handleProductImageChange}
+                    className="border rounded-lg p-2"
+                  />
 
-                        const validFiles = Array.from(e.target.files).filter(
-                          (file) => file.size <= 2 * 1024 * 1024 // 2 MB
-                        );
-
-                        if (validFiles.length !== e.target.files.length) {
-                          alert("Some files were too large (max 2 MB).");
-                        }
-
-                        setNewProduct({
-                          ...newProduct,
-                          pImages: validFiles,
-                        });
-                      }}
-                      className="mt-1 border border-dashed border-gray-400 rounded-md p-1 text-xs text-gray-600 
-               file:mr-2 file:rounded-md file:border-none file:bg-[#3d000c] 
-               file:px-2 file:py-1 file:text-white hover:file:bg-[#650014]"
-                    />
-                  </div>
-
+                  {isUploading && (
+                    <p className="text-sm text-blue-500">Uploading...</p>
+                  )}
                   <button
                     type="submit"
                     className="col-span-2 px-4 py-2 bg-[#3d000c] hover:bg-[#570112] text-white rounded-lg"
@@ -593,13 +598,15 @@ export default function LenderDashboard() {
                   key={p._id}
                   className="flex items-center gap-4 border rounded-lg p-4 mb-3 hover:shadow"
                 >
-                  <Image
-                    src={p.pImages[0] || "/placeholder.png"}
-                    alt={p.pName}
-                    className="h-16 w-16 object-cover rounded-lg"
-                    width={64}
-                    height={64}
-                  />
+                  <div className="flex gap-2 flex-wrap mt-2">
+                    <Image
+                      src={p.pImages[0] || "/placeholder.png"}
+                      alt="preview"
+                      width={64}
+                      height={64}
+                      className="rounded-lg object-cover"
+                    />
+                  </div>
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-800">{p.pName}</h3>
                     <p className="text-sm capitalize text-gray-500">
