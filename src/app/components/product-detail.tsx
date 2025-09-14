@@ -372,7 +372,7 @@ export function ProductDetail({ product }: { product: ProductI }) {
                     />
                   </label>
                 </div>
-                <Link href="/payment  ">
+                <Link href="/customer/payment">
                   <button
                     type="submit"
                     disabled={!selectedSize}
