@@ -45,7 +45,7 @@ export function Header() {
   const [isOpen1, setIsOpen1] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
 
-  // refs for dropdowns
+
   const loginRef = useRef<HTMLDivElement>(null);
   const signupRef = useRef<HTMLDivElement>(null);
 
@@ -452,6 +452,12 @@ export function Header() {
                 className="text-gray-700 hover:text-[#3d000c]"
               >
                 Kids
+              </Link>
+              <Link
+                href="/earn-through-us"
+                className="font-bold text-[#3d000c]"
+              >
+                Unlock your earning through us
               </Link>
 
               {/* More Button for mobile */}

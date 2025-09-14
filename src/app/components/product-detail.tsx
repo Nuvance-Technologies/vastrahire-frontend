@@ -30,6 +30,8 @@ export function ProductDetail({ product }: { product: ProductI }) {
   const [swipeStartX, setSwipeStartX] = useState(0);
   const [swipeStartY, setSwipeStartY] = useState(0);
   const [isSwipeActive, setIsSwipeActive] = useState(false);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+
   const [activeTab, setActiveTab] = useState<"details" | "reviews" | "care">(
     "details"
   );
@@ -135,7 +137,7 @@ export function ProductDetail({ product }: { product: ProductI }) {
           ? window.localStorage.getItem(`reviews:product:${product._id}`)
           : null;
       if (raw) setReviews(JSON.parse(raw) as ReviewModel[]);
-    } catch {}
+    } catch { }
   }, [product._id]);
 
   useEffect(() => {
@@ -150,7 +152,7 @@ export function ProductDetail({ product }: { product: ProductI }) {
           JSON.stringify(reviews)
         );
       }
-    } catch {}
+    } catch { }
   }, [reviews, product._id]);
 
   const handleFeedbackSubmit = () => {
@@ -217,11 +219,10 @@ export function ProductDetail({ product }: { product: ProductI }) {
                 <button
                   key={index}
                   onClick={() => setSelectedImage(index)}
-                  className={`aspect-square overflow-hidden rounded-md border-2 ${
-                    selectedImage === index
-                      ? "border-indigo-500"
-                      : "border-gray-200"
-                  }`}
+                  className={`aspect-square overflow-hidden rounded-md border-2 ${selectedImage === index
+                    ? "border-indigo-500"
+                    : "border-gray-200"
+                    }`}
                 >
                   <Image
                     src={image || "/placeholder.svg"}
@@ -271,14 +272,6 @@ export function ProductDetail({ product }: { product: ProductI }) {
                   {product.availability}
                 </span>
               </div>
-              <div className="flex items-center gap-4">
-                <span className="text-xl flex font-bold text-[#3d000c]">
-                  <p className="text-gray-600 ">Retail price:&nbsp;</p>
-                  <span className="line-through">
-                    ₹{product.pPrice + product.pPrice * 0.1}
-                  </span>
-                </span>
-              </div>
             </div>
 
             {/* Description */}
@@ -320,8 +313,6 @@ export function ProductDetail({ product }: { product: ProductI }) {
 
             {/* Rental Duration - Date Range */}
             <div className="space-y-3">
-              <h3 className="font-semibold text-gray-900">Rental Duration</h3>
-
               <form
                 onSubmit={handleRent}
                 className=" sm:flex-row items-center gap-4 text-gray-700"
@@ -329,18 +320,28 @@ export function ProductDetail({ product }: { product: ProductI }) {
                 {/* Size Selection */}
                 <div className="space-y-3 mb-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="font-semibold text-gray-900">Size</h3>
+                    <h3 className="font-semibold text-gray-900">Select Size</h3>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {product.pSize.map((size) => (
-                      <div key={size} className="flex items-center">
+                      <button
+                        key={size}
+                        type="button"
+                        onClick={() => setSelectedSize(size)}
+                        className={`px-4 py-2 border rounded-lg font-medium transition ${selectedSize === size
+                          ? "border-indigo-600 bg-indigo-100 text-indigo-600"
+                          : "border-gray-300 text-gray-700 hover:border-indigo-400"
+                          }`}
+                      >
                         {size}
-                      </div>
+                      </button>
                     ))}
                   </div>
                 </div>
+
                 {/* From Date */}
                 <div>
+                  <h3 className="font-semibold text-gray-900">Rental Duration</h3>
                   <label className="flex flex-col text-sm font-medium text-gray-700 mb-4">
                     From
                     <input
@@ -373,11 +374,13 @@ export function ProductDetail({ product }: { product: ProductI }) {
                 </div>
                 <button
                   type="submit"
+                  disabled={!selectedSize}
                   className="w-full my-4 py-3 bg-[#3d000c] text-white rounded-lg font-semibold hover:bg-[#85021c] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   <ShoppingBag className="h-5 w-5" />
                   Rent Now
                 </button>
+
               </form>
             </div>
 
@@ -428,15 +431,14 @@ export function ProductDetail({ product }: { product: ProductI }) {
             <div className="flex space-x-8">
               <button
                 onClick={() => setActiveTab("details")}
-                className={`py-4 px-1 border-b-2 ${
-                  activeTab === "details"
-                    ? "border-gray-900 text-gray-900"
-                    : "border-transparent text-gray-500 hover:text-gray-900"
-                }`}
+                className={`py-4 px-1 border-b-2 ${activeTab === "details"
+                  ? "border-gray-900 text-gray-900"
+                  : "border-transparent text-gray-500 hover:text-gray-900"
+                  }`}
               >
                 Details
               </button>
-              {/* <button
+              <button
                 onClick={() => setActiveTab("reviews")}
                 className={`py-4 px-1 border-b-2 ${
                   activeTab === "reviews"
@@ -444,15 +446,14 @@ export function ProductDetail({ product }: { product: ProductI }) {
                     : "border-transparent text-gray-500 hover:text-gray-900"
                 }`}
               >
-                Reviews ({(reviews?.length ?? 0) || product.reviews})
-              </button> */}
+                Reviews ({reviews.length})
+              </button>
               <button
                 onClick={() => setActiveTab("care")}
-                className={`py-4 px-1 border-b-2 ${
-                  activeTab === "care"
-                    ? "border-gray-900 text-gray-900"
-                    : "border-transparent text-gray-500 hover:text-gray-900"
-                }`}
+                className={`py-4 px-1 border-b-2 ${activeTab === "care"
+                  ? "border-gray-900 text-gray-900"
+                  : "border-transparent text-gray-500 hover:text-gray-900"
+                  }`}
               >
                 Care Instructions
               </button>
@@ -646,11 +647,10 @@ export function ProductDetail({ product }: { product: ProductI }) {
                 <button
                   key={reason}
                   onClick={() => setFeedbackReason(reason)}
-                  className={`w-full text-left p-3 rounded-lg border transition-colors ${
-                    feedbackReason === reason
-                      ? "border-indigo-500 bg-indigo-50 text-indigo-600"
-                      : "border-gray-200 hover:border-indigo-300"
-                  }`}
+                  className={`w-full text-left p-3 rounded-lg border transition-colors ${feedbackReason === reason
+                    ? "border-indigo-500 bg-indigo-50 text-indigo-600"
+                    : "border-gray-200 hover:border-indigo-300"
+                    }`}
                 >
                   {reason}
                 </button>

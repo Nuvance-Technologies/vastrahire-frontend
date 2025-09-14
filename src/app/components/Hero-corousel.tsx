@@ -28,39 +28,54 @@ const slides = [
   },
   {
     id: 4,
-    image: "/slide 3.png",
+    image: "/images/slide3.png",
     title: "Complete Your Look",
     subtitle: "Find the perfect accessories for any occasion",
     cta: "Browse Accessories",
   },
   {
     id: 5,
-    image: "/slide 4.png",
+    image: "/images/slide4.png",
     title: "Complete Your Look",
     subtitle: "Find the perfect accessories for any occasion",
     cta: "Browse Accessories",
   },
   {
     id: 6,
-    image: "/slide 5.png",
+    image: "/images/slide5.png",
     title: "Complete Your Look",
     subtitle: "Find the perfect accessories for any occasion",
     cta: "Browse Accessories",
   },
   {
     id: 7,
-    image: "/slide 6.png",
+    image: "/images/slide6.png",
     title: "Complete Your Look",
     subtitle: "Find the perfect accessories for any occasion",
     cta: "Browse Accessories",
   },
   {
     id: 8,
-    image: "/slide 8.png",
+    image: "/images/slide8.png",
     title: "Complete Your Look",
     subtitle: "Find the perfect accessories for any occasion",
     cta: "Browse Accessories",
   },
+  {
+    id: 9,
+    image: "/images/slide9.jpg",
+    title: "Complete Your Look",
+    subtitle: "Find the perfect accessories for any occasion",
+    cta: "Browse Accessories",
+  },
+  {
+    id: 10,
+    image: "/images/slide10.jpg",
+    title: "Complete Your Look",
+    subtitle: "Find the perfect accessories for any occasion",
+    cta: "Browse Accessories",
+  },
+
 ]
 
 export function HeroCarousel() {
