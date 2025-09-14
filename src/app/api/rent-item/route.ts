@@ -108,14 +108,6 @@ export async function POST(request: NextRequest) {
       avgRating: product.avgRating,
     });
 
-    // const lender = await LenderItem.find();
-    // console.log(lender);
-    // let total = 0;
-    // for (let i = 0; i < lender.length; i++) {
-    //   total += lender[i].totalEarnings;
-    //   console.log(total);
-    // }
-
     return NextResponse.json(
       {
         message: "Rental successful",

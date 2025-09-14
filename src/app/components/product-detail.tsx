@@ -137,12 +137,6 @@ export function ProductDetail({ product }: { product: ProductI }) {
 
   const handleFeedbackSubmit = () => {
     if ((feedbackReason || feedbackComments).trim()) {
-      console.log("[v0] Feedback submitted:", {
-        productId: product._id,
-        reason: feedbackReason || null,
-        comments: feedbackComments || null,
-        timestamp: new Date().toISOString(),
-      });
       setShowFeedbackModal(false);
       setFeedbackReason("");
       setFeedbackComments("");
@@ -512,7 +506,6 @@ export function ProductDetail({ product }: { product: ProductI }) {
                 <div className="order-1 md:order-2">
                   <ReviewForm
                     onAdd={(r) => {
-                      console.log("[v0] Review added:", r);
                       setReviews((prev) => [r, ...prev]);
                     }}
                   />

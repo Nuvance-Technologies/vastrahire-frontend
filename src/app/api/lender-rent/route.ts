@@ -16,7 +16,6 @@ export async function GET(req: NextRequest) {
         (total, rental) => total + rental.totalEarnings,
         0
       );
-      console.log("Total Amount Spent:", totalEarningOfAllProducts);
       return NextResponse.json(
         { lenderRentals, totalEarningOfAllProducts },
         { status: 200 }
