@@ -372,15 +372,16 @@ export function ProductDetail({ product }: { product: ProductI }) {
                     />
                   </label>
                 </div>
-                <button
-                  type="submit"
-                  disabled={!selectedSize}
-                  className="w-full my-4 py-3 bg-[#3d000c] text-white rounded-lg font-semibold hover:bg-[#85021c] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                >
-                  <ShoppingBag className="h-5 w-5" />
-                  Rent Now
-                </button>
-
+                <Link href="/payment  ">
+                  <button
+                    type="submit"
+                    disabled={!selectedSize}
+                    className="w-full my-4 py-3 bg-[#3d000c] text-white rounded-lg font-semibold hover:bg-[#85021c] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    <ShoppingBag className="h-5 w-5" />
+                    Rent Now
+                  </button>
+                </Link>
               </form>
             </div>
 
@@ -440,11 +441,10 @@ export function ProductDetail({ product }: { product: ProductI }) {
               </button>
               <button
                 onClick={() => setActiveTab("reviews")}
-                className={`py-4 px-1 border-b-2 ${
-                  activeTab === "reviews"
+                className={`py-4 px-1 border-b-2 ${activeTab === "reviews"
                     ? "border-gray-900 text-gray-900"
                     : "border-transparent text-gray-500 hover:text-gray-900"
-                }`}
+                  }`}
               >
                 Reviews ({reviews.length})
               </button>
