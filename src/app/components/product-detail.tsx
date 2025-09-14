@@ -341,7 +341,7 @@ export function ProductDetail({ product }: { product: ProductI }) {
 
                 {/* From Date */}
                 <div>
-                  <h3 className="font-semibold text-gray-900">Rental Duration</h3>
+                  <h3 className="font-semibold text-gray-900 py-2">Rental Duration</h3>
                   <label className="flex flex-col text-sm font-medium text-gray-700 mb-4">
                     From
                     <input
@@ -375,7 +375,7 @@ export function ProductDetail({ product }: { product: ProductI }) {
                 <Link href="/customer/payment">
                   <button
                     type="submit"
-                    disabled={!selectedSize}
+                    disabled={!selectedSize || !from || !to}
                     className="w-full my-4 py-3 bg-[#3d000c] text-white rounded-lg font-semibold hover:bg-[#85021c] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     <ShoppingBag className="h-5 w-5" />

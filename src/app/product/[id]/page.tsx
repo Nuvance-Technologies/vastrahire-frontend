@@ -13,12 +13,32 @@ export default function ProductPage() {
 
   const [product, setProduct] = useState<ProductI | null>(null);
   const [loading, setLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
+
+  const dummyProduct: ProductI = {
+    _id: "dummy123",
+    pName: "Dummy Summer Dress",
+    pPrice: 1499,
+    pDesc:
+      "A stylish dummy product for testing. Lightweight, comfortable, and perfect for trying out product detail view.",
+    pSize: ["S", "M", "L", "XL"],
+    pImages: ["/dummy-dress.jpg"],
+    pColor: "Red",
+    category: "Women",
+    subcategory: "Dresses",
+    pDiscount: "20% OFF",
+    pFabric: "Cotton",
+    pPattern: "Floral",
+    pOccasion: "Casual wear",
+    availability: "In Stock",
+    ownerID: "owner_dummy",
+    pLocation: "India",
+    quantity: 15,
+    createdAt: new Date(),
+  };
 
   const fetchProduct = async () => {
     try {
       setLoading(true);
-      setNotFound(false);
 
       const response = await fetch(
         `/api/get-productById?productId=${productId}`
@@ -29,14 +49,14 @@ export default function ProductPage() {
         if (data?.product) {
           setProduct(data.product);
         } else {
-          setNotFound(true);
+          setProduct(dummyProduct); // fallback
         }
       } else {
-        setNotFound(true);
+        setProduct(dummyProduct);
       }
     } catch (error) {
       console.error("Error fetching product:", error);
-      setNotFound(true);
+      setProduct(dummyProduct);
     } finally {
       setLoading(false);
     }
@@ -55,30 +75,12 @@ export default function ProductPage() {
     );
   }
 
-  // ✅ Not found state
-  if (notFound || !product) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <AnnouncementBar />
-        <Header />
-        <div className="max-w-7xl mx-auto px-4 py-16 text-center">
-          <h1 className="text-2xl font-bold text-neutral-800 mb-4">
-            Product Not Found
-          </h1>
-          <p className="text-muted-foreground">
-            The product you&apos;re looking for doesn&apos;t exist.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  // ✅ Product found
+  // ✅ Always show product (real or dummy)
   return (
     <div className="min-h-screen bg-gray-50">
       <AnnouncementBar />
       <Header />
-      <ProductDetail product={product} />
+      <ProductDetail product={product!} />
     </div>
   );
 }

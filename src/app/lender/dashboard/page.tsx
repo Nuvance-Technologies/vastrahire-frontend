@@ -77,7 +77,7 @@ export default function LenderDashboard() {
   const [newProduct, setNewProduct] = useState({
     pName: "",
     pPrice: "",
-    pSize: "",
+    pSize: [] as string[],
     pDesc: "",
     pColor: "",
     subcategory: "",
@@ -243,7 +243,7 @@ export default function LenderDashboard() {
         setNewProduct({
           pName: "",
           pPrice: "",
-          pSize: "",
+          pSize: [] as string[],
           pDesc: "",
           pColor: "",
           subcategory: "",
@@ -449,9 +449,15 @@ export default function LenderDashboard() {
                   <input
                     type="text"
                     placeholder="Available Sizes (e.g., S, M, L, XL)"
-                    value={newProduct.pSize}
+                    value={newProduct.pSize.join(", ")}
                     onChange={(e) =>
-                      setNewProduct({ ...newProduct, pSize: e.target.value })
+                      setNewProduct({
+                        ...newProduct,
+                        pSize: e.target.value
+                          .split(",")       // split by comma
+                          .map((s) => s.trim()) // remove extra spaces
+                          .filter((s) => s),   // remove empty strings
+                      })
                     }
                     className="border rounded-lg p-2 col-span-2 md:col-span-1"
                   />
