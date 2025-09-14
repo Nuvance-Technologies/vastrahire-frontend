@@ -434,7 +434,7 @@ export default function LenderDashboard() {
                   </select>
                   <input
                     type="number"
-                    placeholder="Daily Rate ($)"
+                    placeholder="Daily Rate (₹)"
                     value={newProduct.pPrice}
                     onChange={(e) =>
                       setNewProduct({
@@ -469,16 +469,17 @@ export default function LenderDashboard() {
                     }
                     className="border rounded-lg p-2 w-full col-span-2"
                   />
-                  <textarea
-                    placeholder="Description"
-                    value={newProduct.pDesc}
+                  <input
+                    type="number"
+                    placeholder="Quantity Available"
+                    value={newProduct.quantity}
                     onChange={(e) =>
                       setNewProduct({
                         ...newProduct,
-                        pDesc: e.target.value,
+                        quantity: parseInt(e.target.value, 10),
                       })
                     }
-                    className="border rounded-lg p-2 col-span-2"
+                    className="border rounded-lg p-2"
                   />
                   <input
                     type="text"
@@ -555,14 +556,13 @@ export default function LenderDashboard() {
                     }
                     className="border rounded-lg p-2"
                   />
-                  <input
-                    type="number"
-                    placeholder="Quantity Available"
-                    value={newProduct.quantity}
+                  <textarea
+                    placeholder="Description"
+                    value={newProduct.pDesc}
                     onChange={(e) =>
                       setNewProduct({
                         ...newProduct,
-                        quantity: parseInt(e.target.value, 10),
+                        pDesc: e.target.value,
                       })
                     }
                     className="border rounded-lg p-2"

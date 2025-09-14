@@ -160,8 +160,34 @@ export default function EarnThroughUs() {
                         </div>
                     </div>
                 </section>
+                <section className="px-4 py-6 flex justify-center ">
+                    <div className="mx-auto max-w-6xl flex md:flex-row flex-col justify-evenly items-center py-12">
+                        {/* Left Text Section */}
+                        <div className="space-y-6 text-neutral-800 max-w-3xl px-3 py-4">
+                            <h1 className="text-4xl md:text-5xl font-semibold text-pretty text-primary">
+                                Sustain the Future through Vastrahire
+                            </h1>
+                            <p className="text-lg text-gray-700 leading-relaxed">
+                                Renting and lending reduce waste, save resources, and make life more affordable. Join us in building a circular economy where sharing creates value for everyone.
+                            </p>
+                            <p className="text-lg text-gray-700 leading-relaxed">By encouraging a culture of sharing and reuse, these practices also reduce carbon emissions from production and disposal, while making resources more accessible and affordable. Ultimately, renting and lending support a circular economy where value is maximized, and environmental impact is minimized.</p>
+                        </div>
+
+
+                        {/* Right Image Section */}
+                        <div className="flex justify-center">
+                            <Image
+                                src="/sustainable.jpg"
+                                width={560}
+                                height={200}
+                                alt="Illustration of people renting and exchanging products"
+                                className="w-96 h-auto rounded-xl border border-border shadow-sm bg-card"
+                            />
+                        </div>
+                    </div>
+                </section>
                 <section className="px-4 py-12 md:py-20">
-                    <div className="mx-auto max-w-5xl rounded-2xl p-8 md:p-12 text-center text-neutral-800 border border-border bg-card shadow-sm">
+                    <div className="mx-auto max-w-6xl rounded-2xl p-8 md:p-12 text-center text-neutral-800 border border-border bg-card shadow-sm">
                         <h3 className="text-2xl md:text-3xl font-semibold text-balance mb-4">
                             Start Earning with Just a Few Clicks!
                         </h3>

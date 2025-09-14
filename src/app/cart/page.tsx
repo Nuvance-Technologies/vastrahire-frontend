@@ -93,7 +93,7 @@ export default function CartPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="text-slate-900 font-semibold truncate">{it.name}</h3>
-                      <p className="text-slate-600 text-sm mt-0.5">${it.dailyRate}/day</p>
+                      <p className="text-slate-600 text-sm mt-0.5">₹{it.dailyRate}/day</p>
                       <div className="mt-3 flex items-center gap-3">
                         <div className="inline-flex items-center rounded-full border border-slate-200">
                           <button
@@ -122,7 +122,7 @@ export default function CartPage() {
                       </div>
                     </div>
                     <div className="hidden sm:block text-right">
-                      <p className="text-slate-900 font-semibold">${(it.qty * it.dailyRate).toFixed(2)}</p>
+                      <p className="text-slate-900 font-semibold">₹{(it.qty * it.dailyRate).toFixed(2)}</p>
                       <p className="text-slate-500 text-xs">Subtotal</p>
                     </div>
                   </div>
@@ -142,7 +142,7 @@ export default function CartPage() {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-slate-600">Total price</span>
-                  <span className="text-slate-900 font-semibold">${totals.totalPrice.toFixed(2)}</span>
+                  <span className="text-slate-900 font-semibold">₹{totals.totalPrice.toFixed(2)}</span>
                 </div>
               </div>
               <div className="pt-5">
@@ -165,7 +165,7 @@ export default function CartPage() {
             <div>
               <p className="text-xs text-slate-600">Total</p>
               <p className="text-base font-semibold text-slate-900">
-                ${totals.totalPrice.toFixed(2)}{" "}
+              ₹{totals.totalPrice.toFixed(2)}{" "}
                 <span className="text-slate-500 text-sm">({totals.totalItems} items)</span>
               </p>
             </div>

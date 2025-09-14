@@ -383,7 +383,7 @@ export function ProductDetail({ product }: { product: ProductI }) {
                 <Truck className="h-5 w-5 text-indigo-600" />
                 <div>
                   <p className="font-medium text-sm">Free Delivery</p>
-                  <p className="text-xs text-gray-500">On orders over $100</p>
+                  <p className="text-xs text-gray-500">On orders over ₹100</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -583,7 +583,7 @@ export function ProductDetail({ product }: { product: ProductI }) {
                     <p className="text-sm text-gray-500 mb-2">Brand Name</p>
                     <div className="flex items-center justify-between">
                       <span className="text-lg font-bold text-indigo-600">
-                        $30/day
+                        ₹30/day
                       </span>
                       <div className="flex items-center gap-1">
                         <span className="text-yellow-500">★</span>
