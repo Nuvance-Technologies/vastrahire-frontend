@@ -289,9 +289,6 @@ export function ProductDetail({ product }: { product: ProductI }) {
                   <span className="text-2xl font-bold flex items-baseline text-[#3d000c]">
                     <p className="text-gray-600 mr-1">Rented Price:</p> ₹{product.pPrice}
                   </span>
-                  <span className="text-sm text-gray-500">
-                    Retail Price: ₹{product.pretailPrice}
-                  </span>
                 </span>
 
                 <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full h-fit">
@@ -305,7 +302,7 @@ export function ProductDetail({ product }: { product: ProductI }) {
             <p className="text-gray-700 leading-relaxed">{product.pDesc}</p>
 
             {/* Size Chart Modal */}
-            {showSizeChart && (
+            {/* {showSizeChart && (
               <div className="p-4 bg-white border border-gray-200 rounded-lg">
                 <h4 className="font-semibold mb-3 text-gray-900">Size Chart</h4>
                 <div className="overflow-x-auto">
@@ -339,7 +336,7 @@ export function ProductDetail({ product }: { product: ProductI }) {
                   </table>
                 </div>
               </div>
-            )}
+            )} */}
 
             {/* Rental Duration - Date Range */}
             <div className="space-y-3">
@@ -409,13 +406,6 @@ export function ProductDetail({ product }: { product: ProductI }) {
                       type="number"
                     />
                   </label>
-                  {from && to && (
-                    <div className="mt-4 p-3 bg-[#3d000c43] border border-indigo-200 rounded-lg">
-                      <p className="text-lg font-bold text-neutral-800">
-                        Total price will be ₹ {calculateTotalPrice()}
-                      </p>
-                    </div>
-                  )}
                 </div>
                 <Link href="/customer/payment">
                   <button
