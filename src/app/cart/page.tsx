@@ -5,6 +5,8 @@ import { useSession } from "next-auth/react"
 import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useMemo, useState } from "react"
+import { AnnouncementBar } from "../components/Announcement-bar"
+import { Header } from "../components/Header"
 
 type CartItem = {
   _id: string;
@@ -99,6 +101,8 @@ const dec = (cartItemId: string, productId: string, currentQty: number) => {
 
   return (
     <main className="min-h-screen bg-slate-50 pb-32 md:pb-12">
+      <AnnouncementBar />
+      <Header />
       <div className="container mx-auto px-4">
         <header className="py-6">
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Your Cart</h1>
@@ -202,7 +206,7 @@ const dec = (cartItemId: string, productId: string, currentQty: number) => {
             <div>
               <p className="text-xs text-slate-600">Total</p>
               <p className="text-base font-semibold text-slate-900">
-              ₹{totals.totalPrice.toFixed(2)}{" "}
+                ₹{totals.totalPrice.toFixed(2)}{" "}
                 <span className="text-slate-500 text-sm">({totals.totalItems} items)</span>
               </p>
             </div>
