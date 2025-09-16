@@ -190,20 +190,28 @@ export function ProductDetail({ product }: { product: ProductI }) {
     }
   };
 
-  const calculateTotalPrice = () => {
-    if (!from || !to) return 0;
+  const handleAddToCart = async () => {
+    if (!session?.user) {
+      toast.error("Please sign in to proceed!");
+      return;
+    }
 
-    const start = new Date(from);
-    const end = new Date(to);
+    try {
+      const res = await axios.post("/api/cart", {
+        userId: session.user.id,
+        productId: product._id,
+        quantity: quantity || 1,
+      });
 
-    // Calculate difference in days
-    const diffTime = end.getTime() - start.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays <= 0) return 0;
-
-    return diffDays * product.pPrice * quantity;
+      if (res.status === 200) {
+        toast.success("Product added to cart successfully!");
+      }
+    } catch (error) {
+      console.error("Error adding to cart: ", error);
+      toast.error("Error adding to cart!");
+    }
   };
+
   return (
     <>
       <main
@@ -429,7 +437,7 @@ export function ProductDetail({ product }: { product: ProductI }) {
                   <Heart className="h-5 w-5" />
                   Add to Wishlist
                 </button>
-                <button className="flex-1 py-3 border border-gray-200 rounded-lg font-semibold hover:bg-gray-100 flex items-center justify-center gap-2">
+                <button onClick={handleAddToCart} className="flex-1 py-3 border border-gray-200 rounded-lg font-semibold hover:bg-gray-100 flex items-center justify-center gap-2">
                   <ShoppingCart className="h-5 w-5" />
                   Add to Cart
                 </button>

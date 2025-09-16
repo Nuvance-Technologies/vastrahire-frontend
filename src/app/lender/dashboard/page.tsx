@@ -117,26 +117,27 @@ export default function LenderDashboard() {
     setIsUploading(true);
 
     try {
-      const uploadedUrls: string[] = [];
+      const uploadedUrls = await Promise.all(
+        Array.from(files).map(async (file) => {
+          const validTypes = ["image/jpg", "image/jpeg", "image/png", "image/gif"];
+          if (!validTypes.includes(file.type)) {
+            toast.error("Invalid file type. Please upload JPG/JPEG/PNG/GIF.");
+            return null;
+          }
+          if (file.size > 5 * 1024 * 1024) {
+            toast.error("Image must be less than 5MB.");
+            return null;
+          }
+          const data = await uploadImageToCloudinary(file);
+          return data.secure_url;
+        })
+      );
 
-      for (const file of Array.from(files)) {
-        const validTypes = ["image/jpg", "image/jpeg", "image/png", "image/gif"];
-        if (!validTypes.includes(file.type)) {
-          toast.error("Invalid file type. Please upload JPG/JPEG/PNG/GIF.");
-          continue;
-        }
-        if (file.size > 5 * 1024 * 1024) {
-          toast.error("Image must be less than 5MB.");
-          continue;
-        }
-
-        const data = await uploadImageToCloudinary(file);
-        uploadedUrls.push(data.secure_url);
-      }
+      const filteredUrls = uploadedUrls.filter((url): url is string => url !== null);
 
       setNewProduct((prev) => ({
         ...prev,
-        pImages: [...uploadedUrls],
+        pImages: [...(prev.pImages || []), ...filteredUrls],
       }));
       toast.success("Images uploaded successfully!");
     } catch (err) {

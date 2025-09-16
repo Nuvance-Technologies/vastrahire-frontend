@@ -17,7 +17,7 @@ export default function NewArrivals() {
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get(`/api/product/${session?.user?.id}`);
+      const res = await axios.get(`/api/product/allProducts`);
       if (res.status === 200) {
         setSlides(res.data.products);
       }
@@ -27,10 +27,8 @@ export default function NewArrivals() {
   };
 
   useEffect(() => {
-    if (status === "authenticated" && session?.user?.id) {
-      fetchProducts();
-    }
-  }, [status, session?.user?.id]);
+    fetchProducts();
+  }, []);
 
   const prevSlide = () => {
     setCurrent((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
