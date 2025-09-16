@@ -1,6 +1,6 @@
 "use client";
 import axios from "axios";
-import { Search, User, ChevronDown, ShoppingCart, Menu, X } from "lucide-react";
+import { Search, User, ChevronDown, ShoppingCart, Menu, X, Heart } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -18,9 +18,9 @@ export function Header() {
 
   const filteredProducts: ProductI[] = searchQuery.trim()
     ? allProducts.filter(
-        (p: ProductI) =>
-          p.pName && p.pName.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+      (p: ProductI) =>
+        p.pName && p.pName.toLowerCase().includes(searchQuery.toLowerCase())
+    )
     : allProducts;
 
   useEffect(() => {
@@ -433,6 +433,11 @@ export function Header() {
                   <ShoppingCart className="text-gray-800 h-6 w-6" />
                 </button>
               </Link>
+              <Link href="/wishlist">
+                <button>
+                  <Heart className="text-gray-800 h-6 w-6" />
+                </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -470,6 +475,20 @@ export function Header() {
                 className="font-bold text-[#3d000c]"
               >
                 Unlock your earning through us
+              </Link>
+              <Link
+                href="/cart"
+                className="font-bold text-[#3d000c]"
+              >
+                Cart
+                <ShoppingCart className="inline ml-1 mb-1" />
+              </Link>
+              <Link
+                href="/wishlist"
+                className="font-bold text-[#3d000c]"
+              >
+                Wishlist
+                <Heart className="inline ml-1 mb-1" />
               </Link>
 
               {/* More Button for mobile */}
