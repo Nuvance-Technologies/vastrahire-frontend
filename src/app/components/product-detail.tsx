@@ -21,6 +21,7 @@ import { ProductI } from "../category/women/page";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export function ProductDetail({ product }: { product: ProductI }) {
   const [selectedImage, setSelectedImage] = useState(0);
@@ -45,6 +46,7 @@ export function ProductDetail({ product }: { product: ProductI }) {
   const [slides, setSlides] = useState<ProductI[]>([]);
 
   const { data: session, status } = useSession();
+  const router = useRouter();
 
   const fetchProducts = async () => {
     try {
@@ -209,6 +211,28 @@ export function ProductDetail({ product }: { product: ProductI }) {
     } catch (error) {
       console.error("Error adding to cart: ", error);
       toast.error("Error adding to cart!");
+    }
+  };
+
+  const handleAddToWishList = async () => {
+    if (!session?.user) {
+      toast.error("Please sign in to proceed!");
+      return;
+    }
+
+    try {
+      const res = await axios.post("/api/wishlist", {
+        userId: session.user.id,
+        productId: product._id,
+      });
+
+      if (res.status === 200) {
+        toast.success("Product added to wishlist successfully!");
+        router.push("/wishlist");
+      }
+    } catch (error) {
+      console.error("Error adding to wishlist: ", error);
+      toast.error("Error adding to wishlist!");
     }
   };
 
@@ -423,7 +447,7 @@ export function ProductDetail({ product }: { product: ProductI }) {
             {/* Action Buttons */}
             <div className="space-y-3">
               <div className="flex gap-3 text-gray-700">
-                <button className="flex-1 py-3 border border-gray-200 rounded-lg font-semibold hover:bg-gray-100 flex items-center justify-center gap-2">
+                <button onClick={handleAddToWishList} className="flex-1 py-3 border border-gray-200 rounded-lg font-semibold hover:bg-gray-100 flex items-center justify-center gap-2">
                   <Heart className="h-5 w-5" />
                   Add to Wishlist
                 </button>

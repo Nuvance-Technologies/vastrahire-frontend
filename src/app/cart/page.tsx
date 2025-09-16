@@ -8,7 +8,7 @@ import { useEffect, useMemo, useState } from "react"
 import { AnnouncementBar } from "../components/Announcement-bar"
 import { Header } from "../components/Header"
 
-type CartItem = {
+export type CartItem = {
   _id: string;
   productId: {
     _id: string;
