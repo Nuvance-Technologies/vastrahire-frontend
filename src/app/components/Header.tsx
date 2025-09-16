@@ -295,7 +295,7 @@ export function Header() {
               <>
                 <button
                   onClick={() => setIsOpen(!isOpen)}
-                  className="flex items-center px-3 py-2 bg-[#3d000c] text-white rounded-md hover:bg-[#87001b]"
+                  className="flex items-center px-3 py-2 font-bold bg-[#3d000c] text-white rounded-md hover:bg-[#87001b]"
                 >
                   Login / Register
                   <ChevronDown className="h-3 w-3" />
@@ -368,6 +368,12 @@ export function Header() {
                 className="text-gray-700 hover:text-[#3d000c] transition"
               >
                 Kids
+              </Link>
+              <Link
+                href="/branded"
+                className="text-[#3d000c] font-bold px-3 py-1 rounded-xl bg-[#faeed1] transition"
+              >
+                Explore branded collections
               </Link>
               <Link
                 href="/earn-through-us"
@@ -454,6 +460,12 @@ export function Header() {
                 Kids
               </Link>
               <Link
+                href="/branded"
+                className="font-bold text-[#3d000c]"
+              >
+                Explore branded collections
+              </Link>
+              <Link
                 href="/earn-through-us"
                 className="font-bold text-[#3d000c]"
               >
@@ -469,7 +481,7 @@ export function Header() {
                   More
                 </button>
                 {showDropdown && (
-                  <div className="absolute mt-2 w-32 bg-white text-[#3d000c] shadow-lg rounded">
+                  <div className="absolute mt- w-32 bg-white z-50 text-[#3d000c] shadow-lg rounded">
                     <div className="py-2 flex flex-col">
                       <Link
                         href="/policies/wear-and-care"

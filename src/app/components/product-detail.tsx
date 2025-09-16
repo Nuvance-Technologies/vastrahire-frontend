@@ -31,6 +31,7 @@ export function ProductDetail({ product }: { product: ProductI }) {
   const [swipeStartY, setSwipeStartY] = useState(0);
   const [isSwipeActive, setIsSwipeActive] = useState(false);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [showSizeChart, setShowSizeChart] = useState(false);
 
   const [activeTab, setActiveTab] = useState<"details" | "reviews" | "care">(
     "details"
@@ -189,6 +190,20 @@ export function ProductDetail({ product }: { product: ProductI }) {
     }
   };
 
+  const calculateTotalPrice = () => {
+    if (!from || !to) return 0;
+
+    const start = new Date(from);
+    const end = new Date(to);
+
+    // Calculate difference in days
+    const diffTime = end.getTime() - start.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays <= 0) return 0;
+
+    return diffDays * product.pPrice * quantity;
+  };
   return (
     <>
       <main
@@ -243,42 +258,46 @@ export function ProductDetail({ product }: { product: ProductI }) {
                 {product.pName}
               </h1>
 
-              {/* <div className="flex items-center gap-4 mb-4">
+              <div className="flex items-center gap-4 mb-4">
                 <div className="flex items-center gap-1">
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className={`h-4 w-4 ${
-                        i < Math.floor(product.rating)
-                          ? "fill-yellow-500 text-yellow-500"
-                          : "text-gray-300"
-                      }`}
+                      className={`h-4 w-4 ${i < Math.floor(product.pRating ?? 0)
+                        ? "fill-yellow-500 text-yellow-500"
+                        : "text-gray-300"
+                        }`}
                     />
                   ))}
                 </div>
                 <span className="text-sm text-gray-500 ml-1">
-                  {product.rating} ({(reviews?.length ?? 0) || product.reviews}{" "}
-                  reviews)
+                  {(product.pRating ?? 0).toFixed(1)} ({reviews.length} reviews)
                 </span>
-              </div> */}
+              </div>
 
               {/* Price */}
               <div className="flex items-center gap-4">
-                <span className="text-2xl font-bold flex text-[#3d000c]">
-                  <p className="text-gray-600">Rented Price:&nbsp;</p> ₹
-                  {product.pPrice}
+                <span className="flex flex-col">
+                  <span className="text-2xl font-bold flex items-baseline text-[#3d000c]">
+                    <p className="text-gray-600 mr-1">Rented Price:</p> ₹{product.pPrice}
+                  </span>
+                  <span className="text-sm text-gray-500">
+                    Retail Price: ₹{product.pretailPrice}
+                  </span>
                 </span>
-                <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+
+                <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full h-fit">
                   {product.availability}
                 </span>
               </div>
+
             </div>
 
             {/* Description */}
             <p className="text-gray-700 leading-relaxed">{product.pDesc}</p>
 
             {/* Size Chart Modal */}
-            {/* {showSizeChart && (
+            {showSizeChart && (
               <div className="p-4 bg-white border border-gray-200 rounded-lg">
                 <h4 className="font-semibold mb-3 text-gray-900">Size Chart</h4>
                 <div className="overflow-x-auto">
@@ -293,23 +312,26 @@ export function ProductDetail({ product }: { product: ProductI }) {
                     </thead>
                     <tbody>
                       {Object.entries(product.sizeChart).map(
-                        ([size, measurements]) => (
-                          <tr
-                            key={size}
-                            className="border-b border-gray-200 text-gray-800"
-                          >
-                            <td className="py-2 font-medium">{size}</td>
-                            <td className="py-2">{measurements.bust}</td>
-                            <td className="py-2">{measurements.waist}</td>
-                            <td className="py-2">{measurements.hips}</td>
-                          </tr>
-                        )
+                        ([size, measurements]) => {
+                          const m = measurements as { bust: string; waist: string; hips: string };
+                          return (
+                            <tr
+                              key={size}
+                              className="border-b border-gray-200 text-gray-800"
+                            >
+                              <td className="py-2 font-medium">{size}</td>
+                              <td className="py-2">{m.bust}</td>
+                              <td className="py-2">{m.waist}</td>
+                              <td className="py-2">{m.hips}</td>
+                            </tr>
+                          );
+                        }
                       )}
                     </tbody>
                   </table>
                 </div>
               </div>
-            )} */}
+            )}
 
             {/* Rental Duration - Date Range */}
             <div className="space-y-3">
@@ -321,6 +343,14 @@ export function ProductDetail({ product }: { product: ProductI }) {
                 <div className="space-y-3 mb-4">
                   <div className="flex items-center justify-between">
                     <h3 className="font-semibold text-gray-900">Select Size</h3>
+                    <button
+                      type="button"
+                      onClick={() => setShowSizeChart((prev) => !prev)}
+                      className="text-sm text-indigo-600 flex items-center gap-1"
+                    >
+                      <Ruler className="h-4 w-4" />
+                      Size Chart
+                    </button>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {product.pSize.map((size) => (
@@ -371,6 +401,13 @@ export function ProductDetail({ product }: { product: ProductI }) {
                       type="number"
                     />
                   </label>
+                  {from && to && (
+                    <div className="mt-4 p-3 bg-[#3d000c43] border border-indigo-200 rounded-lg">
+                      <p className="text-lg font-bold text-neutral-800">
+                        Total price will be ₹ {calculateTotalPrice()}
+                      </p>
+                    </div>
+                  )}
                 </div>
                 <Link href="/customer/payment">
                   <button
@@ -404,8 +441,8 @@ export function ProductDetail({ product }: { product: ProductI }) {
               <div className="flex items-center gap-3">
                 <Truck className="h-5 w-5 text-indigo-600" />
                 <div>
-                  <p className="font-medium text-sm">Free Delivery</p>
-                  <p className="text-xs text-gray-500">On orders over ₹100</p>
+                  <p className="font-medium text-sm">Free Shipping</p>
+                  <p className="text-xs text-gray-500">On orders over ₹2000</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -442,8 +479,8 @@ export function ProductDetail({ product }: { product: ProductI }) {
               <button
                 onClick={() => setActiveTab("reviews")}
                 className={`py-4 px-1 border-b-2 ${activeTab === "reviews"
-                    ? "border-gray-900 text-gray-900"
-                    : "border-transparent text-gray-500 hover:text-gray-900"
+                  ? "border-gray-900 text-gray-900"
+                  : "border-transparent text-gray-500 hover:text-gray-900"
                   }`}
               >
                 Reviews ({reviews.length})

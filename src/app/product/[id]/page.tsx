@@ -18,6 +18,7 @@ export default function ProductPage() {
     _id: "dummy123",
     pName: "Dummy Summer Dress",
     pPrice: 1499,
+    pretailPrice: 0,
     pDesc:
       "A stylish dummy product for testing. Lightweight, comfortable, and perfect for trying out product detail view.",
     pSize: ["S", "M", "L", "XL"],
@@ -33,8 +34,26 @@ export default function ProductPage() {
     ownerID: "owner_dummy",
     pLocation: "India",
     quantity: 15,
+    pRating: 4.2,
     createdAt: new Date(),
+    sizeChart: {
+      S: { bust: "32", waist: "26", hips: "36" },
+      M: { bust: "34", waist: "28", hips: "38" },
+      L: { bust: "36", waist: "30", hips: "40" },
+      XL: { bust: "38", waist: "32", hips: "42" },
+    },
   };
+  // Whenever you set product state, auto-calculate pretailPrice
+  useEffect(() => {
+    if (product?.pPrice) {
+      // Example: Retail price = rental price + 20%
+      const calculatedRetail = Math.round(product.pPrice * 1.2);
+
+      setProduct((prev) =>
+        prev ? { ...prev, pretailPrice: calculatedRetail } : prev
+      );
+    }
+  }, [product?.pPrice]);
 
   const fetchProduct = async () => {
     try {

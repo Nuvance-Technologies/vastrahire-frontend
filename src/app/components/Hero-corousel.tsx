@@ -89,9 +89,6 @@ export function HeroCarousel() {
                 <div className="text-center text-white max-w-2xl px-4">
                   <h2 className="text-5xl font-bold mb-4">{slide.title}</h2>
                   <p className="text-xl mb-8">{slide.subtitle}</p>
-                  <button className="bg-[#3b000c] hover:bg-[#680015] px-3 py-2 rounded-xl">
-                    {slide.cta}
-                  </button>
                 </div>
               </div>
             </div>

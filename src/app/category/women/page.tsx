@@ -7,7 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { BecomeLender } from "@/app/components/Become-lender";
+// import { BecomeLender } from "@/app/components/Become-lender";
 import { fetchSubCategories } from "@/util/get-subCategories";
 import axios from "axios";
 import { getProducts } from "@/util/get-product";
@@ -147,8 +147,17 @@ export interface ProductI {
   availability: string;
   ownerID: string;
   pLocation: string;
+  pretailPrice: number;
   quantity: number;
   createdAt?: Date;
+  pRating?: number;
+  sizeChart: {
+    [size: string]: {
+      bust: string;
+      waist: string;
+      hips: string;
+    };
+  };
 }
 
 export default function ClothingPage() {
@@ -230,8 +239,6 @@ export default function ClothingPage() {
           ))}
         </div>
       </div>
-
-      <BecomeLender />
 
       <main className="max-w-7xl mx-auto px-4 py-8">
         {/* ✅ Dynamic Heading */}
