@@ -32,6 +32,9 @@ export function ProductDetail({ product }: { product: ProductI }) {
   const [isSwipeActive, setIsSwipeActive] = useState(false);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [showSizeChart, setShowSizeChart] = useState(false);
+  const [singleDay, setSingleDay] = useState(false);
+  const [singleDate, setSingleDate] = useState("");
+  const [deliveryTime, setDeliveryTime] = useState("");
 
   const [activeTab, setActiveTab] = useState<"details" | "reviews" | "care">(
     "details"
@@ -168,27 +171,47 @@ export function ProductDetail({ product }: { product: ProductI }) {
   };
 
   const handleRent = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     if (!session?.user) {
       toast.error("Please sign in to proceed!");
       return;
     }
-    e.preventDefault();
+
+    if (!selectedSize) {
+      toast.error("Please select a size!");
+      return;
+    }
+
+    if (singleDay && !singleDate) {
+      toast.error("Please select the date!");
+      return;
+    }
+
+    if (singleDay && !deliveryTime) {
+      toast.error("Please select delivery time!");
+      return;
+    }
+
     try {
       const res = await axios.post("/api/rent-item", {
-        quantity,
-        from,
-        to,
-        userId: session?.user?.id,
+        userId: session.user.id,
         productId: product._id,
+        quantity,
+        size: selectedSize,
+        rental: singleDay
+          ? { date: singleDate, time: deliveryTime, type: "single" }
+          : { from, to, type: "range" },
       });
+
       if (res.status === 200) {
         toast.success("Product rented successfully!");
       }
     } catch (error) {
-      console.error("Error renting the item: ", error);
+      console.error(error);
       toast.error("Error renting item!");
     }
   };
+
 
   const handleAddToCart = async () => {
     if (!session?.user) {
@@ -212,6 +235,28 @@ export function ProductDetail({ product }: { product: ProductI }) {
     }
   };
 
+  // Calculate total price based on rental duration and quantity
+  function calculateTotalPrice() {
+    if (singleDay) {
+      return (product.pPrice || 0) * (quantity || 1);
+    }
+    if (!from || !to) return 0;
+    const fromDate = new Date(from);
+    const toDate = new Date(to);
+    const diffTime = toDate.getTime() - fromDate.getTime();
+    const diffDays = Math.max(Math.ceil(diffTime / (1000 * 60 * 60 * 24)), 1);
+    return diffDays * (product.pPrice || 0) * (quantity || 1);
+  }
+
+
+
+  // Define default size chart
+  const defaultSizeChart: Record<string, { bust: string; waist: string; hips: string }> = {
+    S: { bust: "34\"", waist: "26\"", hips: "36\"" },
+    M: { bust: "36\"", waist: "28\"", hips: "38\"" },
+    L: { bust: "38\"", waist: "30\"", hips: "40\"" },
+    XL: { bust: "40\"", waist: "32\"", hips: "42\"" },
+  };
   return (
     <>
       <main
@@ -319,22 +364,14 @@ export function ProductDetail({ product }: { product: ProductI }) {
                       </tr>
                     </thead>
                     <tbody>
-                      {Object.entries(product.sizeChart).map(
-                        ([size, measurements]) => {
-                          const m = measurements as { bust: string; waist: string; hips: string };
-                          return (
-                            <tr
-                              key={size}
-                              className="border-b border-gray-200 text-gray-800"
-                            >
-                              <td className="py-2 font-medium">{size}</td>
-                              <td className="py-2">{m.bust}</td>
-                              <td className="py-2">{m.waist}</td>
-                              <td className="py-2">{m.hips}</td>
-                            </tr>
-                          );
-                        }
-                      )}
+                      {Object.entries(defaultSizeChart).map(([size, m]) => (
+                        <tr key={size} className="border-b border-gray-200 text-gray-800">
+                          <td className="py-2 font-medium">{size}</td>
+                          <td className="py-2">{m.bust}</td>
+                          <td className="py-2">{m.waist}</td>
+                          <td className="py-2">{m.hips}</td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
@@ -380,26 +417,63 @@ export function ProductDetail({ product }: { product: ProductI }) {
                 {/* From Date */}
                 <div>
                   <h3 className="font-semibold text-gray-900 py-2">Rental Duration</h3>
-                  <label className="flex flex-col text-sm font-medium text-gray-700 mb-4">
-                    From
-                    <input
-                      type="date"
-                      value={from}
-                      onChange={(e) => setFrom(e.target.value)}
-                      className="mt-1 px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                    />
-                  </label>
+                  <div className="space-y-3 mb-4">
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={singleDay}
+                        onChange={(e) => setSingleDay(e.target.checked)}
+                        className="h-4 w-4"
+                      />
+                      Rent for only one day
+                    </label>
 
-                  {/* To Date */}
-                  <label className="flex flex-col text-sm font-medium text-gray-700">
-                    To
-                    <input
-                      type="date"
-                      value={to}
-                      onChange={(e) => setTo(e.target.value)}
-                      className="mt-1 px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                    />
-                  </label>
+                    {singleDay ? (
+                      <div className="flex flex-col gap-2">
+                        <label className="flex flex-col text-sm font-medium text-gray-700">
+                          Select Date
+                          <input
+                            type="date"
+                            value={singleDate}
+                            onChange={(e) => setSingleDate(e.target.value)}
+                            className="mt-1 px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                          />
+                        </label>
+
+                        <label className="flex flex-col text-sm font-medium text-gray-700">
+                          Delivery Time
+                          <input
+                            type="time"
+                            value={deliveryTime}
+                            onChange={(e) => setDeliveryTime(e.target.value)}
+                            className="mt-1 px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                          />
+                        </label>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col gap-2">
+                        <label className="flex flex-col text-sm font-medium text-gray-700">
+                          From
+                          <input
+                            type="date"
+                            value={from}
+                            onChange={(e) => setFrom(e.target.value)}
+                            className="mt-1 px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                          />
+                        </label>
+
+                        <label className="flex flex-col text-sm font-medium text-gray-700">
+                          To
+                          <input
+                            type="date"
+                            value={to}
+                            onChange={(e) => setTo(e.target.value)}
+                            className="mt-1 px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                          />
+                        </label>
+                      </div>
+                    )}
+                  </div>
                   <label className="flex flex-col text-sm font-medium text-gray-700 mt-4">
                     Quantity
                     <input
@@ -409,18 +483,21 @@ export function ProductDetail({ product }: { product: ProductI }) {
                       type="number"
                     />
                   </label>
-                  {from && to && (
+                  {(singleDay || (from && to)) && (
                     <div className="mt-4 p-3 bg-[#3d000c43] border border-indigo-200 rounded-lg">
                       <p className="text-lg font-bold text-neutral-800">
                         Total price will be ₹ {calculateTotalPrice()}
                       </p>
                     </div>
                   )}
+
                 </div>
                 <Link href="/customer/payment">
                   <button
                     type="submit"
-                    disabled={!selectedSize || !from || !to}
+                    disabled={
+                      !selectedSize || (singleDay ? !singleDate || !deliveryTime : !from || !to)
+                    }
                     className="w-full my-4 py-3 bg-[#3d000c] text-white rounded-lg font-semibold hover:bg-[#85021c] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     <ShoppingBag className="h-5 w-5" />
