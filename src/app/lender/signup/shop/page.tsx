@@ -27,6 +27,7 @@ export default function BusinessLenderSignupPage() {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   const router = useRouter();
 
@@ -251,6 +252,28 @@ export default function BusinessLenderSignupPage() {
                 {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
+            {/* Terms */}
+                        <div className="flex items-start space-x-2 py-5">
+                          <input
+                            type="checkbox"
+                            id="terms"
+                            value={termsAccepted ? "accepted" : ""}
+                            onChange={(e) => setTermsAccepted(e.target.checked)}
+                            className="rounded border-gray-300 w-4 h-4 mt-1"
+                          />
+                          <label
+                            htmlFor="terms"
+                            className="text-sm leading-relaxed text-gray-600"
+                          >
+                            I agree to the{" "}
+                            <Link
+                              href="/terms"
+                              className="text-[#3d000c] hover:text-[#9f0020] font-medium"
+                            >
+                              Terms & conditions
+                            </Link>
+                          </label>
+                        </div>
             <button className="w-full h-12 bg-gradient-to-r from-[#3d000c] to-[#720017] text-white font-semibold rounded-md shadow-lg">
               Sign Up as Business
             </button>
