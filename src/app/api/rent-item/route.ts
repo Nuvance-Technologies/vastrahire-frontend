@@ -4,6 +4,7 @@ import Product from "@/lib/models/product.model";
 import UserRentalItem from "@/lib/models/userRental.model";
 import LenderItem from "@/lib/models/lenderItem.model";
 import User from "@/lib/models/user.model";
+import mongoose from "mongoose";
 
 // Helper function to calculate days between dates
 function calculateRentalDays(from: Date, to: Date): number {
@@ -89,8 +90,8 @@ export async function POST(request: NextRequest) {
 
     // create a new user rental record
     const userRental = await UserRentalItem.create({
-      userID: userId,
-      productID: productId,
+      userID: new mongoose.Types.ObjectId(userId),
+      productID: new mongoose.Types.ObjectId(productId),
       totalRentals: quantity,
       totalSpent: totalCost,
       rentalPeriod: {

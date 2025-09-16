@@ -187,6 +187,28 @@ export function ProductDetail({ product }: { product: ProductI }) {
     }
   };
 
+  const handleAddToCart = async () => {
+    if (!session?.user) {
+      toast.error("Please sign in to proceed!");
+      return;
+    }
+
+    try {
+      const res = await axios.post("/api/cart", {
+        userId: session.user.id,
+        productId: product._id,
+        quantity: quantity || 1,
+      });
+
+      if (res.status === 200) {
+        toast.success("Product added to cart successfully!");
+      }
+    } catch (error) {
+      console.error("Error adding to cart: ", error);
+      toast.error("Error adding to cart!");
+    }
+  };
+
   return (
     <>
       <main
@@ -388,7 +410,7 @@ export function ProductDetail({ product }: { product: ProductI }) {
                   <Heart className="h-5 w-5" />
                   Add to Wishlist
                 </button>
-                <button className="flex-1 py-3 border border-gray-200 rounded-lg font-semibold hover:bg-gray-100 flex items-center justify-center gap-2">
+                <button onClick={handleAddToCart} className="flex-1 py-3 border border-gray-200 rounded-lg font-semibold hover:bg-gray-100 flex items-center justify-center gap-2">
                   <ShoppingCart className="h-5 w-5" />
                   Add to Cart
                 </button>
