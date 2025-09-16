@@ -198,7 +198,7 @@ export function ProductDetail({ product }: { product: ProductI }) {
         {/* Tip Banner */}
         <div className="mb-4 md:hidden p-3 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-lg border border-gray-200">
           <p className="text-sm text-gray-700 text-center">
-            💡 <strong>Tip:</strong> Swipe right on the product if you&apos;re
+            💡 <strong>Tip:</strong> Swipe left on the product if you&apos;re
             not satisfied to give us feedback
           </p>
         </div>
