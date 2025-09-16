@@ -7,7 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { BecomeLender } from "@/app/components/Become-lender";
+// import { BecomeLender } from "@/app/components/Become-lender";
 import { fetchSubCategories } from "@/util/get-subCategories";
 import { ProductI, SubCatI } from "../women/page";
 import { getProducts } from "@/util/get-product";
@@ -147,7 +147,6 @@ export default function ClothingPage() {
           ))}
         </div>
       </div>
-      <BecomeLender />
       <main className="max-w-7xl mx-auto px-4 py-8">
         {/* ✅ Dynamic Heading */}
         <h1 className="text-xl mb-6 font-bold text-gray-800">

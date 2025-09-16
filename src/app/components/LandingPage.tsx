@@ -18,11 +18,11 @@ export default function HomePage() {
       <MovingAnnouncement />
       <main>
         <HeroCarousel />
-        <HowItWorks />
         <NewArrivals />
-        <BecomeLender />
         <ShopsGrid />
         <IndividualRenters />
+        <HowItWorks />
+        <BecomeLender />
       </main>
     </div>
   );

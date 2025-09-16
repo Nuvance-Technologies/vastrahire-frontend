@@ -32,14 +32,6 @@ export function BecomeLender() {
                                 Insurance coverage included
                             </li>
                         </ul>
-                        <div className="flex flex-col sm:flex-row gap-4">
-                            <button className="px-6 py-3 rounded-lg bg-[#3b000c] text-white font-medium hover:bg-[#680015] transition">
-                                Start Lending Today
-                            </button>
-                            <button className="px-6 py-3 rounded-lg bg-[#3b000c] text-white font-medium hover:bg-[#680015] transition">
-                                Advantages of becoming lender
-                            </button>
-                        </div>
                     </div>
 
 

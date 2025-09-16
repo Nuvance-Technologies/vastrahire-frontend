@@ -14,6 +14,7 @@ import {
   Crown,
   Gem,
   InfoIcon,
+  IndianRupee,
 } from "lucide-react";
 import { DashboardHeader } from "@/app/components/Dashboard-header";
 import { DashboardNav } from "@/app/components/Dashboard-nav";
@@ -77,7 +78,7 @@ export default function LenderDashboard() {
   const [newProduct, setNewProduct] = useState({
     pName: "",
     pPrice: "",
-    pSize: "",
+    pSize: [] as string[],
     pDesc: "",
     pColor: "",
     subcategory: "",
@@ -244,7 +245,7 @@ export default function LenderDashboard() {
         setNewProduct({
           pName: "",
           pPrice: "",
-          pSize: "",
+          pSize: [] as string[],
           pDesc: "",
           pColor: "",
           subcategory: "",
@@ -317,7 +318,7 @@ export default function LenderDashboard() {
     {
       label: "Total Earnings",
       value: `₹${totalEarnings}`,
-      icon: DollarSign,
+      icon: IndianRupee,
       color: "text-purple-600",
     },
   ];
@@ -450,10 +451,16 @@ export default function LenderDashboard() {
                   <input
                     type="text"
                     placeholder="Available Sizes (e.g., S, M, L, XL)"
-                    value={newProduct.pSize}
-                    onChange={(e) =>
-                      setNewProduct({ ...newProduct, pSize: e.target.value })
-                    }
+                    value={newProduct.pSize.join(", ")} // show sizes comma-separated
+                    onChange={(e) => {
+                      setNewProduct({
+                        ...newProduct,
+                        pSize: e.target.value
+                          .split(/[\s,]+/)        // split by spaces or commas
+                          .map((s) => s.trim())   // trim whitespace
+                          .filter((s) => s),      // remove empty values
+                      });
+                    }}
                     className="border rounded-lg p-2 col-span-2 md:col-span-1"
                   />
 
