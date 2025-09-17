@@ -5,20 +5,6 @@ import { useState } from "react";
 
 export default function PaymentPage() {
     const [isConfirmed, setIsConfirmed] = useState(false);
-    const [upiId, setUpiId] = useState("");
-    const [contact, setContact] = useState("");
-
-    const handleConfirm = () => {
-        if (!upiId.match(/^[\w.-]+@[\w]+$/)) {
-            alert("Please enter a valid UPI ID (e.g., example@upi)");
-            return;
-        }
-        if (!/^\d{10}$/.test(contact)) {
-            alert("Please enter a valid 10-digit contact number");
-            return;
-        }
-        setIsConfirmed(true);
-    };
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6">
@@ -39,37 +25,8 @@ export default function PaymentPage() {
                     />
                 </div>
 
-                {!isConfirmed ? (
-                    <>
-                        {/* UPI ID */}
-                        <div className="mb-4 text-left">
-                            <label className="block text-sm font-medium text-gray-700">
-                                UPI ID
-                            </label>
-                          <p>
-                            abhinavpandey5716@okicici
-                          </p>
-                        </div>
-
-                        {/* Contact Number */}
-                        <div className="mb-6 text-left">
-                            <label className="block text-sm font-medium text-gray-700">
-                                Contact Number
-                            </label>
-                            <p>
-                                +91 77238 81896
-                            </p>
-                        </div>
-
-                        {/* Confirm Button */}
-                        <button
-                            onClick={handleConfirm}
-                            className="w-full bg-[#3d000c] text-white py-2 px-4 rounded-xl shadow hover:bg-[#5a0014] transition cursor-pointer"
-                        >
-                            I Have Made the Payment
-                        </button>
-                    </>
-                ) : (
+                {/* Conditional rendering */}
+                {isConfirmed ? (
                     <>
                         <div className="mt-4 bg-yellow-50 border border-yellow-200 text-yellow-800 p-4 rounded-xl">
                             <h2 className="text-lg font-medium">Payment Under Verification</h2>
@@ -85,6 +42,32 @@ export default function PaymentPage() {
                         >
                             Go to Dashboard
                         </Link>
+                    </>
+                ) : (
+                    <>
+                        {/* UPI ID */}
+                        <div className="mb-4 text-left">
+                            <label className="block text-sm font-medium text-gray-700">
+                                UPI ID
+                            </label>
+                            <p>abhinavpandey5716@okicici</p>
+                        </div>
+
+                        {/* Contact Number */}
+                        <div className="mb-6 text-left">
+                            <label className="block text-sm font-medium text-gray-700">
+                                Contact Number
+                            </label>
+                            <p>+91 77238 81896</p>
+                        </div>
+
+                        {/* Confirm Button */}
+                        <button
+                            onClick={() => setIsConfirmed(true)}
+                            className="w-full bg-[#3d000c] text-white py-2 px-4 rounded-xl shadow hover:bg-[#5a0014] transition cursor-pointer"
+                        >
+                            I Have Made the Payment
+                        </button>
                     </>
                 )}
             </div>

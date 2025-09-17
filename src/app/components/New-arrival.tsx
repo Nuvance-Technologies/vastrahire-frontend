@@ -53,14 +53,15 @@ export default function NewArrivals() {
           >
             {slides.map((slide) => (
               <div key={slide._id} className="w-full flex-shrink-0 relative">
-                <Image
-                  src={slide.pImages[0] || "/placeholder.png"}
-                  alt="New Arrival"
-                  width={1000}
-                  height={500}
-                  className="w-full h-[400px] object-contain"
-                />
-
+                <Link href={`/product/${slide._id}`}>
+                  <Image
+                    src={slide.pImages[0] || "/placeholder.png"}
+                    alt="New Arrival"
+                    width={1000}
+                    height={500}
+                    className="w-full h-[400px] object-contain"
+                  />
+                </Link>
                 {/* Center Button */}
                 {/* <div className="absolute inset-0 flex items-center justify-center">
                   <Link href={slide.link}>
@@ -96,9 +97,8 @@ export default function NewArrivals() {
             <button
               key={index}
               onClick={() => setCurrent(index)}
-              className={`w-3 h-3 rounded-full ${
-                current === index ? "bg-[#3d000c]" : "bg-gray-400"
-              }`}
+              className={`w-3 h-3 rounded-full ${current === index ? "bg-[#3d000c]" : "bg-gray-400"
+                }`}
             />
           ))}
         </div>
