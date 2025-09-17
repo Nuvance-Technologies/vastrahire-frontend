@@ -438,61 +438,27 @@ export function ProductDetail({ product }: { product: ProductI }) {
                 <div>
                   <h3 className="font-semibold text-gray-900 py-2">Rental Duration</h3>
                   <div className="space-y-3 mb-4">
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={singleDay}
-                        onChange={(e) => setSingleDay(e.target.checked)}
-                        className="h-4 w-4"
-                      />
-                      Rent for only one day
-                    </label>
+                    <div className="flex flex-col gap-2">
+                      <label className="flex flex-col text-sm font-medium text-gray-700">
+                        From
+                        <input
+                          type="date"
+                          value={from}
+                          onChange={(e) => setFrom(e.target.value)}
+                          className="mt-1 px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                        />
+                      </label>
 
-                    {singleDay ? (
-                      <div className="flex flex-col gap-2">
-                        <label className="flex flex-col text-sm font-medium text-gray-700">
-                          Select Date
-                          <input
-                            type="date"
-                            value={singleDate}
-                            onChange={(e) => setSingleDate(e.target.value)}
-                            className="mt-1 px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                          />
-                        </label>
-
-                        <label className="flex flex-col text-sm font-medium text-gray-700">
-                          Delivery Time
-                          <input
-                            type="time"
-                            value={deliveryTime}
-                            onChange={(e) => setDeliveryTime(e.target.value)}
-                            className="mt-1 px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                          />
-                        </label>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col gap-2">
-                        <label className="flex flex-col text-sm font-medium text-gray-700">
-                          From
-                          <input
-                            type="date"
-                            value={from}
-                            onChange={(e) => setFrom(e.target.value)}
-                            className="mt-1 px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                          />
-                        </label>
-
-                        <label className="flex flex-col text-sm font-medium text-gray-700">
-                          To
-                          <input
-                            type="date"
-                            value={to}
-                            onChange={(e) => setTo(e.target.value)}
-                            className="mt-1 px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                          />
-                        </label>
-                      </div>
-                    )}
+                      <label className="flex flex-col text-sm font-medium text-gray-700">
+                        To
+                        <input
+                          type="date"
+                          value={to}
+                          onChange={(e) => setTo(e.target.value)}
+                          className="mt-1 px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                        />
+                      </label>
+                    </div>
                   </div>
                   <label className="flex flex-col text-sm font-medium text-gray-700 mt-4">
                     Quantity
