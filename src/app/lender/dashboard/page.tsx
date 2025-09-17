@@ -78,7 +78,7 @@ export default function LenderDashboard() {
   const [newProduct, setNewProduct] = useState({
     pName: "",
     pPrice: "",
-    pSize: "",
+    pSize: [] as string[],
     pDesc: "",
     pColor: "",
     subcategory: "",
@@ -245,7 +245,7 @@ export default function LenderDashboard() {
         setNewProduct({
           pName: "",
           pPrice: "",
-          pSize: "",
+          pSize: [] as string[],
           pDesc: "",
           pColor: "",
           subcategory: "",
@@ -325,6 +325,13 @@ export default function LenderDashboard() {
 
   const tier = getLenderTier();
   const tierStyle = TIER_STYLES[tier];
+  // Predefined sizes for categories
+  const SIZE_OPTIONS: Record<string, string[]> = {
+    Cloth: ["XS", "S", "M", "L", "XL", "XXL"],
+    Footwear: ["6", "7", "8", "9", "10", "11"],
+    Watch: ["One Size"],
+  };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
@@ -451,16 +458,14 @@ export default function LenderDashboard() {
                   <input
                     type="text"
                     placeholder="Available Sizes (e.g., S, M, L, XL)"
-                    value={newProduct.pSize} // show sizes comma-separated
-                    onChange={(e) => {
+                    className="border rounded-lg p-2 col-span-2 md:col-span-1"
+                    onChange={(e) =>
                       setNewProduct({
                         ...newProduct,
-                        pSize: e.target.value
-                      });
-                    }}
-                    className="border rounded-lg p-2 col-span-2 md:col-span-1"
+                        pSize: e.target.value.split(",").map(s => s.trim()).filter(Boolean),
+                      })
+                    }
                   />
-
                   {/* Pickup Location */}
                   <input
                     type="text"
