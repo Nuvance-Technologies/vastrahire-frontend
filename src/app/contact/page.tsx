@@ -224,7 +224,7 @@ export default function ContactPage() {
             Prefer email? We’ll keep the thread for your records.
           </p>
           <Link
-            href="mailto:support@rentstyle.example"
+            href="mailto:vastrahire@gmail.com"
             className="inline-flex items-center gap-2 rounded-md bg-[#3d000c] px-4 py-2 text-sm text-white hover:bg-[#690216] transition"
           >
             <Mail className="h-4 w-4" />
