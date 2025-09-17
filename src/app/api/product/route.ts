@@ -28,6 +28,8 @@ export async function POST(req: Request) {
       pImages,
     } = body;
 
+    console.log(pSize)
+
     const sizes = pSize ? pSize.split(",").map((s: string) => s.trim()) : [];
 
     if (!pName || !pPrice || !sizes.length || !category || !ownerID) {

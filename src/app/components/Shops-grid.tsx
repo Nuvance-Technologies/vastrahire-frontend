@@ -99,7 +99,7 @@ export function ShopsGrid() {
         {/* Shops Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProducts.map((product, idx) => (
-            <Link href={`/product/${product._id}`}>
+            <Link key={idx} href={`/product/${product._id}`}>
               <div
                 key={product._id ?? product._id ?? idx}
                 className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-gray-200"
