@@ -40,7 +40,6 @@ function LenderProfilePage() {
     const fetchProducts = async () => {
       try {
         const response = await axios.get(`/api/product/${ownerId}`);
-        // ✅ Adjust based on your API response
         setProducts(response.data.products ?? response.data);
       } catch (error) {
         console.error("Error fetching products:", error);

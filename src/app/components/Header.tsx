@@ -12,9 +12,6 @@ export function Header() {
   const [allProducts, setAllProducts] = useState<ProductI[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  useEffect(() => {
-    console.log("All products:", allProducts);
-  }, [allProducts]);
 
   const filteredProducts: ProductI[] = searchQuery.trim()
     ? allProducts.filter(
@@ -22,10 +19,6 @@ export function Header() {
         p.pName && p.pName.toLowerCase().includes(searchQuery.toLowerCase())
     )
     : allProducts;
-
-  useEffect(() => {
-    console.log("Filtered products:", filteredProducts);
-  }, [filteredProducts]);
 
   useEffect(() => {
     const fetchAllProducts = async () => {

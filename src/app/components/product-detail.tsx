@@ -200,9 +200,8 @@ export function ProductDetail({ product }: { product: ProductI }) {
         productId: product._id,
         quantity,
         size: selectedSize,
-        rental: singleDay
-          ? { date: singleDate, time: deliveryTime, type: "single" }
-          : { from, to, type: "range" },
+        from,
+        to,
       });
 
       if (res.status === 200) {
@@ -406,27 +405,12 @@ export function ProductDetail({ product }: { product: ProductI }) {
               >
                 {/* Size Selection */}
                 <div className="space-y-3 mb-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-semibold text-gray-900">Select Size</h3>
-                    <button
-                      type="button"
-                      onClick={() => setShowSizeChart((prev) => !prev)}
-                      className="text-sm text-indigo-600 flex items-center gap-1"
-                    >
-                      <Ruler className="h-4 w-4" />
-                      Size Chart
-                    </button>
-                  </div>
                   <div className="flex flex-wrap gap-2">
                     {product.pSize.map((size) => (
                       <button
                         key={size}
                         type="button"
-                        onClick={() => setSelectedSize(size)}
-                        className={`px-4 py-2 border rounded-lg font-medium transition ${selectedSize === size
-                          ? "border-indigo-600 bg-indigo-100 text-indigo-600"
-                          : "border-gray-300 text-gray-700 hover:border-indigo-400"
-                          }`}
+                        className= "px-3 py-2 border rounded-lg font-medium text-sm hover:bg-gray-100 transition"
                       >
                         {size}
                       </button>
@@ -469,13 +453,21 @@ export function ProductDetail({ product }: { product: ProductI }) {
                       type="number"
                     />
                   </label>
-                  {(singleDay || (from && to)) && (
-                    <div className="mt-4 p-3 bg-[#3d000c43] border border-indigo-200 rounded-lg">
-                      <p className="text-lg font-bold text-neutral-800">
-                        Total price will be ₹ {calculateTotalPrice()}
-                      </p>
-                    </div>
-                  )}
+                  <label className="flex flex-col text-sm font-medium text-gray-700 mt-4">
+                    Select Size from the available sizes
+                    <select
+                      value={selectedSize || ""}
+                      onChange={(e) => setSelectedSize(e.target.value)}
+                      className="mt-1 px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    >
+                      <option value="">Select a size</option>
+                      {product.pSize.map((size) => (
+                        <option key={size} value={size}>
+                          {size}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
 
                 </div>
                 <Link href="/customer/payment">

@@ -9,6 +9,7 @@ import { ShopsGrid } from "./Shops-grid";
 import MovingAnnouncement from "./Moving-announcement";
 import NewArrivals from "./New-arrival";
 import { IndividualRenters } from "./Individual-renters";
+import { ShopRenters } from "./ShopRenters";
 
 export default function HomePage() {
   return (
@@ -21,6 +22,7 @@ export default function HomePage() {
         <NewArrivals />
         <ShopsGrid />
         <IndividualRenters />
+        <ShopRenters />
         <HowItWorks />
         <BecomeLender />
       </main>

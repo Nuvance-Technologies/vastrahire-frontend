@@ -68,7 +68,7 @@ export default function ProductPage() {
         if (data?.product) {
           setProduct(data.product);
         } else {
-          setProduct(dummyProduct); // fallback
+          setProduct(dummyProduct);
         }
       } else {
         setProduct(dummyProduct);

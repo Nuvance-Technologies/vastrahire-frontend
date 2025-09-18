@@ -30,9 +30,7 @@ export async function POST(req: Request) {
 
     console.log(pSize)
 
-    const sizes = pSize ? pSize.split(",").map((s: string) => s.trim()) : [];
-
-    if (!pName || !pPrice || !sizes.length || !category || !ownerID) {
+    if (!pName || !pPrice || !category || !ownerID) {
       return NextResponse.json(
         { message: "Please provide all required fields" },
         { status: 400 }

@@ -18,6 +18,8 @@ const userRentalItemSchema = new mongoose.Schema(
       from: { type: Date, required: true },
       to: { type: Date, required: true },
     },
+    size: { type: String },
+    quantity: { type: Number, default: 1 },
   },
   { timestamps: true }
 );

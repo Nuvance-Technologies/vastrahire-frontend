@@ -19,16 +19,17 @@ export interface UserI {
   address: string;
 }
 
-export function IndividualRenters() {
+export function ShopRenters() {
   const [renters, setRenters] = useState<UserI[]>([]);
 
   const fetchRenters = async () => {
     try {
-      const response = await axios.get(`/api/users?role=individual`);
+      const response = await axios.get(`/api/users?role=business`);
       if (response.status !== 200) {
         throw new Error("Failed to fetch renters");
       }
       const data = response.data;
+      console.log(data);
       setRenters(data);
     } catch (error) {
       console.error("Error fetching renters:", error);
@@ -44,7 +45,7 @@ export function IndividualRenters() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Lend from Individual&apos;s Closet
+            Lend from Shop&apos;s Closet
           </h2>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
             Discover amazing items from our community of trusted fashion
