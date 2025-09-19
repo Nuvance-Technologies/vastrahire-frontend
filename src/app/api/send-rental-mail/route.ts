@@ -1,0 +1,83 @@
+import { NextResponse } from "next/server";
+import nodemailer from "nodemailer";
+import User from "@/lib/models/user.model";
+import Product from "@/lib/models/product.model";
+import UserRental from "@/lib/models/userRental.model";
+
+// Helper functions for DB queries (Mongoose example)
+async function fetchUserById(userId: string) {
+  return await User.findById(userId).lean();
+}
+
+async function fetchLatestRentalForUser(userId: string) {
+  // Assumes UserRental has a createdAt field
+  return await UserRental.findOne({ userId }).sort({ createdAt: -1 }).lean();
+}
+
+async function fetchProductById(productId: string) {
+  return await Product.findById(productId).lean();
+}
+
+export async function POST(req: Request) {
+
+  // Get userId from request body
+  const { userId } = await req.json();
+
+  // Fetch user info
+  const user = await fetchUserById(userId);
+  if (!user || Array.isArray(user) || !user.email) {
+    return NextResponse.json({ success: false, error: "User not found or missing email" }, { status: 404 });
+  }
+
+  // Fetch latest rental for user
+  const rental = await fetchLatestRentalForUser(userId);
+  console.log("Fetched rental:", rental);
+  if (!rental || Array.isArray(rental) || !rental.productId) {
+    return NextResponse.json({ success: false, error: "Rental not found or missing productId" }, { status: 404 });
+  }
+
+  // Fetch product info
+  const product = await fetchProductById(rental.productId);
+  console.log("Fetched product:", product);
+  if (!product || Array.isArray(product) || !product.pName) {
+    return NextResponse.json({ success: false, error: "Product not found or missing name" }, { status: 404 });
+  }
+
+  // Setup nodemailer transporter (use your SMTP credentials)
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+
+  // Email content
+  const mailOptions = {
+    from: process.env.SMTP_USER,
+    to: user.email,
+    subject: "Your Rental Request Has Been Received!",
+    html: `
+      <h2>Dear ${user.name},</h2>
+      <p>We have received your rental request and are processing your payment.</p>
+      <h3>Product Details:</h3>
+      <ul>
+        <li><strong>Name:</strong> ${product.pName}</li>
+        <li><strong>Description:</strong> ${product.pDesc}</li>
+        <li><strong>Price:</strong> ₹${product.pPrice}</li>
+        <li><strong>Options:</strong> Size: ${rental.size}, Quantity: ${rental.quantity}, Dates: ${rental.from} to ${rental.to}</li>
+      </ul>
+      <p>We will contact you shortly with further details.</p>
+      <p>If you have any questions, reply to this email.</p>
+      <br />
+      <p>Thank you for choosing Vastrahire!</p>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json({ success: false, error: (error instanceof Error ? error.message : "An unknown error occurred") }, { status: 500 });
+  }
+}

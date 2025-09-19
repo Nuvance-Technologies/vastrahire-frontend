@@ -5,7 +5,41 @@ import { useState } from "react";
 
 export default function PaymentPage() {
     const [isConfirmed, setIsConfirmed] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
+    // Test data for email
+    const testEmailData = {
+        email: "testuser@example.com",
+        name: "Test User",
+        product: {
+            name: "Elegant Dress",
+            description: "A beautiful evening dress for special occasions.",
+            price: "₹2,000",
+        },
+        options: "Size: M, Color: Red, Rental Dates: 2025-09-20 to 2025-09-22"
+    };
+
+    const handleConfirm = async () => {
+        setLoading(true);
+        setError("");
+        try {
+            const res = await fetch("/api/send-rental-mail", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(testEmailData)
+            });
+            const result = await res.json();
+            if (result.success) {
+                setIsConfirmed(true);
+            } else {
+                setError("Failed to send confirmation email.");
+            }
+        } catch (err) {
+            setError("Error sending email.");
+        }
+        setLoading(false);
+    };
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6">
             <div className="bg-white shadow-lg rounded-2xl p-6 max-w-md w-full text-center">
@@ -62,11 +96,15 @@ export default function PaymentPage() {
                         </div>
 
                         {/* Confirm Button */}
+                        {error && (
+                            <div className="mb-4 text-red-600 text-sm">{error}</div>
+                        )}
                         <button
-                            onClick={() => setIsConfirmed(true)}
+                            onClick={handleConfirm}
                             className="w-full bg-[#3d000c] text-white py-2 px-4 rounded-xl shadow hover:bg-[#5a0014] transition cursor-pointer"
+                            disabled={loading}
                         >
-                            I Have Made the Payment
+                            {loading ? "Sending Confirmation..." : "I Have Made the Payment"}
                         </button>
                     </>
                 )}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, use } from "react";
 import {
   Star,
   Heart,
@@ -36,6 +36,12 @@ export function ProductDetail({ product }: { product: ProductI }) {
   const [singleDay, setSingleDay] = useState(false);
   const [singleDate, setSingleDate] = useState("");
   const [deliveryTime, setDeliveryTime] = useState("");
+  interface UserData {
+    address: string;
+    phoneNumber: string;
+  }
+
+  const [userdata, setUserData] = useState<UserData | null>(null);
 
   const [activeTab, setActiveTab] = useState<"details" | "reviews" | "care">(
     "details"
@@ -161,6 +167,24 @@ export function ProductDetail({ product }: { product: ProductI }) {
     } catch { }
   }, [reviews, product._id]);
 
+  useEffect(() => {
+    if (session?.user?.id) {
+      getUser();
+    }
+  }, [session?.user?.id])
+
+  const getUser = async() => {
+    try {
+      const response = await axios.get(`/api/get-user?userId=${session?.user?.id}`);
+      setUserData(response.data)
+      if(userdata){
+        console.log(userdata)
+      }
+    } catch (error) {
+      console.error("Error fetching user:", error);
+    }
+  }
+
   const handleFeedbackSubmit = () => {
     if ((feedbackReason || feedbackComments).trim()) {
       setShowFeedbackModal(false);
@@ -189,11 +213,18 @@ export function ProductDetail({ product }: { product: ProductI }) {
       return;
     }
 
-    if (singleDay && !deliveryTime) {
+    if (!userdata || !userdata.address || !userdata.phoneNumber) {
       toast.error("Please select delivery time!");
       return;
     }
 
+    if (!userdata.address || !userdata.phoneNumber) {
+      toast.error("Please fill out your address and phone number in your profile before proceeding.");
+      router.push("/customer/dashboard"); // Change path if your profile page is different
+      return;
+    }
+
+    // If user has address and phone, proceed with rent request
     try {
       const res = await axios.post("/api/rent-item", {
         userId: session.user.id,
@@ -205,7 +236,8 @@ export function ProductDetail({ product }: { product: ProductI }) {
       });
 
       if (res.status === 200) {
-        toast.success("Product rented successfully!");
+        toast.success("Make the payment. We'll mail you your details.!");
+        router.push("/customer/payment"); // Change path if your payment page is different
       }
     } catch (error) {
       console.error(error);
@@ -270,7 +302,6 @@ export function ProductDetail({ product }: { product: ProductI }) {
     const diffDays = Math.max(Math.ceil(diffTime / (1000 * 60 * 60 * 24)), 1);
     return diffDays * (product.pPrice || 0) * (quantity || 1);
   }
-
 
   // Define default size chart
   const defaultSizeChart: Record<string, { bust: string; waist: string; hips: string }> = {
@@ -470,7 +501,7 @@ export function ProductDetail({ product }: { product: ProductI }) {
                   </label>
 
                 </div>
-                <Link href="/customer/payment">
+                
                   <button
                     type="submit"
                     disabled={
@@ -481,7 +512,7 @@ export function ProductDetail({ product }: { product: ProductI }) {
                     <ShoppingBag className="h-5 w-5" />
                     Rent Now
                   </button>
-                </Link>
+                
               </form>
             </div>
 

@@ -402,8 +402,12 @@ export function Header() {
                     <div className="mt-8 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-6 max-w-8xl mx-auto">
                       {filteredProducts.map((item, i) => (
                         <div
-                          key={i}
-                          className="flex flex-col items-center text-center"
+                          key={item._id ?? i}
+                          className="flex flex-col items-center text-center cursor-pointer"
+                          onClick={() => {
+                            console.log("hello");
+                            router.push(`/product/${item._id}`);
+                          }}
                         >
                           <Image
                             src={item.pImages[0] || "/placeholder.svg"}
@@ -549,8 +553,12 @@ export function Header() {
             <div className="mt-8 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-6 max-w-6xl mx-auto">
               {filteredProducts.map((product, i) => (
                 <div
-                  key={product._id ?? product._id ?? i}
-                  className="flex flex-col items-center text-center"
+                  key={product._id ?? i}
+                  className="flex flex-col items-center text-center cursor-pointer"
+                  onClick={() => {
+                    console.log("hello");
+                    router.push(`/product/${product._id}`);
+                  }}
                 >
                   <Image
                     src={product.pImages[0] || "/placeholder.svg"}
