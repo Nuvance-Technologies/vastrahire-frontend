@@ -24,13 +24,22 @@ export default function BusinessLenderSignupPage() {
     brandBio: "",
     password: "",
     confirmPassword: "",
+    profilePhoto: null as File | null,
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
 
   const router = useRouter();
 
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFormData({ ...formData, profilePhoto: file });
+      setPreview(URL.createObjectURL(file)); // generate preview
+    }
+  };
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
@@ -73,6 +82,7 @@ export default function BusinessLenderSignupPage() {
             brandBio: "",
             password: "",
             confirmPassword: "",
+            profilePhoto: null,
           });
           router.push("/");
         }
@@ -186,6 +196,26 @@ export default function BusinessLenderSignupPage() {
               }
               className="w-full px-3 py-2 border-2 border-neutral-400 rounded-md"
             ></textarea>
+            <div className="flex md:flex-row flex-col items-center gap-3">
+              <label htmlFor="profilePhoto" className="text-sm font-medium">
+                Profile Photo
+              </label>
+              {preview && (
+                <Image
+                  src={preview}
+                  alt="Profile Preview"
+                  width={80}
+                  height={80}
+                  className="rounded-full object-cover w-16 h-16"
+                />
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handlePhotoChange}
+                className="w-full md:w-[84%] px-3 py-2 border-2 border-neutral-400 rounded-md"
+              />
+            </div>
             <div className="grid grid-cols-2 gap-3">
               <input
                 placeholder="Bank Account Number"
@@ -253,27 +283,27 @@ export default function BusinessLenderSignupPage() {
               </button>
             </div>
             {/* Terms */}
-                        <div className="flex items-start space-x-2 py-5">
-                          <input
-                            type="checkbox"
-                            id="terms"
-                            value={termsAccepted ? "accepted" : ""}
-                            onChange={(e) => setTermsAccepted(e.target.checked)}
-                            className="rounded border-gray-300 w-4 h-4 mt-1"
-                          />
-                          <label
-                            htmlFor="terms"
-                            className="text-sm leading-relaxed text-gray-600"
-                          >
-                            I agree to the{" "}
-                            <Link
-                              href="/terms"
-                              className="text-[#3d000c] hover:text-[#9f0020] font-medium"
-                            >
-                              Terms & conditions
-                            </Link>
-                          </label>
-                        </div>
+            <div className="flex items-start space-x-2 py-5">
+              <input
+                type="checkbox"
+                id="terms"
+                value={termsAccepted ? "accepted" : ""}
+                onChange={(e) => setTermsAccepted(e.target.checked)}
+                className="rounded border-gray-300 w-4 h-4 mt-1"
+              />
+              <label
+                htmlFor="terms"
+                className="text-sm leading-relaxed text-gray-600"
+              >
+                I agree to the{" "}
+                <Link
+                  href="/terms"
+                  className="text-[#3d000c] hover:text-[#9f0020] font-medium"
+                >
+                  Terms & conditions
+                </Link>
+              </label>
+            </div>
             <button className="w-full h-12 bg-gradient-to-r from-[#3d000c] to-[#720017] text-white font-semibold rounded-md shadow-lg">
               Sign Up as Business
             </button>

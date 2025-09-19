@@ -2,12 +2,15 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 export default function PaymentPage() {
     const [isConfirmed, setIsConfirmed] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const searchParams = useSearchParams();
 
+    const price = searchParams.get("price") || "0";
     // Test data for email
     const testEmailData = {
         email: "testuser@example.com",
@@ -46,6 +49,11 @@ export default function PaymentPage() {
                 <h1 className="text-2xl font-semibold text-gray-800 mb-4">
                     Make Your Payment
                 </h1>
+
+                {/* ✅ Show Total Price */}
+                <p className="text-lg font-medium mb-4">
+                    Amount to Pay: <span className="text-indigo-600 font-bold">₹{price}</span>
+                </p>
 
                 {/* QR Code Section */}
                 <div className="mb-6 flex justify-center">

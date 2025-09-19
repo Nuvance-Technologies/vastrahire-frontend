@@ -22,7 +22,7 @@ export default function ProductPage() {
     pDesc:
       "A stylish dummy product for testing. Lightweight, comfortable, and perfect for trying out product detail view.",
     pSize: ["S", "M", "L", "XL"],
-    pImages: ["/dummy-dress.jpg"],
+    pImages: ["/elegant-dress.png", "/images/Slide3.jpg"],
     pColor: "Red",
     category: "Women",
     subcategory: "Dresses",

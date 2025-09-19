@@ -15,6 +15,7 @@ import {
   Gem,
   InfoIcon,
   IndianRupee,
+  Camera
 } from "lucide-react";
 import { DashboardHeader } from "@/app/components/Dashboard-header";
 import { DashboardNav } from "@/app/components/Dashboard-nav";
@@ -105,6 +106,23 @@ export default function LenderDashboard() {
   const [totalProducts, setTotalProducts] = useState(0);
   const [totalEarnings, setTotalEarnings] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
+
+  const handleEditClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  // Handle file change
+  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Preview
+    const objectUrl = URL.createObjectURL(file);
+    setPreview(objectUrl);
+
+  };
 
   const { data: session } = useSession();
 
@@ -236,10 +254,11 @@ export default function LenderDashboard() {
         ...newProduct,
         ownerID: session?.user?.id || "",
       };
-
+      console.log(productData);
       const res = await axios.post("/api/product", productData);
-
+      console.log(res.status);
       if (res.status === 201) {
+
         toast.success("Product added successfully!");
         setShowAddForm(false);
         setNewProduct({
@@ -671,6 +690,34 @@ export default function LenderDashboard() {
               </div>
 
               <form onSubmit={handleProfileSave}>
+                {/* Profile Photo Section */}
+                <div className="flex flex-col items-center mb-6">
+                  <div className="relative">
+                    <Image
+                      src={preview || "/default-avatar.png"}
+                      alt="Profile Photo"
+                      width={100}
+                      height={100}
+                      className="rounded-full object-cover border-2 border-gray-300 w-28 h-28"
+                    />
+                    {isEditingProfile && (
+                      <button
+                        type="button"
+                        onClick={handleEditClick}
+                        className="absolute bottom-0 right-0 bg-[#3d000c] text-white p-2 rounded-full shadow-md hover:bg-[#710017]"
+                      >
+                        <Camera size={18} />
+                      </button>
+                    )}
+                  </div>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePhotoChange}
+                    className="hidden"
+                  />
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Left column */}
                   <div className="space-y-4">

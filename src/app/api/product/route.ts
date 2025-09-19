@@ -33,7 +33,7 @@ export async function POST(req: Request) {
     if (!pName || !pPrice || !category || !ownerID) {
       return NextResponse.json(
         { message: "Please provide all required fields" },
-        { status: 400 }
+        { status: 401 }
       );
     }
 
@@ -41,7 +41,7 @@ export async function POST(req: Request) {
     if (!categoryData) {
       return NextResponse.json(
         { message: "Invalid category" },
-        { status: 400 }
+        { status: 402 }
       );
     }
 

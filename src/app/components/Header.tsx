@@ -76,18 +76,29 @@ export function Header() {
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (
-        overlayRef.current &&
-        !overlayRef.current.contains(event.target as Node)
-      ) {
-        setSearchOpen(false);
+      if (!overlayRef.current) return;
+
+      const target = event.target as Node;
+
+      // ✅ If click is inside overlay → do nothing
+      if (overlayRef.current.contains(target)) {
+        return;
       }
+
+      // ✅ Otherwise close
+      setSearchOpen(false);
     }
-    if (searchOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+
+    // if (searchOpen) {
+    //   // use capture phase so this runs before other handlers
+    //   document.addEventListener("click", handleClickOutside, true);
+    // }
+
+    return () => {
+      document.removeEventListener("click", handleClickOutside, true);
+    };
   }, [searchOpen]);
+
 
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);

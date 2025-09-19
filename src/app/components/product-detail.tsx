@@ -173,11 +173,11 @@ export function ProductDetail({ product }: { product: ProductI }) {
     }
   }, [session?.user?.id])
 
-  const getUser = async() => {
+  const getUser = async () => {
     try {
       const response = await axios.get(`/api/get-user?userId=${session?.user?.id}`);
       setUserData(response.data)
-      if(userdata){
+      if (userdata) {
         console.log(userdata)
       }
     } catch (error) {
@@ -217,7 +217,6 @@ export function ProductDetail({ product }: { product: ProductI }) {
       toast.error("Please select delivery time!");
       return;
     }
-
     if (!userdata.address || !userdata.phoneNumber) {
       toast.error("Please fill out your address and phone number in your profile before proceeding.");
       router.push("/customer/dashboard"); // Change path if your profile page is different
@@ -236,8 +235,10 @@ export function ProductDetail({ product }: { product: ProductI }) {
       });
 
       if (res.status === 200) {
+        const totalPrice = calculateTotalPrice();   // get calculated price
         toast.success("Make the payment. We'll mail you your details.!");
-        router.push("/customer/payment"); // Change path if your payment page is different
+        // ✅ pass it in the URL
+        router.push(`/customer/payment?price=${totalPrice}`);
       }
     } catch (error) {
       console.error(error);
@@ -328,7 +329,7 @@ export function ProductDetail({ product }: { product: ProductI }) {
           <div className="space-y-4">
             <div className="aspect-[4/5] overflow-hidden rounded-lg border border-gray-200">
               <Image
-                src={product.pImages[0] || "/placeholder.svg"}
+                src={product.pImages[selectedImage] || "/placeholder.svg"}
                 alt={product.pName}
                 className="w-full h-full object-cover"
                 width={400}
@@ -441,7 +442,7 @@ export function ProductDetail({ product }: { product: ProductI }) {
                       <button
                         key={size}
                         type="button"
-                        className= "px-3 py-2 border rounded-lg font-medium text-sm hover:bg-gray-100 transition"
+                        className="px-3 py-2 border rounded-lg font-medium text-sm hover:bg-gray-100 transition"
                       >
                         {size}
                       </button>
@@ -499,20 +500,22 @@ export function ProductDetail({ product }: { product: ProductI }) {
                       ))}
                     </select>
                   </label>
-
                 </div>
-                
-                  <button
-                    type="submit"
-                    disabled={
-                      !selectedSize || (singleDay ? !singleDate || !deliveryTime : !from || !to)
-                    }
-                    className="w-full my-4 py-3 bg-[#3d000c] text-white rounded-lg font-semibold hover:bg-[#85021c] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    <ShoppingBag className="h-5 w-5" />
-                    Rent Now
-                  </button>
-                
+                <div className="mt-4 text-xl font-bold text-[#3d000c]">
+                  Total Price: ₹{calculateTotalPrice()}
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={
+                    !selectedSize || (singleDay ? !singleDate || !deliveryTime : !from || !to)
+                  }
+                  className="w-full my-4 py-3 bg-[#3d000c] text-white rounded-lg font-semibold hover:bg-[#85021c] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  <ShoppingBag className="h-5 w-5" />
+                  Rent Now
+                </button>
+
               </form>
             </div>
 
