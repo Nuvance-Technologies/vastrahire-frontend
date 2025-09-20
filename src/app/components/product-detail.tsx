@@ -240,7 +240,7 @@ export function ProductDetail({ product }: { product: ProductI }) {
         const totalPrice = calculateTotalPrice();   // get calculated price
         toast.success("Make the payment. We'll mail you your details.!");
         // ✅ pass it in the URL
-        router.push(`/customer/payment?price=${totalPrice}?fromTime=${fromTime}?toTime=${toTime}`);
+        router.push(`/customer/payment?price=${totalPrice}&fromTime=${fromTime}&toTime=${toTime}`);
       }
     } catch (error) {
       console.error(error);
