@@ -55,8 +55,10 @@ export default function EditProduct() {
     // ✅ Fetch product by ID (prefill form)
     useEffect(() => {
         if (params?.id) {
-            axios.get(`/api/products/${params.id}`).then((res) => {
-                setNewProduct(res.data);
+            // Remove any trailing '}' or invalid characters from id
+            const cleanId = typeof params.id === 'string' ? params.id.replace(/[^a-fA-F0-9]/g, '').slice(0, 24) : params.id;
+            axios.get(`/api/get-productById?productId=${cleanId}`).then((res) => {
+                setNewProduct(res.data.product);
             });
         }
     }, [params?.id]);
@@ -88,12 +90,46 @@ export default function EditProduct() {
         setIsUploading(false);
     };
 
+
+    // ✅ Handle form submit
+    const handleFormSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            // 1. Map category name to ObjectId
+            let categoryId = newProduct.category;
+            if (categoryId && categoryId.length !== 24) {
+                // Fetch category ObjectId by name
+                const catRes = await axios.get(`/api/category?name=${newProduct.category}`);
+                categoryId = catRes.data.category?._id || categoryId;
+            }
+
+            // 2. Fetch ownerID ObjectId if needed
+            let ownerId = newProduct.ownerID;
+            if (ownerId && ownerId.length !== 24) {
+                const userRes = await axios.get(`/api/get-user?email=${newProduct.ownerID}`);
+                ownerId = userRes.data._id || ownerId;
+            }
+
+            // 3. Build payload with correct ObjectIds
+            const payload = {
+                ...newProduct,
+                category: categoryId,
+                ownerID: ownerId,
+            };
+            const response = await axios.put('/api/updateProductDetail', payload);
+        }
+        catch (error) {
+            console.error("Error updating product:", error);
+        }
+    }
+
     return (
         <div className="max-w-4xl mx-auto p-6 my-6 bg-white rounded-lg shadow-md">
             <h1 className="text-xl font-bold mb-4">Edit Product</h1>
 
             <form
                 className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-black"
+                onSubmit={handleFormSubmit}
             >
                 <input
                     type="text"

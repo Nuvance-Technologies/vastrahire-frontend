@@ -56,6 +56,7 @@ export default function ClothingPage() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [subCategories, setSubCategories] = useState<SubCatI[]>([]);
   const [catId, setCatId] = useState("");
+  const [filters, setFilters] = useState<Record<string, string>>({});
 
   const getProductsBySubCategory = async (subCategory?: string) => {
     const productRes = await getProducts(catId, subCategory);
@@ -82,11 +83,48 @@ export default function ClothingPage() {
     })();
   }, [catId]);
 
-  // ✅ Filtered products
-  const filteredProducts =
-    activeCategory === "All"
-      ? products
-      : products.filter((p) => p.subcategory === activeCategory);
+  // Filter products using selected filters
+  const filteredProducts = products.filter((p) => {
+    // Subcategory filter
+    if (activeCategory !== "All" && p.subcategory !== activeCategory) return false;
+
+    // Category filter (matches pName for demo)
+    if (filters.cat && p.pName && !p.pName.toLowerCase().includes(filters.cat.toLowerCase())) return false;
+
+    // Colour filter
+    if (filters.col && p.pColor && p.pColor.toLowerCase() !== filters.col.toLowerCase()) return false;
+
+    // Discount filter
+    if (filters.dis) {
+      const discountValue = parseInt(p.pDiscount) || 0;
+      const minDiscount = parseInt(filters.dis);
+      if (discountValue < minDiscount) return false;
+    }
+
+    // Fabric filter
+    if (filters.fab && p.pFabric && p.pFabric.toLowerCase() !== filters.fab.toLowerCase()) return false;
+
+    // Pattern filter
+    if (filters.pat && p.pPattern && p.pPattern.toLowerCase() !== filters.pat.toLowerCase()) return false;
+
+    // Occasion filter
+    if (filters.occ && p.pOccasion && p.pOccasion.toLowerCase() !== filters.occ.toLowerCase()) return false;
+
+    // Size filter
+    if (filters.siz && p.pSize && !p.pSize.includes(filters.siz)) return false;
+
+    // Price filter
+    if (filters.pri) {
+      const price = p.pPrice || 0;
+      if (filters.pri === "0-500" && !(price >= 0 && price <= 500)) return false;
+      if (filters.pri === "500-1000" && !(price > 500 && price <= 1000)) return false;
+      if (filters.pri === "1000-1500" && !(price > 1000 && price <= 1500)) return false;
+      if (filters.pri === "1500-2000" && !(price > 1500 && price <= 2000)) return false;
+      if (filters.pri === "2000+" && !(price > 2000)) return false;
+    }
+
+    return true;
+  });
 
   return (
     <div className="min-h-screen bg-white">
@@ -133,8 +171,8 @@ export default function ClothingPage() {
         </h1>
 
         <FilterSection
-          onFilterChange={(filters) => {
-            console.log("Selected Filters:", filters);
+          onFilterChange={(newFilters) => {
+            setFilters(newFilters);
           }}
         />
         {/* Sub Heading + Sort Dropdown */}
