@@ -3,43 +3,53 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export default function PaymentPage() {
     const [isConfirmed, setIsConfirmed] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const searchParams = useSearchParams();
+    const { data: session } = useSession();
 
     const price = searchParams.get("price") || "0";
+    const fromTime = searchParams.get("fromTime") || "10:00"
+    const toTime = searchParams.get("toTime") || "10:00"
+    const data = {
+        userID: session?.user?.id,
+        fromTime: fromTime,
+        toTime: toTime
+    }
     // Test data for email
-    const testEmailData = {
-        email: "testuser@example.com",
-        name: "Test User",
-        product: {
-            name: "Elegant Dress",
-            description: "A beautiful evening dress for special occasions.",
-            price: "₹2,000",
-        },
-        options: "Size: M, Color: Red, Rental Dates: 2025-09-20 to 2025-09-22"
-    };
 
     const handleConfirm = async () => {
         setLoading(true);
         setError("");
         try {
-            const res = await fetch("/api/send-rental-mail", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(testEmailData)
-            });
-            const result = await res.json();
-            if (result.success) {
-                setIsConfirmed(true);
-            } else {
-                setError("Failed to send confirmation email.");
+            if (session?.user?.id) {
+                // Send both emails in parallel
+                const [customerRes, ownerRes] = await Promise.all([
+                    fetch("/api/send-rental-mail", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(data)
+                    }),
+                    fetch("/api/send-owner-mail", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(data)
+                    })
+                ]);
+                const customerResult = await customerRes.json();
+                const ownerResult = await ownerRes.json();
+                if (customerResult.success && ownerResult.success) {
+                    setIsConfirmed(true);
+                } else {
+                    setError("Failed to send one or both emails.");
+                }
             }
         } catch (err) {
-            setError("Error sending email.");
+            setError("Error sending emails.");
         }
         setLoading(false);
     };

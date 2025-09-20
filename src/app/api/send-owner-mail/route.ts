@@ -4,13 +4,8 @@ import User from "@/lib/models/user.model";
 import Product from "@/lib/models/product.model";
 import UserRental from "@/lib/models/userRental.model";
 
-// Helper functions for DB queries (Mongoose example)
-async function fetchUserById(userId: string) {
-  return await User.findById(userId).lean();
-}
-
+// Helper functions for DB queries
 async function fetchLatestRentalForUser(userId: string) {
-  // Assumes UserRental has a createdAt field
   return await UserRental.findOne({ userId }).sort({ createdAt: -1 }).lean();
 }
 
@@ -18,34 +13,33 @@ async function fetchProductById(productId: string) {
   return await Product.findById(productId).lean();
 }
 
+async function fetchOwnerById(ownerId: string) {
+  return await User.findById(ownerId).lean();
+}
+
 export async function POST(req: Request) {
-
   // Get userId from request body
-  const data = await req.json();
-  const { userId, fromTime, toTime } = data;
-  console.log(userId, fromTime, toTime)
-
-  // Fetch user info
-  const user = await fetchUserById(userId);
-  if (!user || Array.isArray(user) || !user.email) {
-    return NextResponse.json({ success: false, error: "User not found or missing email" }, { status: 404 });
-  }
+  const { userId } = await req.json();
 
   // Fetch latest rental for user
   const rental = await fetchLatestRentalForUser(userId);
-  console.log("Fetched rental:", rental);
   if (!rental || Array.isArray(rental) || !rental.productId) {
     return NextResponse.json({ success: false, error: "Rental not found or missing productId" }, { status: 404 });
   }
 
   // Fetch product info
   const product = await fetchProductById(rental.productId);
-  console.log("Fetched product:", product);
-  if (!product || Array.isArray(product) || !product.pName) {
-    return NextResponse.json({ success: false, error: "Product not found or missing name" }, { status: 404 });
+  if (!product || Array.isArray(product) || !product.ownerId) {
+    return NextResponse.json({ success: false, error: "Product not found or missing ownerId" }, { status: 404 });
   }
 
-  // Setup nodemailer transporter (use your SMTP credentials)
+  // Fetch owner info
+  const owner = await fetchOwnerById(product.ownerId);
+  if (!owner || Array.isArray(owner) || !owner.email) {
+    return NextResponse.json({ success: false, error: "Owner not found or missing email" }, { status: 404 });
+  }
+
+  // Setup nodemailer transporter
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -54,25 +48,31 @@ export async function POST(req: Request) {
     },
   });
 
-  // Email content
+  // Email content for owner
   const mailOptions = {
     from: process.env.SMTP_USER,
-    to: user.email,
-    subject: "Your Rental Request Has Been Received!",
+    to: owner.email,
+    subject: "New Rental Request Received!",
     html: `
-      <h2>Dear ${user.name},</h2>
-      <p>We have received your rental request and are processing your payment.</p>
+      <h2>Dear ${owner.name},</h2>
+      <p>A new rental request has been made for your product.</p>
       <h3>Product Details:</h3>
       <ul>
         <li><strong>Name:</strong> ${product.pName}</li>
         <li><strong>Description:</strong> ${product.pDesc}</li>
         <li><strong>Price:</strong> ₹${product.pPrice}</li>
-        <li><strong>Options:</strong> Size: ${rental.size}, Quantity: ${rental.quantity}, Dates: ${rental.from} : ${fromTime} to ${rental.to} : ${toTime}</li>
+        <li><strong>Options:</strong> Size: ${rental.size}, Quantity: ${rental.quantity}, Dates: ${rental.from} to ${rental.to}</li>
       </ul>
-      <p>We will contact you shortly with further details.</p>
-      <p>If you have any questions, reply to this email.</p>
+      <h3>Customer Details:</h3>
+      <ul>
+        <li><strong>Name:</strong> ${rental.customerName || "N/A"}</li>
+        <li><strong>Email:</strong> ${rental.customerEmail || "N/A"}</li>
+        <li><strong>Phone:</strong> ${rental.customerPhone || "N/A"}</li>
+        <li><strong>Address:</strong> ${rental.customerAddress || "N/A"}</li>
+      </ul>
+      <p>Please check your dashboard for more details.</p>
       <br />
-      <p>Thank you for choosing Vastrahire!</p>
+      <p>Thank you for using Vastrahire!</p>
     `,
   };
 

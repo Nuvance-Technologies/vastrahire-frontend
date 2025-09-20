@@ -47,7 +47,9 @@ export function ProductDetail({ product }: { product: ProductI }) {
     "details"
   );
   const [from, setFrom] = useState("");
+  const [fromTime, setFromTime] = useState("");
   const [to, setTo] = useState("");
+  const [toTime, setToTime] = useState("");
   const [quantity, setQuantity] = useState(1);
 
   const [reviews, setReviews] = useState<ReviewModel[]>([]);
@@ -238,7 +240,7 @@ export function ProductDetail({ product }: { product: ProductI }) {
         const totalPrice = calculateTotalPrice();   // get calculated price
         toast.success("Make the payment. We'll mail you your details.!");
         // ✅ pass it in the URL
-        router.push(`/customer/payment?price=${totalPrice}`);
+        router.push(`/customer/payment?price=${totalPrice}?fromTime=${fromTime}?toTime=${toTime}`);
       }
     } catch (error) {
       console.error(error);
@@ -464,6 +466,15 @@ export function ProductDetail({ product }: { product: ProductI }) {
                           className="mt-1 px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                         />
                       </label>
+                      <label className="flex flex-col text-sm font-medium text-gray-700">
+                        From Time
+                        <input
+                          type="time"
+                          value={fromTime}
+                          onChange={(e) => setFromTime(e.target.value)}
+                          className="mt-1 px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                        />
+                      </label>
 
                       <label className="flex flex-col text-sm font-medium text-gray-700">
                         To
@@ -471,6 +482,15 @@ export function ProductDetail({ product }: { product: ProductI }) {
                           type="date"
                           value={to}
                           onChange={(e) => setTo(e.target.value)}
+                          className="mt-1 px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                        />
+                      </label>
+                      <label className="flex flex-col text-sm font-medium text-gray-700">
+                        To Time
+                        <input
+                          type="time"
+                          value={toTime}
+                          onChange={(e) => setToTime(e.target.value)}
                           className="mt-1 px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                         />
                       </label>
