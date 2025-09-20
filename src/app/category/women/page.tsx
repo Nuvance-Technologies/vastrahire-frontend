@@ -68,63 +68,6 @@ function AnimatedDropdown({
   );
 }
 
-// ✅ Product Data with categories
-// const products = [
-//   {
-//     id: 1,
-//     name: "Pink & Orange Embroidered Suit",
-//     image: "/ethnic1.png",
-//     discount: "55% OFF",
-//     category: "Smart Watches",
-//   },
-//   {
-//     id: 2,
-//     name: "Lime Green Kurta Set",
-//     image: "/ethnic2.png",
-//     discount: "55% OFF",
-//     category: "Leather strap",
-//   },
-//   {
-//     id: 3,
-//     name: "Lavender Saree with Lace",
-//     image: "/ethnic3.png",
-//     discount: "55% OFF",
-//     category: "Analog watches",
-//   },
-//   {
-//     id: 4,
-//     name: "Golden Ethnic Set",
-//     image: "/ethnic1.png",
-//     discount: "45% OFF",
-//     category: "Luxury watches",
-//   },
-//   {
-//     id: 5,
-//     name: "Designer Saree",
-//     image: "/ethnic2.png",
-//     discount: "30% OFF",
-//     category: "Smart bands",
-//   },
-//   {
-//     id: 6,
-//     name: "Traditional Lehenga",
-//     image: "/ethnic3.png",
-//     discount: "60% OFF",
-//     category: "Hybrid watches",
-//   },
-// ];
-
-// ✅ Categories
-// const categories = [
-//   "All",
-//   "Lehengas",
-//   "Sarees",
-//   "Indo Western",
-//   "Salwar Kameez",
-//   "Ethnic Wear",
-//   "Branded",
-// ]
-
 export interface SubCatI {
   name: string;
   _id: string;

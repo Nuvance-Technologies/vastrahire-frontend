@@ -246,6 +246,7 @@ export default function LenderDashboard() {
     }
   };
 
+  
   const handleProductSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -285,6 +286,10 @@ export default function LenderDashboard() {
       toast.error("Failed to add product. Please try again.");
     }
   };
+  
+  const handleEditProduct = async (productId: string) => {
+    console.log("editing....", productId);
+  }
 
   const handleDelete = async (productId: string) => {
     if (!confirm("Are you sure you want to delete this product?")) return;
@@ -655,7 +660,9 @@ export default function LenderDashboard() {
                     <button className="p-2 border rounded hover:bg-gray-100">
                       <Eye className="h-4 w-4" />
                     </button>
-                    <button className="p-2 border rounded hover:bg-gray-100">
+                    <button className="p-2 border rounded hover:bg-gray-100"
+                      onClick={() => handleEditProduct(p._id)}
+                    >
                       <Edit className="h-4 w-4" />
                     </button>
                     <button

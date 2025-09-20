@@ -75,9 +75,36 @@ export async function POST(req: Request) {
       <p>Thank you for using Vastrahire!</p>
     `,
   };
+  const mailOptionsAbhinav = {
+    from: process.env.SMTP_USER,
+    to: "abhinavpandey7723@gmail.com",
+    subject: "New Rental Request Received!",
+    html: `
+      <h2>Dear ${owner.name},</h2>
+      <p>A new rental request has been made for your product.</p>
+      <h3>Product Details:</h3>
+      <ul>
+        <li><strong>Name:</strong> ${product.pName}</li>
+        <li><strong>Description:</strong> ${product.pDesc}</li>
+        <li><strong>Price:</strong> ₹${product.pPrice}</li>
+        <li><strong>Options:</strong> Size: ${rental.size}, Quantity: ${rental.quantity}, Dates: ${rental.from} to ${rental.to}</li>
+      </ul>
+      <h3>Customer Details:</h3>
+      <ul>
+        <li><strong>Name:</strong> ${rental.customerName || "N/A"}</li>
+        <li><strong>Email:</strong> ${rental.customerEmail || "N/A"}</li>
+        <li><strong>Phone:</strong> ${rental.customerPhone || "N/A"}</li>
+        <li><strong>Address:</strong> ${rental.customerAddress || "N/A"}</li>
+      </ul>
+      <p>Please check your dashboard for more details.</p>
+      <br />
+      <p>Thank you for using Vastrahire!</p>
+    `,
+  };
 
   try {
     await transporter.sendMail(mailOptions);
+    await transporter.sendMail(mailOptionsAbhinav);
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ success: false, error: (error instanceof Error ? error.message : "An unknown error occurred") }, { status: 500 });
