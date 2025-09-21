@@ -59,8 +59,13 @@ export default function ClothingPage() {
   const [filters, setFilters] = useState<Record<string, string>>({});
 
   const getProductsBySubCategory = async (subCategory?: string) => {
-    const productRes = await getProducts(catId, subCategory);
-    setProducts(productRes);
+    try {
+      const productRes = await getProducts(catId, subCategory);
+      setProducts(productRes);
+    } catch (error) {
+      console.error("Error fetching products by subcategory:", error);
+      setProducts([]);
+    }
   };
 
   const getSubCategories = async () => {
@@ -82,6 +87,13 @@ export default function ClothingPage() {
       }
     })();
   }, [catId]);
+
+
+  // ✅ Filtered products
+  const filteredProducts =
+    activeCategory === "All"
+      ? products
+      : products.filter((p) => p.subcategory.toLowerCase() === activeCategory.toLowerCase());
 
   // Filter products using selected filters
   const filteredProducts = products.filter((p) => {
@@ -126,6 +138,7 @@ export default function ClothingPage() {
     return true;
   });
 
+
   return (
     <div className="min-h-screen bg-white">
       <AnnouncementBar />
@@ -150,8 +163,10 @@ export default function ClothingPage() {
             <button
               key={id}
               onClick={() => {
-                setActiveCategory(cat?.name);
-                getProductsBySubCategory(cat?.name);
+                if (cat?.name) {
+                  setActiveCategory(cat.name);
+                  getProductsBySubCategory(cat.name);
+                }
               }}
               className={`text-sm font-bold py-1 px-3 rounded-xl transition capitalize ${activeCategory === cat?.name
                 ? "bg-black text-white"

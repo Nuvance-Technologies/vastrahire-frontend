@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
   try {
     await connectToDB();
     const products = await Product.find({
-      subcategory: subCat,
+      subcategory: { $regex: new RegExp('^' + subCat + '$', 'i') },
       category: catId,
       availability: "active",
     });

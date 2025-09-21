@@ -41,7 +41,7 @@ export default function ClothingPage() {
   const filteredProducts =
     activeCategory === "All"
       ? products
-      : products.filter((p) => p.category === activeCategory)
+      : products.filter((p) => p.category.toLowerCase() === activeCategory.toLowerCase())
 
   return (
     <div className="min-h-screen bg-white">
@@ -53,7 +53,11 @@ export default function ClothingPage() {
           {categories.map((cat) => (
             <button
               key={cat}
-              onClick={() => setActiveCategory(cat)}
+              onClick={() => {
+                if (cat) {
+                  setActiveCategory(cat);
+                }
+              }}
               className={`text-sm font-bold py-1 px-3 rounded-xl transition ${activeCategory === cat
                 ? "bg-black text-white"
                 : "text-gray-700 hover:text-black"
