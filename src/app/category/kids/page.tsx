@@ -77,9 +77,14 @@ export default function ClothingPage() {
   const [catId, setCatId] = useState("");
   const [products, setProducts] = useState<ProductI[]>([]);
 
-  const getProductsBySubCategory = async (subCategory?: string) => {
-    const productRes = await getProducts(catId, subCategory);
-    setProducts(productRes);
+  const getProductsBySubCategory = async (subCategory: string) => {
+    try {
+      const productRes = await getProducts("kids", subCategory);
+      setProducts(productRes);
+    } catch (error) {
+      console.error("Error fetching products by subcategory:", error);
+      setProducts([]);
+    }
   };
 
   const getSubCategories = async () => {
@@ -106,7 +111,7 @@ export default function ClothingPage() {
   const filteredProducts =
     activeCategory === "All"
       ? products
-      : products.filter((p) => p.category === activeCategory);
+      : products.filter((p) => p.subcategory.toLowerCase() === activeCategory.toLowerCase());
 
   return (
     <div className="min-h-screen bg-white">
@@ -133,8 +138,10 @@ export default function ClothingPage() {
             <button
               key={id}
               onClick={() => {
-                setActiveCategory(cat?.name);
-                getProductsBySubCategory(cat?.name);
+                if (cat?.name) {
+                  setActiveCategory(cat?.name);
+                  getProductsBySubCategory(cat?.name);
+                }
               }}
               className={`text-sm font-bold py-1 px-3 rounded-xl transition capitalize ${
                 activeCategory === cat?.name
