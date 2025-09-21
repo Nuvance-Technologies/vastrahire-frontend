@@ -216,10 +216,6 @@ export function ProductDetail({ product }: { product: ProductI }) {
     }
 
     if (!userdata || !userdata.address || !userdata.phoneNumber) {
-      toast.error("Please select delivery time!");
-      return;
-    }
-    if (!userdata.address || !userdata.phoneNumber) {
       toast.error("Please fill out your address and phone number in your profile before proceeding.");
       router.push("/customer/dashboard"); // Change path if your profile page is different
       return;
