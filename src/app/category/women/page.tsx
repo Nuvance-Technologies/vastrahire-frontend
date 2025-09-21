@@ -90,13 +90,13 @@ export default function ClothingPage() {
 
 
   // ✅ Filtered products
-  const filteredProducts =
+  const FilteredProduct =
     activeCategory === "All"
       ? products
       : products.filter((p) => p.subcategory.toLowerCase() === activeCategory.toLowerCase());
 
   // Filter products using selected filters
-  const filteredProducts = products.filter((p) => {
+  const FilteredProducts = products.filter((p) => {
     // Subcategory filter
     if (activeCategory !== "All" && p.subcategory !== activeCategory) return false;
 
@@ -194,7 +194,7 @@ export default function ClothingPage() {
         <div className="flex items-center justify-between border-b pb-3 mb-6">
           <p className="text-sm text-gray-700 font-medium">
             {activeCategory === "All" ? "ALL" : activeCategory.toUpperCase()} |{" "}
-            {filteredProducts.length} STYLES FOUND
+            {FilteredProduct.length} STYLES FOUND
           </p>
 
           {/* Sort */}
@@ -241,7 +241,7 @@ export default function ClothingPage() {
 
         {/* ✅ Products Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredProducts.map((product) => (
+          {FilteredProduct.map((product) => (
             <Link key={product._id} href={`/product/${product._id}`}>
               <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
                 <div className="aspect-[4/5] overflow-hidden">
