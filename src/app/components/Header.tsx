@@ -1,38 +1,33 @@
 "use client";
 import axios from "axios";
-import { Search, User, ChevronDown, ShoppingCart, Menu, X } from "lucide-react";
+import { Search, User, ChevronDown, ShoppingCart, Menu, X, Heart } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
+import { ProductI } from "../category/women/page";
 
 export function Header() {
-  const [allProducts, setAllProducts] = useState<any[]>([]);
+  const [allProducts, setAllProducts] = useState<ProductI[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  useEffect(() => {
-    console.log('All products:', allProducts);
-  }, [allProducts]);
 
-  const filteredProducts: any[] = searchQuery.trim()
-    ? allProducts.filter((p: any) =>
-      p.pName && p.pName.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredProducts: ProductI[] = searchQuery.trim()
+    ? allProducts.filter(
+      (p: ProductI) =>
+        p.pName && p.pName.toLowerCase().includes(searchQuery.toLowerCase())
     )
     : allProducts;
-
-  useEffect(() => {
-    console.log('Filtered products:', filteredProducts);
-  }, [filteredProducts]);
 
   useEffect(() => {
     const fetchAllProducts = async () => {
       setLoadingProducts(true);
       try {
-        const response = await axios.get('/api/product/allProducts');
+        const response = await axios.get("/api/product/allProducts");
         setAllProducts(response.data.products || []);
       } catch (error) {
-        console.error('Error fetching all products:', error);
+        console.error("Error fetching all products:", error);
       } finally {
         setLoadingProducts(false);
       }
@@ -43,7 +38,7 @@ export function Header() {
   const [isOpen1, setIsOpen1] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
 
-  // refs for dropdowns
+
   const loginRef = useRef<HTMLDivElement>(null);
   const signupRef = useRef<HTMLDivElement>(null);
 
@@ -53,7 +48,6 @@ export function Header() {
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       const target = event.target as Element;
-      console.log(target.className);
       // Don't close if clicking on a link or button inside the dropdown
       if (target.className.includes("drop-down")) {
         return;
@@ -82,18 +76,29 @@ export function Header() {
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (
-        overlayRef.current &&
-        !overlayRef.current.contains(event.target as Node)
-      ) {
-        setSearchOpen(false);
+      if (!overlayRef.current) return;
+
+      const target = event.target as Node;
+
+      // ✅ If click is inside overlay → do nothing
+      if (overlayRef.current.contains(target)) {
+        return;
       }
+
+      // ✅ Otherwise close
+      setSearchOpen(false);
     }
-    if (searchOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+
+    // if (searchOpen) {
+    //   // use capture phase so this runs before other handlers
+    //   document.addEventListener("click", handleClickOutside, true);
+    // }
+
+    return () => {
+      document.removeEventListener("click", handleClickOutside, true);
+    };
   }, [searchOpen]);
+
 
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -294,7 +299,7 @@ export function Header() {
               <>
                 <button
                   onClick={() => setIsOpen(!isOpen)}
-                  className="flex items-center px-3 py-2 bg-[#3d000c] text-white rounded-md hover:bg-[#87001b]"
+                  className="flex items-center px-3 py-2 font-bold bg-[#3d000c] text-white rounded-md hover:bg-[#87001b]"
                 >
                   Login / Register
                   <ChevronDown className="h-3 w-3" />
@@ -369,6 +374,12 @@ export function Header() {
                 Kids
               </Link>
               <Link
+                href="/branded"
+                className="text-[#3d000c] font-bold px-3 py-1 rounded-xl bg-[#faeed1] transition"
+              >
+                Explore branded collections
+              </Link>
+              <Link
                 href="/earn-through-us"
                 className="text-gray-200 px-3 py-1 rounded-xl bg-[#3d000c] transition"
               >
@@ -383,7 +394,7 @@ export function Header() {
                   placeholder="Search items..."
                   className="pl-10 w-64 h-10 border rounded-md text-gray-700 border-gray-300 focus:ring-2 focus:ring-[#3d000c] focus:outline-none"
                   value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={() => setSearchOpen(true)}
                 />
                 {searchOpen && (
@@ -402,11 +413,15 @@ export function Header() {
                     <div className="mt-8 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-6 max-w-8xl mx-auto">
                       {filteredProducts.map((item, i) => (
                         <div
-                          key={i}
-                          className="flex flex-col items-center text-center"
+                          key={item._id ?? i}
+                          className="flex flex-col items-center text-center cursor-pointer"
+                          onClick={() => {
+                            console.log("hello");
+                            router.push(`/product/${item._id}`);
+                          }}
                         >
                           <Image
-                            src={item.imgage}
+                            src={item.pImages[0] || "/placeholder.svg"}
                             alt={item.pName}
                             className="w-20 h-20 object-cover rounded-full border shadow-sm hover:scale-105 transition"
                             width={80}
@@ -424,6 +439,11 @@ export function Header() {
               <Link href="/cart">
                 <button>
                   <ShoppingCart className="text-gray-800 h-6 w-6" />
+                </button>
+              </Link>
+              <Link href="/wishlist">
+                <button>
+                  <Heart className="text-gray-800 h-6 w-6" />
                 </button>
               </Link>
             </div>
@@ -452,6 +472,32 @@ export function Header() {
               >
                 Kids
               </Link>
+              <Link
+                href="/branded"
+                className="font-bold text-[#3d000c]"
+              >
+                Explore branded collections
+              </Link>
+              <Link
+                href="/earn-through-us"
+                className="font-bold text-[#3d000c]"
+              >
+                Unlock your earning through us
+              </Link>
+              <Link
+                href="/cart"
+                className="font-bold text-[#3d000c]"
+              >
+                Cart
+                <ShoppingCart className="inline ml-1 mb-1" />
+              </Link>
+              <Link
+                href="/wishlist"
+                className="font-bold text-[#3d000c]"
+              >
+                Wishlist
+                <Heart className="inline ml-1 mb-1" />
+              </Link>
 
               {/* More Button for mobile */}
               <div className="relative" ref={dropdownRef}>
@@ -462,7 +508,7 @@ export function Header() {
                   More
                 </button>
                 {showDropdown && (
-                  <div className="absolute mt-2 w-32 bg-white text-[#3d000c] shadow-lg rounded">
+                  <div className="absolute mt- w-32 bg-white z-50 text-[#3d000c] shadow-lg rounded">
                     <div className="py-2 flex flex-col">
                       <Link
                         href="/policies/wear-and-care"
@@ -499,7 +545,7 @@ export function Header() {
           placeholder="Search..."
           className="pl-10 w-full h-10 border rounded-md text-gray-700 border-gray-300 focus:ring-2 focus:ring-[#3d000c] focus:outline-none"
           value={searchQuery}
-          onChange={e => setSearchQuery(e.target.value)}
+          onChange={(e) => setSearchQuery(e.target.value)}
           onFocus={() => setSearchOpen(true)} // 👈 opens overlay in mobile
         />
         {searchOpen && (
@@ -517,9 +563,16 @@ export function Header() {
             {/* Circular Suggestions - filtered products */}
             <div className="mt-8 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-6 max-w-6xl mx-auto">
               {filteredProducts.map((product, i) => (
-                <div key={product._id ?? product.id ?? i} className="flex flex-col items-center text-center">
+                <div
+                  key={product._id ?? i}
+                  className="flex flex-col items-center text-center cursor-pointer"
+                  onClick={() => {
+                    console.log("hello");
+                    router.push(`/product/${product._id}`);
+                  }}
+                >
                   <Image
-                    src={product.image || (Array.isArray(product.pImages) && product.pImages.length > 0 ? product.pImages[0] : "/placeholder.svg")}
+                    src={product.pImages[0] || "/placeholder.svg"}
                     alt={product.pName}
                     className="w-20 h-20 object-cover rounded-full border shadow-sm hover:scale-105 transition"
                     width={80}

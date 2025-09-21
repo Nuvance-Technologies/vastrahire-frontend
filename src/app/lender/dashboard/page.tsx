@@ -14,6 +14,8 @@ import {
   Crown,
   Gem,
   InfoIcon,
+  IndianRupee,
+  Camera
 } from "lucide-react";
 import { DashboardHeader } from "@/app/components/Dashboard-header";
 import { DashboardNav } from "@/app/components/Dashboard-nav";
@@ -25,7 +27,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { ProductI } from "@/app/category/women/page";
 import Link from "next/link";
-import { UserRentalI } from "@/app/customer/dashboard/page";
+import { uploadImageToCloudinary } from "@/util/uploadImage";
 
 type Tier = "Golden" | "Platinum" | "Diamond";
 type TierOrNone = Tier | "none";
@@ -77,7 +79,7 @@ export default function LenderDashboard() {
   const [newProduct, setNewProduct] = useState({
     pName: "",
     pPrice: "",
-    pSize: "",
+    pSize: [] as string[],
     pDesc: "",
     pColor: "",
     subcategory: "",
@@ -89,7 +91,7 @@ export default function LenderDashboard() {
     quantity: 0,
     category: "",
     ownerID: "",
-    pImages: [] as (string | File)[],
+    pImages: [] as string[], // store Cloudinary URLs only
   });
   // inside LenderDashboard component (state + handlers at the top)
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -103,8 +105,66 @@ export default function LenderDashboard() {
   });
   const [totalProducts, setTotalProducts] = useState(0);
   const [totalEarnings, setTotalEarnings] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
+
+  const handleEditClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  // Handle file change
+  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Preview
+    const objectUrl = URL.createObjectURL(file);
+    setPreview(objectUrl);
+
+  };
 
   const { data: session } = useSession();
+
+  const handleProductImageChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    setIsUploading(true);
+
+    try {
+      const uploadedUrls = await Promise.all(
+        Array.from(files).map(async (file) => {
+          const validTypes = ["image/jpg", "image/jpeg", "image/png", "image/gif"];
+          if (!validTypes.includes(file.type)) {
+            toast.error("Invalid file type. Please upload JPG/JPEG/PNG/GIF.");
+            return null;
+          }
+          if (file.size > 5 * 1024 * 1024) {
+            toast.error("Image must be less than 5MB.");
+            return null;
+          }
+          const data = await uploadImageToCloudinary(file);
+          return data.secure_url;
+        })
+      );
+
+      const filteredUrls = uploadedUrls.filter((url): url is string => url !== null);
+
+      setNewProduct((prev) => ({
+        ...prev,
+        pImages: [...(prev.pImages || []), ...filteredUrls],
+      }));
+      toast.success("Images uploaded successfully!");
+    } catch (err) {
+      console.error("Upload error:", err);
+      toast.error("Failed to upload images. Try again.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const fetchLenderProfile = async () => {
     try {
@@ -186,35 +246,26 @@ export default function LenderDashboard() {
     }
   };
 
+
   const handleProductSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      const formData = new FormData();
-
-      Object.entries(newProduct).forEach(([key, value]) => {
-        if (key === "pImages" && Array.isArray(value)) {
-          value.forEach((file) => formData.append("pImages", file));
-        } else {
-          formData.append(key, value as string | Blob);
-        }
-      });
-
-      formData.set("ownerID", session?.user?.id || "");
-
-      const res = await axios.post("/api/product", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
+      const productData = {
+        ...newProduct,
+        ownerID: session?.user?.id || "",
+      };
+      console.log(productData);
+      const res = await axios.post("/api/product", productData);
+      console.log(res.status);
       if (res.status === 201) {
+
         toast.success("Product added successfully!");
         setShowAddForm(false);
         setNewProduct({
           pName: "",
           pPrice: "",
-          pSize: "",
+          pSize: [] as string[],
           pDesc: "",
           pColor: "",
           subcategory: "",
@@ -226,7 +277,7 @@ export default function LenderDashboard() {
           quantity: 0,
           category: "",
           ownerID: "",
-          pImages: [""],
+          pImages: [],
         });
         fetchProducts();
       }
@@ -235,6 +286,10 @@ export default function LenderDashboard() {
       toast.error("Failed to add product. Please try again.");
     }
   };
+
+  const handleEditProduct = async (productId: string) => {
+    console.log("editing....", productId);
+  }
 
   const handleDelete = async (productId: string) => {
     if (!confirm("Are you sure you want to delete this product?")) return;
@@ -287,13 +342,20 @@ export default function LenderDashboard() {
     {
       label: "Total Earnings",
       value: `₹${totalEarnings}`,
-      icon: DollarSign,
+      icon: IndianRupee,
       color: "text-purple-600",
     },
   ];
 
   const tier = getLenderTier();
   const tierStyle = TIER_STYLES[tier];
+  // Predefined sizes for categories
+  const SIZE_OPTIONS: Record<string, string[]> = {
+    Cloth: ["XS", "S", "M", "L", "XL", "XXL"],
+    Footwear: ["6", "7", "8", "9", "10", "11"],
+    Watch: ["One Size"],
+  };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
@@ -388,7 +450,7 @@ export default function LenderDashboard() {
                     onChange={(e) =>
                       setNewProduct({ ...newProduct, pName: e.target.value })
                     }
-                    className="border rounded-lg p-2"
+                    className="border rounded-lg p-2 col-span-2 md:col-span-1"
                   />
                   {/* Category ID by category name */}
                   <select
@@ -396,7 +458,7 @@ export default function LenderDashboard() {
                     onChange={(e) =>
                       setNewProduct({ ...newProduct, category: e.target.value })
                     }
-                    className="border rounded-lg p-2"
+                    className="border rounded-lg p-2 col-span-2 md:col-span-1"
                   >
                     <option value="">Select Category</option>
                     <option value="women">Women</option>
@@ -405,7 +467,7 @@ export default function LenderDashboard() {
                   </select>
                   <input
                     type="number"
-                    placeholder="Daily Rate ($)"
+                    placeholder="Daily Rate (₹)"
                     value={newProduct.pPrice}
                     onChange={(e) =>
                       setNewProduct({
@@ -413,20 +475,21 @@ export default function LenderDashboard() {
                         pPrice: e.target.value,
                       })
                     }
-                    className="border rounded-lg p-2"
+                    className="border rounded-lg p-2 col-span-2 md:col-span-1"
                   />
 
                   {/* Available Sizes */}
                   <input
                     type="text"
                     placeholder="Available Sizes (e.g., S, M, L, XL)"
-                    value={newProduct.pSize}
+                    className="border rounded-lg p-2 col-span-2 md:col-span-1"
                     onChange={(e) =>
-                      setNewProduct({ ...newProduct, pSize: e.target.value })
+                      setNewProduct({
+                        ...newProduct,
+                        pSize: e.target.value.split(",").map(s => s.trim()).filter(Boolean),
+                      })
                     }
-                    className="border rounded-lg p-2"
                   />
-
                   {/* Pickup Location */}
                   <input
                     type="text"
@@ -440,16 +503,17 @@ export default function LenderDashboard() {
                     }
                     className="border rounded-lg p-2 w-full col-span-2"
                   />
-                  <textarea
-                    placeholder="Description"
-                    value={newProduct.pDesc}
+                  <input
+                    type="number"
+                    placeholder="Quantity Available"
+                    value={newProduct.quantity}
                     onChange={(e) =>
                       setNewProduct({
                         ...newProduct,
-                        pDesc: e.target.value,
+                        quantity: parseInt(e.target.value, 10),
                       })
                     }
-                    className="border rounded-lg p-2 col-span-2"
+                    className="border rounded-lg p-2 col-span-2 md:col-span-1"
                   />
                   <input
                     type="text"
@@ -458,7 +522,7 @@ export default function LenderDashboard() {
                     onChange={(e) =>
                       setNewProduct({ ...newProduct, pColor: e.target.value })
                     }
-                    className="border rounded-lg p-2"
+                    className="border rounded-lg p-2 col-span-2 md:col-span-1"
                   />
                   <select
                     value={newProduct.subcategory}
@@ -468,7 +532,7 @@ export default function LenderDashboard() {
                         subcategory: e.target.value,
                       })
                     }
-                    className="border rounded-lg p-2"
+                    className="border rounded-lg p-2 col-span-2 md:col-span-1"
                   >
                     <option value="">Select Subcategory</option>
                     <option value="clothes">Clothes</option>
@@ -488,7 +552,7 @@ export default function LenderDashboard() {
                         pDiscount: e.target.value,
                       })
                     }
-                    className="border rounded-lg p-2"
+                    className="border rounded-lg p-2 col-span-2 md:col-span-1"
                   />
                   <input
                     type="text"
@@ -500,7 +564,7 @@ export default function LenderDashboard() {
                         pFabric: e.target.value,
                       })
                     }
-                    className="border rounded-lg p-2"
+                    className="border rounded-lg p-2 col-span-2 md:col-span-1"
                   />
                   <input
                     type="text"
@@ -512,7 +576,7 @@ export default function LenderDashboard() {
                         pPattern: e.target.value,
                       })
                     }
-                    className="border rounded-lg p-2"
+                    className="border rounded-lg p-2 col-span-2 md:col-span-1"
                   />
                   <input
                     type="text"
@@ -524,33 +588,30 @@ export default function LenderDashboard() {
                         pOccasion: e.target.value,
                       })
                     }
-                    className="border rounded-lg p-2"
+                    className="border rounded-lg p-2 col-span-2 md:col-span-1"
                   />
-                  <input
-                    type="number"
-                    placeholder="Quantity Available"
-                    value={newProduct.quantity}
+                  <textarea
+                    placeholder="Description"
+                    value={newProduct.pDesc}
                     onChange={(e) =>
                       setNewProduct({
                         ...newProduct,
-                        quantity: parseInt(e.target.value, 10),
+                        pDesc: e.target.value,
                       })
                     }
-                    className="border rounded-lg p-2"
+                    className="border rounded-lg p-2 col-span-2"
                   />
-                  {/* Images upload can be added here */}
+
                   <input
                     type="file"
                     multiple
-                    onChange={(e) => {
-                      if (!e.target.files) return;
-                      setNewProduct({
-                        ...newProduct,
-                        pImages: Array.from(e.target.files), // store File objects
-                      });
-                    }}
+                    onChange={handleProductImageChange}
                     className="border rounded-lg p-2"
                   />
+
+                  {isUploading && (
+                    <p className="text-sm text-blue-500">Uploading...</p>
+                  )}
                   <button
                     type="submit"
                     className="col-span-2 px-4 py-2 bg-[#3d000c] hover:bg-[#570112] text-white rounded-lg"
@@ -571,13 +632,15 @@ export default function LenderDashboard() {
                   key={p._id}
                   className="flex items-center gap-4 border rounded-lg p-4 mb-3 hover:shadow"
                 >
-                  <Image
-                    src={p.pImages[0] || "/placeholder.png"}
-                    alt={p.pName}
-                    className="h-16 w-16 object-cover rounded-lg"
-                    width={64}
-                    height={64}
-                  />
+                  <div className="flex gap-2 flex-wrap mt-2">
+                    <Image
+                      src={p.pImages[0] || "/placeholder.png"}
+                      alt="preview"
+                      width={64}
+                      height={64}
+                      className="rounded-lg object-cover"
+                    />
+                  </div>
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-800">{p.pName}</h3>
                     <p className="text-sm capitalize text-gray-500">
@@ -597,9 +660,10 @@ export default function LenderDashboard() {
                     <button className="p-2 border rounded hover:bg-gray-100">
                       <Eye className="h-4 w-4" />
                     </button>
-                    <button className="p-2 border rounded hover:bg-gray-100">
+                    <Link href={`/product/${p._id}/edit`} className="p-2 border rounded hover:bg-gray-100"
+                    >
                       <Edit className="h-4 w-4" />
-                    </button>
+                    </Link>
                     <button
                       onClick={() => handleDelete(p._id)}
                       className="p-2 border rounded text-red-600 hover:bg-red-50"
@@ -632,6 +696,34 @@ export default function LenderDashboard() {
               </div>
 
               <form onSubmit={handleProfileSave}>
+                {/* Profile Photo Section */}
+                <div className="flex flex-col items-center mb-6">
+                  <div className="relative">
+                    <Image
+                      src={preview || "/default-avatar.png"}
+                      alt="Profile Photo"
+                      width={100}
+                      height={100}
+                      className="rounded-full object-cover border-2 border-gray-300 w-28 h-28"
+                    />
+                    {isEditingProfile && (
+                      <button
+                        type="button"
+                        onClick={handleEditClick}
+                        className="absolute bottom-0 right-0 bg-[#3d000c] text-white p-2 rounded-full shadow-md hover:bg-[#710017]"
+                      >
+                        <Camera size={18} />
+                      </button>
+                    )}
+                  </div>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePhotoChange}
+                    className="hidden"
+                  />
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Left column */}
                   <div className="space-y-4">

@@ -23,15 +23,18 @@
     "next": "15.4.7",
     "next-auth": "^4.24.11",
     "nextjs-toploader": "^3.8.16",
+    "nodemailer": "^6.10.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hot-toast": "^2.6.0",
+    "react-router-dom": "^7.9.1",
     "swiper": "^11.2.10"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/nodemailer": "^7.0.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",

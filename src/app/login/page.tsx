@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ShoppingBag, Heart, Star } from "lucide-react";
+import { ShoppingBag, Heart, Star, Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -15,6 +15,7 @@ export default function CustomerLoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { data: session } = useSession();
+    const [showPassword, setShowPassword] = useState(false);
 
   const router = useRouter();
   useEffect(() => {
@@ -58,7 +59,6 @@ export default function CustomerLoginPage() {
   if (loading) {
     return <SpinnerLoader />;
   }
-
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 relative">
       {/* Background decorative elements */}
@@ -119,21 +119,28 @@ export default function CustomerLoginPage() {
                   className="h-12 w-full text-gray-700 px-3 rounded-md border-2 border-gray-300 bg-white focus:border-indigo-600 outline-none transition-colors"
                 />
               </div>
-              <div className="space-y-2">
+              <div className="space-y-2 relative">
                 <label
                   htmlFor="password"
                   className="text-sm font-medium text-gray-700"
                 >
-                  Password
+                 Password
                 </label>
                 <input
                   id="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
-                  className="h-12 w-full text-gray-700 px-3 rounded-md border-2 border-gray-300 bg-white focus:border-indigo-600 outline-none transition-colors"
+                  placeholder="Create a strong password"
+                  className="h-12 w-full px-3 pr-10 text-gray-700 rounded-md border-2 border-gray-300 bg-white focus:border-[#3d000c] outline-none transition-colors"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 bottom-5 text-gray-500"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
               </div>
             </div>
 

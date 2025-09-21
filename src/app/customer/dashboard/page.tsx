@@ -164,9 +164,9 @@ export default function CustomerDashboard() {
       const res = await axios.get(`/api/user-rent?userId=${session?.user?.id}`);
       if (res.status === 200) {
         setRentalHistory(res.data.userRentals);
+        console.log("res.data.userRentals: ", res.data.userRentals);
         setTotalSpentOnAllProducts(res.data.totalSpentOfAllProducts);
         setTotalRentedItems(res.data.totalRentedItems);
-        // console.log("User Rentals:", res.data.userRentals);
       }
     } catch (error) {
       console.error("Error fetching user rentals:", error);
@@ -226,7 +226,7 @@ export default function CustomerDashboard() {
   //     startDate: "2024-01-15",
   //     endDate: "2024-01-20",
   //     status: "completed",
-  //     amount: "$150",
+  //     amount: "₹150",
   //     image: "/vintage-camera-still-life.png",
   //     rating: 5,
   //   },
@@ -238,7 +238,7 @@ export default function CustomerDashboard() {
   //     startDate: "2024-01-10",
   //     endDate: "2024-01-17",
   //     status: "completed",
-  //     amount: "$200",
+  //     amount: "₹200",
   //     image: "/modern-laptop-workspace.png",
   //     rating: 4,
   //   },
@@ -250,7 +250,7 @@ export default function CustomerDashboard() {
   //     startDate: "2024-01-25",
   //     endDate: "2024-01-28",
   //     status: "active",
-  //     amount: "$80",
+  //     amount: "₹80",
   //     image: "/mountain-bike-trail.png",
   //     rating: null,
   //   },
@@ -372,7 +372,7 @@ export default function CustomerDashboard() {
                   >
                     <div className="relative overflow-hidden rounded-lg">
                       <Image
-                        src={rental.productID.pImages[0]}
+                        src={rental.productID.pImages[0] || "/placeholder.png"}
                         alt={rental.productID.pName}
                         className="h-16 w-16 object-cover group-hover:scale-110 transition-transform duration-300"
                         width={64}

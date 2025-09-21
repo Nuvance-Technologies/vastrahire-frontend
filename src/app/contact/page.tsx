@@ -9,7 +9,8 @@ export default function ContactPage() {
   const [submitting, setSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function 
+  onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setSubmitting(true)
     await new Promise((r) => setTimeout(r, 900))
@@ -56,7 +57,7 @@ export default function ContactPage() {
               {/* Contact shortcuts */}
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
-                  href="mailto:support@rentstyle.example"
+                  href="mailto:vastrahire@gmail.com"
                   className="inline-flex items-center gap-2 rounded-md border border-gray-300 px-4 py-2 text-sm hover:bg-gray-100 transition"
                 >
                   <Mail className="h-4 w-4" />
@@ -70,7 +71,7 @@ export default function ContactPage() {
                   Send a message
                 </Link>
                 <Link
-                  href="tel:+11234567890"
+                  href="tel:+917723881896"
                   className="inline-flex items-center gap-2 rounded-md border border-gray-300 px-4 py-2 text-sm hover:bg-gray-100 transition"
                 >
                   <Phone className="h-4 w-4" />
@@ -137,8 +138,7 @@ export default function ContactPage() {
                 <textarea id="message" name="message" placeholder="Tell us what you need help with..." required className="mt-1.5 w-full rounded-md border border-gray-300 px-3 py-2 text-sm min-h-[120px]" />
                 <p className="mt-2 text-xs text-gray-500">
                   By submitting, you agree to our{" "}
-                  <Link href="/terms" className="underline hover:text-[#690216]">Terms</Link> and{" "}
-                  <Link href="/privacy" className="underline hover:text-[#690216]">Privacy Policy</Link>. We’ll never share your information.
+                      <Link href="/terms-and-conditions" className="underline hover:text-[#690216]">Terms and Conditions</Link>. We’ll never share your information.
                 </p>
               </div>
 
@@ -183,13 +183,13 @@ export default function ContactPage() {
             <div className="p-6 bg-gray-50 rounded-lg shadow-sm">
               <h3 className="text-base font-semibold">Prefer a different channel?</h3>
               <div className="mt-4 space-y-3 text-sm">
-                <Link href="mailto:support@rentstyle.example" className="flex items-center gap-3 hover:text-[#690216] transition">
+                <Link href="mailto:vastrahire@gmail.com" className="flex items-center gap-3 hover:text-[#690216] transition">
                   <Mail className="h-4 w-4 text-[#690216]" />
-                  support@rentstyle.example
+                  vastrahire@gmail.com
                 </Link>
-                <Link href="tel:+11234567890" className="flex items-center gap-3 hover:text-[#690216] transition">
+                <Link href="tel:+917723881896" className="flex items-center gap-3 hover:text-[#690216] transition">
                   <Phone className="h-4 w-4 text-[#690216]" />
-                  +1 (123) 456-7890
+                  +917723881896
                 </Link>
                 <Link href="#contact-form" className="flex items-center gap-3 hover:text-[#690216] transition">
                   <MessageSquare className="h-4 w-4 text-[#690216]" />
@@ -224,7 +224,7 @@ export default function ContactPage() {
             Prefer email? We’ll keep the thread for your records.
           </p>
           <Link
-            href="mailto:support@rentstyle.example"
+            href="mailto:vastrahire@gmail.com"
             className="inline-flex items-center gap-2 rounded-md bg-[#3d000c] px-4 py-2 text-sm text-white hover:bg-[#690216] transition"
           >
             <Mail className="h-4 w-4" />

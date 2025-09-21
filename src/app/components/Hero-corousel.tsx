@@ -26,41 +26,21 @@ const slides = [
     subtitle: "Find the perfect accessories for any occasion",
     cta: "Browse Accessories",
   },
-  {
+    {
     id: 4,
-    image: "/slide 3.png",
+    image: "/images/slide9.jpg",
     title: "Complete Your Look",
     subtitle: "Find the perfect accessories for any occasion",
     cta: "Browse Accessories",
   },
   {
     id: 5,
-    image: "/slide 4.png",
+    image: "/images/slide10.jpg",
     title: "Complete Your Look",
     subtitle: "Find the perfect accessories for any occasion",
     cta: "Browse Accessories",
   },
-  {
-    id: 6,
-    image: "/slide 5.png",
-    title: "Complete Your Look",
-    subtitle: "Find the perfect accessories for any occasion",
-    cta: "Browse Accessories",
-  },
-  {
-    id: 7,
-    image: "/slide 6.png",
-    title: "Complete Your Look",
-    subtitle: "Find the perfect accessories for any occasion",
-    cta: "Browse Accessories",
-  },
-  {
-    id: 8,
-    image: "/slide 8.png",
-    title: "Complete Your Look",
-    subtitle: "Find the perfect accessories for any occasion",
-    cta: "Browse Accessories",
-  },
+
 ]
 
 export function HeroCarousel() {
@@ -109,9 +89,6 @@ export function HeroCarousel() {
                 <div className="text-center text-white max-w-2xl px-4">
                   <h2 className="text-5xl font-bold mb-4">{slide.title}</h2>
                   <p className="text-xl mb-8">{slide.subtitle}</p>
-                  <button className="bg-[#3b000c] hover:bg-[#680015] px-3 py-2 rounded-xl">
-                    {slide.cta}
-                  </button>
                 </div>
               </div>
             </div>

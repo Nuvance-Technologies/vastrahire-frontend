@@ -4,6 +4,7 @@ import Product from "@/lib/models/product.model";
 import UserRentalItem from "@/lib/models/userRental.model";
 import LenderItem from "@/lib/models/lenderItem.model";
 import User from "@/lib/models/user.model";
+import mongoose from "mongoose";
 
 // Helper function to calculate days between dates
 function calculateRentalDays(from: Date, to: Date): number {
@@ -14,7 +15,9 @@ function calculateRentalDays(from: Date, to: Date): number {
 // Helper function to validate rental period
 function validateRentalPeriod(
   from: Date,
-  to: Date
+  to: Date,
+  fromTime: Date,
+  toTime: Date
 ): { isValid: boolean; error?: string } {
   const fromDate = new Date(from);
   const toDate = new Date(to);
@@ -24,11 +27,8 @@ function validateRentalPeriod(
   if (fromDate < today) {
     return { isValid: false, error: "Rental start date cannot be in the past" };
   }
-  if (toDate <= fromDate) {
-    return {
-      isValid: false,
-      error: "Rental end date must be after start date",
-    };
+  if(fromTime < toTime){
+    return {isValid : false, error: "invalidRentalTime"}
   }
   return { isValid: true };
 }
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
   try {
     await connectToDB();
 
-    const { productId, quantity, userId, from, to } = await request.json();
+    const { productId, quantity, userId, from, to, fromTime, toTime } = await request.json();
 
     if (!productId || !userId || !from || !to || !quantity) {
       return NextResponse.json(
@@ -54,7 +54,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const periodValidation = validateRentalPeriod(from, to);
+    const periodValidation = validateRentalPeriod(from, to, fromTime, toTime);
+    if(periodValidation.error === "invalidRentalTime"){
+      return NextResponse.json(
+        { error: "End time must be after start time" },
+        { status: 400 }
+      );
+    }
     if (!periodValidation.isValid) {
       return NextResponse.json(
         { error: periodValidation.error },
@@ -89,8 +95,8 @@ export async function POST(request: NextRequest) {
 
     // create a new user rental record
     const userRental = await UserRentalItem.create({
-      userID: userId,
-      productID: productId,
+      userID: new mongoose.Types.ObjectId(userId),
+      productID: new mongoose.Types.ObjectId(productId),
       totalRentals: quantity,
       totalSpent: totalCost,
       rentalPeriod: {
@@ -107,14 +113,6 @@ export async function POST(request: NextRequest) {
       totalEarnings: totalCost,
       avgRating: product.avgRating,
     });
-
-    // const lender = await LenderItem.find();
-    // console.log(lender);
-    // let total = 0;
-    // for (let i = 0; i < lender.length; i++) {
-    //   total += lender[i].totalEarnings;
-    //   console.log(total);
-    // }
 
     return NextResponse.json(
       {

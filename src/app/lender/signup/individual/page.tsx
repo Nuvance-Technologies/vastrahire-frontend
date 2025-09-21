@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { Zap } from "lucide-react";
+import { Zap, Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import { signIn } from "next-auth/react";
 import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ErrorI } from "@/app/customer/signup/page";
 
 export default function IndividualLenderSignupPage() {
   const [formData, setFormData] = useState({
@@ -21,10 +22,22 @@ export default function IndividualLenderSignupPage() {
     ifscCode: "",
     password: "",
     confirmPassword: "",
+    profilePhoto: null as File | null,
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
 
   const router = useRouter();
 
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFormData({ ...formData, profilePhoto: file });
+      setPreview(URL.createObjectURL(file)); // generate preview
+    }
+  };
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
@@ -63,11 +76,18 @@ export default function IndividualLenderSignupPage() {
             ifscCode: "",
             password: "",
             confirmPassword: "",
+            profilePhoto: null,
           });
           router.push("/");
         }
       }
-    } catch (error) {
+    } catch (err: unknown) {
+      const error = err as ErrorI;
+      // console.log(error);
+      if (error?.status === 400) {
+        toast.error(error?.response?.data.message || "User already exists!");
+        return;
+      }
       console.error("Signup failed:", error);
       toast.error("Signup failed. Please try again.");
     }
@@ -109,6 +129,8 @@ export default function IndividualLenderSignupPage() {
           </h2>
 
           <form onSubmit={handleSignup} className="space-y-4 text-neutral-800">
+            {/* Profile Photo */}
+
             <div className="grid grid-cols-2 gap-3">
               <input
                 placeholder="First Name"
@@ -154,6 +176,26 @@ export default function IndividualLenderSignupPage() {
               }
               className="w-full px-3 py-2 border-2 border-neutral-400 rounded-md"
             ></textarea>
+            <div className="flex md:flex-row flex-col items-center gap-3">
+              <label htmlFor="profilePhoto" className="text-sm font-medium">
+                Profile Photo
+              </label>
+              {preview && (
+                <Image
+                  src={preview}
+                  alt="Profile Preview"
+                  width={80}
+                  height={80}
+                  className="rounded-full object-cover w-16 h-16"
+                />
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handlePhotoChange}
+                className="w-full md:w-[84%] px-3 py-2 border-2 border-neutral-400 rounded-md"
+              />
+            </div>
             <div className="grid grid-cols-2 gap-3">
               <input
                 placeholder="Account Number"
@@ -172,25 +214,67 @@ export default function IndividualLenderSignupPage() {
                 className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
               />
             </div>
-            <input
-              type="password"
-              placeholder="Create Password"
-              value={formData.password}
-              onChange={(e) =>
-                setFormData({ ...formData, password: e.target.value })
-              }
-              className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
-            />
-            <input
-              type="password"
-              placeholder="Confirm Password"
-              value={formData.confirmPassword}
-              onChange={(e) =>
-                setFormData({ ...formData, confirmPassword: e.target.value })
-              }
-              className="w-full h-12 px-3 border-2 border-neutral-400 rounded-md"
-            />
+            {/* Password Field */}
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Create Password"
+                value={formData.password}
+                onChange={(e) =>
+                  setFormData({ ...formData, password: e.target.value })
+                }
+                className="w-full h-12 px-3 pr-10 border-2 border-neutral-400 rounded-md"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-3 flex items-center text-gray-500"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
 
+            {/* Confirm Password Field */}
+            <div className="relative">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="Confirm Password"
+                value={formData.confirmPassword}
+                onChange={(e) =>
+                  setFormData({ ...formData, confirmPassword: e.target.value })
+                }
+                className="w-full h-12 px-3 pr-10 border-2 border-neutral-400 rounded-md"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute inset-y-0 right-3 flex items-center text-gray-500"
+              >
+                {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
+            {/* Terms */}
+            <div className="flex items-start space-x-2 py-5">
+              <input
+                type="checkbox"
+                id="terms"
+                value={termsAccepted ? "accepted" : ""}
+                onChange={(e) => setTermsAccepted(e.target.checked)}
+                className="rounded border-gray-300 w-4 h-4 mt-1"
+              />
+              <label
+                htmlFor="terms"
+                className="text-sm leading-relaxed text-gray-600"
+              >
+                I agree to the{" "}
+                <Link
+                  href="/terms"
+                  className="text-[#3d000c] hover:text-[#9f0020] font-medium"
+                >
+                  Terms & conditions
+                </Link>
+              </label>
+            </div>
             <button
               type="submit"
               className="w-full h-12 bg-gradient-to-r from-[#3d000c] to-[#720017] text-white font-semibold rounded-md shadow-lg"
