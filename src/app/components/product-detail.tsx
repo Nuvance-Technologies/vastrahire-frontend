@@ -55,6 +55,7 @@ export function ProductDetail({ product }: { product: ProductI }) {
   const [reviews, setReviews] = useState<ReviewModel[]>([]);
   const productRef = useRef<HTMLDivElement>(null);
   const [slides, setSlides] = useState<ProductI[]>([]);
+  const [ownerData, setOwnerData] = useState("");
 
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -64,6 +65,7 @@ export function ProductDetail({ product }: { product: ProductI }) {
       const res = await axios.get(`/api/product/${session?.user?.id}`);
       if (res.status === 200) {
         setSlides(res.data.products);
+        console.log(res.data.products[0].ownerID)
       }
     } catch (error) {
       console.error("Failed to fetch products:", error);
@@ -75,6 +77,23 @@ export function ProductDetail({ product }: { product: ProductI }) {
       fetchProducts();
     }
   }, [status, session?.user?.id]);
+
+  useEffect(() => {
+    getOwner(product.ownerID)
+  }, [product.ownerID])
+
+  const getOwner = async (id: string) => {
+    try {
+      const response = await axios.get(`/api/get-user?userId=${id}`);
+      console.log(typeof(response.data.role))
+      if (response.data.role === "business") {
+        setOwnerData(response.data.name.companyName)
+      } else {
+        setOwnerData(response.data.name.firstName)
+      }
+    } catch (error) {
+    }
+  }
 
   // --- Swipe-to-feedback listeners ---
   useEffect(() => {
@@ -210,6 +229,16 @@ export function ProductDetail({ product }: { product: ProductI }) {
       return;
     }
 
+    if(!fromTime){
+      toast.error("Please select from time!");
+      return;
+    }
+
+    if(!toTime){
+      toast.error("Please select to time!");
+      return;
+    }
+
     if (singleDay && !singleDate) {
       toast.error("Please select the date!");
       return;
@@ -221,6 +250,10 @@ export function ProductDetail({ product }: { product: ProductI }) {
       return;
     }
 
+    // Combine date and time into ISO strings
+        const fromDateTime = from && fromTime ? new Date(`${from}T${fromTime}`).toISOString() : null;
+        const toDateTime = to && toTime ? new Date(`${to}T${toTime}`).toISOString() : null;
+
     // If user has address and phone, proceed with rent request
     try {
       const res = await axios.post("/api/rent-item", {
@@ -228,9 +261,10 @@ export function ProductDetail({ product }: { product: ProductI }) {
         productId: product._id,
         quantity,
         size: selectedSize,
-        from,
-        to,
+        from: fromDateTime,
+        to: toDateTime,
       });
+      console.log(res.data)
 
       if (res.status === 200) {
         const totalPrice = calculateTotalPrice();   // get calculated price
@@ -361,6 +395,9 @@ export function ProductDetail({ product }: { product: ProductI }) {
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
                 {product.pName}
+              </h1>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                {ownerData}
               </h1>
 
               <div className="flex items-center gap-4 mb-4">
