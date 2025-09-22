@@ -47,6 +47,12 @@ export interface ProductI {
       hips: string;
     };
   };
+    renter?: {
+    name: {
+      firstname: string;
+      lastname: string;
+    };
+  };
 }
 
 export default function ClothingPage() {

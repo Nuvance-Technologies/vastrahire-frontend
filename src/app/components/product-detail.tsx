@@ -313,6 +313,7 @@ export function ProductDetail({ product }: { product: ProductI }) {
     L: { bust: "38\"", waist: "30\"", hips: "40\"" },
     XL: { bust: "40\"", waist: "32\"", hips: "42\"" },
   };
+  
   return (
     <>
       <main
@@ -322,7 +323,7 @@ export function ProductDetail({ product }: { product: ProductI }) {
         {/* Tip Banner */}
         <div className="mb-4 md:hidden p-3 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-lg border border-gray-200">
           <p className="text-sm text-gray-700 text-center">
-            💡 <strong>Tip:</strong> Swipe left on the product if you&apos;re
+            💡 <strong>Tip:</strong> Swip e left on the product if you&apos;re
             not satisfied to give us feedback
           </p>
         </div>
@@ -366,7 +367,9 @@ export function ProductDetail({ product }: { product: ProductI }) {
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
                 {product.pName}
               </h1>
-
+              <p className="text-gray-700 font-bold py-3">
+                By: {product.renter?.name.firstname} {product.renter?.name.lastname}
+              </p>
               <div className="flex items-center gap-4 mb-4">
                 <div className="flex items-center gap-1">
                   {[...Array(5)].map((_, i) => (
