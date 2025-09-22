@@ -23,18 +23,18 @@ export async function POST(req: Request) {
 
   // Fetch latest rental for user
   const rental = await fetchLatestRentalForUser(userId);
-  if (!rental || Array.isArray(rental) || !rental.productId) {
+  if (!rental || Array.isArray(rental) || !rental.productID) {
     return NextResponse.json({ success: false, error: "Rental not found or missing productId" }, { status: 404 });
   }
 
   // Fetch product info
-  const product = await fetchProductById(rental.productId);
-  if (!product || Array.isArray(product) || !product.ownerId) {
+  const product = await fetchProductById(rental.productID);
+  if (!product || Array.isArray(product) || !product.ownerID) {
     return NextResponse.json({ success: false, error: "Product not found or missing ownerId" }, { status: 404 });
   }
 
   // Fetch owner info
-  const owner = await fetchOwnerById(product.ownerId);
+  const owner = await fetchOwnerById(product.ownerID);
   if (!owner || Array.isArray(owner) || !owner.email) {
     return NextResponse.json({ success: false, error: "Owner not found or missing email" }, { status: 404 });
   }
