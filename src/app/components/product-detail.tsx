@@ -55,6 +55,7 @@ export function ProductDetail({ product }: { product: ProductI }) {
   const [reviews, setReviews] = useState<ReviewModel[]>([]);
   const productRef = useRef<HTMLDivElement>(null);
   const [slides, setSlides] = useState<ProductI[]>([]);
+  const [ownerData, setOwnerData] = useState("");
 
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -64,6 +65,7 @@ export function ProductDetail({ product }: { product: ProductI }) {
       const res = await axios.get(`/api/product/${session?.user?.id}`);
       if (res.status === 200) {
         setSlides(res.data.products);
+        console.log(res.data.products[0].ownerID)
       }
     } catch (error) {
       console.error("Failed to fetch products:", error);
@@ -75,6 +77,26 @@ export function ProductDetail({ product }: { product: ProductI }) {
       fetchProducts();
     }
   }, [status, session?.user?.id]);
+
+  useEffect(() => {
+    getOwner(product.ownerID)
+  }, [product.ownerID])
+
+const getOwner = async (id: string) => {
+  try {
+    const response = await axios.get(`/api/get-user?userId=${id}`);
+    console.log("Owner response:", response.data);
+
+    const first = response.data.name?.firstname || "";
+    const last = response.data.name?.lastname || "";
+    setOwnerData(`${first} ${last}`.trim() || "Unknown User");
+  } catch (error) {
+    console.error("Error fetching owner:", error);
+    setOwnerData("Unknown Owner");
+  }
+};
+
+
 
   // --- Swipe-to-feedback listeners ---
   useEffect(() => {
@@ -210,20 +232,30 @@ export function ProductDetail({ product }: { product: ProductI }) {
       return;
     }
 
+    if(!fromTime){
+      toast.error("Please select from time!");
+      return;
+    }
+
+    if(!toTime){
+      toast.error("Please select to time!");
+      return;
+    }
+
     if (singleDay && !singleDate) {
       toast.error("Please select the date!");
       return;
     }
 
     if (!userdata || !userdata.address || !userdata.phoneNumber) {
-      toast.error("Please select delivery time!");
-      return;
-    }
-    if (!userdata.address || !userdata.phoneNumber) {
       toast.error("Please fill out your address and phone number in your profile before proceeding.");
       router.push("/customer/dashboard"); // Change path if your profile page is different
       return;
     }
+
+    // Combine date and time into ISO strings
+        const fromDateTime = from && fromTime ? new Date(`${from}T${fromTime}`).toISOString() : null;
+        const toDateTime = to && toTime ? new Date(`${to}T${toTime}`).toISOString() : null;
 
     // If user has address and phone, proceed with rent request
     try {
@@ -232,9 +264,10 @@ export function ProductDetail({ product }: { product: ProductI }) {
         productId: product._id,
         quantity,
         size: selectedSize,
-        from,
-        to,
+        from: fromDateTime,
+        to: toDateTime,
       });
+      console.log(res.data)
 
       if (res.status === 200) {
         const totalPrice = calculateTotalPrice();   // get calculated price
@@ -367,9 +400,10 @@ export function ProductDetail({ product }: { product: ProductI }) {
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
                 {product.pName}
               </h1>
-              <p className="text-gray-700 font-bold py-3">
-                By: {product.renter?.name.firstname} {product.renter?.name.lastname}
-              </p>
+              <h1 className="text-xl font-bold text-gray-900 opacity-70 mb-2">
+               By: {ownerData}
+              </h1>
+
               <div className="flex items-center gap-4 mb-4">
                 <div className="flex items-center gap-1">
                   {[...Array(5)].map((_, i) => (

@@ -62,10 +62,16 @@ export default function ClothingPage() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [subCategories, setSubCategories] = useState<SubCatI[]>([]);
   const [catId, setCatId] = useState("");
+  const [filters, setFilters] = useState<Record<string, string>>({});
 
   const getProductsBySubCategory = async (subCategory?: string) => {
-    const productRes = await getProducts(catId, subCategory);
-    setProducts(productRes);
+    try {
+      const productRes = await getProducts(catId, subCategory);
+      setProducts(productRes);
+    } catch (error) {
+      console.error("Error fetching products by subcategory:", error);
+      setProducts([]);
+    }
   };
 
   const getSubCategories = async () => {
@@ -88,11 +94,56 @@ export default function ClothingPage() {
     })();
   }, [catId]);
 
+
   // ✅ Filtered products
-  const filteredProducts =
+  const FilteredProduct =
     activeCategory === "All"
       ? products
-      : products.filter((p) => p.subcategory === activeCategory);
+      : products.filter((p) => p.subcategory.toLowerCase() === activeCategory.toLowerCase());
+
+  // Filter products using selected filters
+  const FilteredProducts = products.filter((p) => {
+    // Subcategory filter
+    if (activeCategory !== "All" && p.subcategory !== activeCategory) return false;
+
+    // Category filter (matches pName for demo)
+    if (filters.cat && p.pName && !p.pName.toLowerCase().includes(filters.cat.toLowerCase())) return false;
+
+    // Colour filter
+    if (filters.col && p.pColor && p.pColor.toLowerCase() !== filters.col.toLowerCase()) return false;
+
+    // Discount filter
+    if (filters.dis) {
+      const discountValue = parseInt(p.pDiscount) || 0;
+      const minDiscount = parseInt(filters.dis);
+      if (discountValue < minDiscount) return false;
+    }
+
+    // Fabric filter
+    if (filters.fab && p.pFabric && p.pFabric.toLowerCase() !== filters.fab.toLowerCase()) return false;
+
+    // Pattern filter
+    if (filters.pat && p.pPattern && p.pPattern.toLowerCase() !== filters.pat.toLowerCase()) return false;
+
+    // Occasion filter
+    if (filters.occ && p.pOccasion && p.pOccasion.toLowerCase() !== filters.occ.toLowerCase()) return false;
+
+    // Size filter
+    if (filters.siz && p.pSize && !p.pSize.includes(filters.siz)) return false;
+
+    // Price filter
+    if (filters.pri) {
+      const price = p.pPrice || 0;
+      if (filters.pri === "0-500" && !(price >= 0 && price <= 500)) return false;
+      if (filters.pri === "500-1000" && !(price > 500 && price <= 1000)) return false;
+      if (filters.pri === "1000-1500" && !(price > 1000 && price <= 1500)) return false;
+      if (filters.pri === "1500-2000" && !(price > 1500 && price <= 2000)) return false;
+      if (filters.pri === "2000+" && !(price > 2000)) return false;
+    }
+
+    return true;
+  });
+
 
   return (
     <div className="min-h-screen bg-white">
@@ -118,8 +169,10 @@ export default function ClothingPage() {
             <button
               key={id}
               onClick={() => {
-                setActiveCategory(cat?.name);
-                getProductsBySubCategory(cat?.name);
+                if (cat?.name) {
+                  setActiveCategory(cat.name);
+                  getProductsBySubCategory(cat.name);
+                }
               }}
               className={`text-sm font-bold py-1 px-3 rounded-xl transition capitalize ${activeCategory === cat?.name
                 ? "bg-black text-white"
@@ -139,15 +192,15 @@ export default function ClothingPage() {
         </h1>
 
         <FilterSection
-          onFilterChange={(filters) => {
-            console.log("Selected Filters:", filters);
+          onFilterChange={(newFilters) => {
+            setFilters(newFilters);
           }}
         />
         {/* Sub Heading + Sort Dropdown */}
         <div className="flex items-center justify-between border-b pb-3 mb-6">
           <p className="text-sm text-gray-700 font-medium">
             {activeCategory === "All" ? "ALL" : activeCategory.toUpperCase()} |{" "}
-            {filteredProducts.length} STYLES FOUND
+            {FilteredProduct.length} STYLES FOUND
           </p>
 
           {/* Sort */}
@@ -194,7 +247,7 @@ export default function ClothingPage() {
 
         {/* ✅ Products Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredProducts.map((product) => (
+          {FilteredProduct.map((product) => (
             <Link key={product._id} href={`/product/${product._id}`}>
               <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
                 <div className="aspect-[4/5] overflow-hidden">

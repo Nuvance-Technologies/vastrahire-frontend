@@ -1,6 +1,7 @@
 import { connectToDB } from "@/lib/db/db";
 import Category from "@/lib/models/category.model";
 import Product from "@/lib/models/product.model";
+import mongoose from "mongoose";
 import { uploadImageToCloudinary } from "@/util/uploadImage";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -110,9 +111,9 @@ export async function DELETE(req: NextRequest) {
   const productId = req.nextUrl.searchParams.get("productId");
   try {
     await connectToDB();
-    if (!productId) {
+    if (!productId || !mongoose.Types.ObjectId.isValid(productId)) {
       return NextResponse.json(
-        { message: "Product ID is required" },
+        { message: "Invalid Product ID" },
         { status: 400 }
       );
     }

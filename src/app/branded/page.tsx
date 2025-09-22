@@ -124,7 +124,11 @@ function BrandChip({
         <button
             type="button"
             aria-pressed={active}
-            onClick={onClick}
+            onClick={() => {
+                if (label) {
+                    onClick();
+                }
+            }}
             className={[
                 "whitespace-nowrap rounded-full px-3 py-1.5 text-sm transition-colors border",
                 active ? "bg-[#3d000c] text-white border-[#3d000c]" : "bg-white hover:bg-gray-100 border-gray-300 text-gray-700",
@@ -226,7 +230,7 @@ export default function BrandedItemsPage() {
     const items = useMemo(() => {
         const onlyBranded = DEMO_PRODUCTS.filter((p) => !!p.brand)
         if (selectedBrand === "All") return onlyBranded
-        return onlyBranded.filter((p) => p.brand === selectedBrand)
+        return onlyBranded.filter((p) => p.brand.toLowerCase() === selectedBrand.toLowerCase())
     }, [selectedBrand])
 
     return (
