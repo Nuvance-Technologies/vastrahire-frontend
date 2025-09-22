@@ -33,14 +33,12 @@ export async function POST(req: Request) {
 
   // Fetch latest rental for user
   const rental = await fetchLatestRentalForUser(userId);
-  console.log("Fetched rental:", rental);
-  if (!rental || Array.isArray(rental) || !rental.productId) {
+  if (!rental || Array.isArray(rental) || !rental.productID) {
     return NextResponse.json({ success: false, error: "Rental not found or missing productId" }, { status: 404 });
   }
 
   // Fetch product info
-  const product = await fetchProductById(rental.productId);
-  console.log("Fetched product:", product);
+  const product = await fetchProductById(rental.productID);
   if (!product || Array.isArray(product) || !product.pName) {
     return NextResponse.json({ success: false, error: "Product not found or missing name" }, { status: 404 });
   }
