@@ -82,19 +82,19 @@ export function ProductDetail({ product }: { product: ProductI }) {
     getOwner(product.ownerID)
   }, [product.ownerID])
 
-const getOwner = async (id: string) => {
-  try {
-    const response = await axios.get(`/api/get-user?userId=${id}`);
-    console.log("Owner response:", response.data);
+  const getOwner = async (id: string) => {
+    try {
+      const response = await axios.get(`/api/get-user?userId=${id}`);
+      console.log("Owner response:", response.data);
 
-    const first = response.data.name?.firstname || "";
-    const last = response.data.name?.lastname || "";
-    setOwnerData(`${first} ${last}`.trim() || "Unknown User");
-  } catch (error) {
-    console.error("Error fetching owner:", error);
-    setOwnerData("Unknown Owner");
-  }
-};
+      const first = response.data.name?.firstname || "";
+      const last = response.data.name?.lastname || "";
+      setOwnerData(`${first} ${last}`.trim() || "Unknown User");
+    } catch (error) {
+      console.error("Error fetching owner:", error);
+      setOwnerData("Unknown Owner");
+    }
+  };
 
 
 
@@ -232,12 +232,12 @@ const getOwner = async (id: string) => {
       return;
     }
 
-    if(!fromTime){
+    if (!fromTime) {
       toast.error("Please select from time!");
       return;
     }
 
-    if(!toTime){
+    if (!toTime) {
       toast.error("Please select to time!");
       return;
     }
@@ -254,8 +254,8 @@ const getOwner = async (id: string) => {
     }
 
     // Combine date and time into ISO strings
-        const fromDateTime = from && fromTime ? new Date(`${from}T${fromTime}`).toISOString() : null;
-        const toDateTime = to && toTime ? new Date(`${to}T${toTime}`).toISOString() : null;
+    const fromDateTime = from && fromTime ? new Date(`${from}T${fromTime}`).toISOString() : null;
+    const toDateTime = to && toTime ? new Date(`${to}T${toTime}`).toISOString() : null;
 
     // If user has address and phone, proceed with rent request
     try {
@@ -267,17 +267,20 @@ const getOwner = async (id: string) => {
         from: fromDateTime,
         to: toDateTime,
       });
-      console.log(res.data)
 
       if (res.status === 200) {
-        const totalPrice = calculateTotalPrice();   // get calculated price
-        toast.success("Make the payment. We'll mail you your details.!");
-        // ✅ pass it in the URL
+        const totalPrice = calculateTotalPrice();
+        toast.success("Make the payment. We'll mail you your details!");
         router.push(`/customer/payment?price=${totalPrice}&fromTime=${fromTime}&toTime=${toTime}`);
       }
-    } catch (error) {
-      console.error(error);
-      toast.error("Error renting item!");
+    } catch (error: any) {
+      console.error("Rent Error:", error);
+      const backendMessage =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        "Something went wrong while processing your request.";
+
+      toast.error(backendMessage);
     }
   };
 
@@ -346,7 +349,7 @@ const getOwner = async (id: string) => {
     L: { bust: "38\"", waist: "30\"", hips: "40\"" },
     XL: { bust: "40\"", waist: "32\"", hips: "42\"" },
   };
-  
+
   return (
     <>
       <main
@@ -401,7 +404,7 @@ const getOwner = async (id: string) => {
                 {product.pName}
               </h1>
               <h1 className="text-xl font-bold text-gray-900 opacity-70 mb-2">
-               By: {ownerData}
+                By: {ownerData}
               </h1>
 
               <div className="flex items-center gap-4 mb-4">
