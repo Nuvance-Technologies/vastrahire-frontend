@@ -82,18 +82,21 @@ export function ProductDetail({ product }: { product: ProductI }) {
     getOwner(product.ownerID)
   }, [product.ownerID])
 
-  const getOwner = async (id: string) => {
-    try {
-      const response = await axios.get(`/api/get-user?userId=${id}`);
-      console.log(typeof(response.data.role))
-      if (response.data.role === "business") {
-        setOwnerData(response.data.name.companyName)
-      } else {
-        setOwnerData(response.data.name.firstName)
-      }
-    } catch (error) {
-    }
+const getOwner = async (id: string) => {
+  try {
+    const response = await axios.get(`/api/get-user?userId=${id}`);
+    console.log("Owner response:", response.data);
+
+    const first = response.data.name?.firstname || "";
+    const last = response.data.name?.lastname || "";
+    setOwnerData(`${first} ${last}`.trim() || "Unknown User");
+  } catch (error) {
+    console.error("Error fetching owner:", error);
+    setOwnerData("Unknown Owner");
   }
+};
+
+
 
   // --- Swipe-to-feedback listeners ---
   useEffect(() => {
@@ -343,6 +346,7 @@ export function ProductDetail({ product }: { product: ProductI }) {
     L: { bust: "38\"", waist: "30\"", hips: "40\"" },
     XL: { bust: "40\"", waist: "32\"", hips: "42\"" },
   };
+  
   return (
     <>
       <main
@@ -396,8 +400,8 @@ export function ProductDetail({ product }: { product: ProductI }) {
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
                 {product.pName}
               </h1>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                {ownerData}
+              <h1 className="text-xl font-bold text-gray-900 opacity-70 mb-2">
+               By: {ownerData}
               </h1>
 
               <div className="flex items-center gap-4 mb-4">

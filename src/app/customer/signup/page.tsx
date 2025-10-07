@@ -261,7 +261,7 @@ export default function CustomerSignupPage() {
               >
                 I agree to the{" "}
                 <Link
-                  href="/terms"
+                  href="/policies/terms-and-conditions"
                   className="text-[#3d000c] hover:text-[#9f0020] font-medium"
                 >
                   Terms & conditions
