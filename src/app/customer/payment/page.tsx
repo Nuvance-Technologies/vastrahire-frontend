@@ -17,16 +17,19 @@ function PaymentContent() {
   const fromTime = searchParams.get("fromTime") || "10:00";
   const toTime = searchParams.get("toTime") || "10:00";
 
-  const data = {
-    userID: session?.user?.id,
-    fromTime,
-    toTime,
-  };
+
 
   const handleConfirm = async () => {
     setLoading(true);
     setError("");
     try {
+      console.log("id:", session?.user?.id);
+      const data = {
+        userId: session?.user?.id,
+        fromTime,
+        toTime,
+      };
+      console.log("Data being sent:", data);
       if (session?.user?.id) {
         const [customerRes, ownerRes] = await Promise.all([
           fetch("/api/send-rental-mail", {
@@ -43,6 +46,9 @@ function PaymentContent() {
 
         const customerResult = await customerRes.json();
         const ownerResult = await ownerRes.json();
+
+        console.log("Customer email result:", customerResult);
+        console.log("Owner email result:", ownerResult);
 
         if (customerResult.success && ownerResult.success) {
           setIsConfirmed(true);
