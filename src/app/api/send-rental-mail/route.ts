@@ -75,7 +75,8 @@ export async function POST(req: Request) {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    const sendEmail = await transporter.sendMail(mailOptions);
+    console.log("Email sent: " + sendEmail.response);
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ success: false, error: (error instanceof Error ? error.message : "An unknown error occurred") }, { status: 500 });
