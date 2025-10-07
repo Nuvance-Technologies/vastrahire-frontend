@@ -17,7 +17,6 @@ function validateRentalPeriod(
   from: Date,
   to: Date,
   fromTime: Date,
-  toTime: Date
 ): { isValid: boolean; error?: string } {
   const fromDate = new Date(from);
   const toDate = new Date(to);
@@ -27,9 +26,6 @@ function validateRentalPeriod(
   if (fromDate < today) {
     return { isValid: false, error: "Rental start date cannot be in the past" };
   }
-  if(fromTime < toTime){
-    return {isValid : false, error: "invalidRentalTime"}
-  }
   return { isValid: true };
 }
 
@@ -38,9 +34,9 @@ export async function POST(request: NextRequest) {
   try {
     await connectToDB();
 
-    const { productId, quantity, userId, from, to, fromTime, toTime } = await request.json();
+    const { productId, quantity, userId, from, to, fromTime} = await request.json();
 
-    if (!productId || !userId || !from || !to || !quantity) {
+    if (!productId || !userId || !from || !quantity) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
@@ -54,7 +50,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const periodValidation = validateRentalPeriod(from, to, fromTime, toTime);
+    const periodValidation = validateRentalPeriod(from, to, fromTime);
     if(periodValidation.error === "invalidRentalTime"){
       return NextResponse.json(
         { error: "End time must be after start time" },

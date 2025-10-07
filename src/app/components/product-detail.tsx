@@ -236,12 +236,6 @@ export function ProductDetail({ product }: { product: ProductI }) {
       toast.error("Please select from time!");
       return;
     }
-
-    if (!toTime) {
-      toast.error("Please select to time!");
-      return;
-    }
-
     if (singleDay && !singleDate) {
       toast.error("Please select the date!");
       return;
@@ -525,15 +519,6 @@ export function ProductDetail({ product }: { product: ProductI }) {
                           className="mt-1 px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                         />
                       </label>
-                      <label className="flex flex-col text-sm font-medium text-gray-700">
-                        To Time
-                        <input
-                          type="time"
-                          value={toTime}
-                          onChange={(e) => setToTime(e.target.value)}
-                          className="mt-1 px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                        />
-                      </label>
                     </div>
                   </div>
                   <label className="flex flex-col text-sm font-medium text-gray-700 mt-4">
@@ -568,7 +553,7 @@ export function ProductDetail({ product }: { product: ProductI }) {
                 <button
                   type="submit"
                   disabled={
-                    !selectedSize || (singleDay ? !singleDate || !deliveryTime : !from || !to)
+                    !selectedSize || (singleDay ? (!singleDate || !from || !to) : (!from || !to))
                   }
                   className="w-full my-4 py-3 bg-[#3d000c] text-white rounded-lg font-semibold hover:bg-[#85021c] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
