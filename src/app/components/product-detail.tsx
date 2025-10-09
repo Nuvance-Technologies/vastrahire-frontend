@@ -332,7 +332,8 @@ export function ProductDetail({ product }: { product: ProductI }) {
     const fromDate = new Date(from);
     const toDate = new Date(to);
     const diffTime = toDate.getTime() - fromDate.getTime();
-    const diffDays = Math.max(Math.ceil(diffTime / (1000 * 60 * 60 * 24)), 1);
+    let diffDays = Math.max(Math.ceil(diffTime / (1000 * 60 * 60 * 24)), 1);
+diffDays += 1;
     return diffDays * (product.pPrice || 0) * (quantity || 1);
   }
 
