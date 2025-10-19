@@ -98,7 +98,6 @@ export default function LateFeePolicyPage() {
           </h1>
           <p className="mt-3 text-neutral-600">
             Your safety and peace of mind are our top priorities. In a community built on sharing, hygiene is not just a policy—it is our most important promise.
-            Every item you receive has been meticulously cleaned, sanitized, and prepared by our expert team.
           </p>
           <p className="mt-3 text-neutral-600 italic">
             You will never have to worry about cleaning or sanitizing a VASTRAHIRE item. We handle it all.
@@ -112,7 +111,7 @@ export default function LateFeePolicyPage() {
             After every single rental, each item undergoes a rigorous, multi-step cleaning process tailored to its specific category and material.
           </p>
 
-          <h3>1. Immediate Inspection Upon Return</h3>
+          <h3>1. Immediate Inspection Upon Return <span className="font-bold">(Not implemented yet)</span></h3>
           <p>
             Upon return, every garment is immediately sent to our dedicated care facility. Our team inspects each piece under bright light to identify repairs or specialized cleaning needs.
           </p>
@@ -181,11 +180,7 @@ export default function LateFeePolicyPage() {
           <p>
             Your <strong>Return Date</strong> is the day after your selected rental period ends. To ensure a timely return, the
             product must be packaged in the provided return bag and handed over to our courier partner for shipment by
-            <strong> 5:00 PM</strong> on your Return Date.
-          </p>
-          <p>
-            We consider an item "returned" once it is scanned into the courier's tracking system. It is your
-            responsibility to retain the courier receipt as proof of shipment.
+            <strong> 12:00 PM</strong> on your Return Date.
           </p>
 
           <h2 id="late-fee-structure" className="scroll-mt-24">2. Late Fee Structure</h2>
@@ -232,11 +227,7 @@ export default function LateFeePolicyPage() {
 
           <h2 id="communication" className="scroll-mt-24">4. Communication</h2>
           <ul>
-            <li>
-              We will notify you via email and SMS as soon as our system marks your return as late. This notification will
-              be sent at <strong>9:00 PM</strong> on your Return Date.
-            </li>
-            <li>
+             <li>
               If you anticipate any issues or delays in returning your product, please contact our customer support team at
               <a className="mx-1 underline" href="mailto:vastrahire@gmail.com">vastrahire@gmail.com</a>
               and <a className="mx-1 underline" href="tel:+917723881896">7723881896</a> as soon as possible. We believe in being

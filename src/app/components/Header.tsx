@@ -449,9 +449,58 @@ export function Header() {
             </div>
           </div>
         </div>
+        <div className="relative md:hidden">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <input
+            type="text"
+            placeholder="Search..."
+            className="pl-10 w-full h-10 border rounded-md text-gray-700 border-gray-300 focus:ring-2 focus:ring-[#3d000c] focus:outline-none"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onFocus={() => setSearchOpen(true)} // 👈 opens overlay in mobile
+          />
+          {searchOpen && (
+            <div
+              className="relative top-[26%] inset-0 bg-white z-[9999] flex flex-col p-6 overflow-y-auto"
+              ref={overlayRef}
+            >
+              <button
+                className="self-end p-2 text-gray-500 hover:text-gray-800"
+                onClick={() => setSearchOpen(false)}
+              >
+                <X className="h-6 w-6" />
+              </button>
+
+              {/* Circular Suggestions - filtered products */}
+              <div className="mt-8 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-6 max-w-6xl mx-auto">
+                {filteredProducts.map((product, i) => (
+                  <div
+                    key={product._id ?? i}
+                    className="flex flex-col items-center text-center cursor-pointer"
+                    onClick={() => {
+                      console.log("hello");
+                      router.push(`/product/${product._id}`);
+                    }}
+                  >
+                    <Image
+                      src={product.pImages[0] || "/placeholder.svg"}
+                      alt={product.pName}
+                      className="w-20 h-20 object-cover rounded-full border shadow-sm hover:scale-105 transition"
+                      width={80}
+                      height={80}
+                    />
+                    <p className="mt-2 text-sm font-medium text-gray-700">
+                      {product.pName}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Mobile Menu */}
-        {mobileMenu && (
+        {mobileMenu && (  
           <div className="md:hidden px-4 pb-4 space-y-3">
             <div className="flex flex-col space-y-2">
               <Link
@@ -538,55 +587,6 @@ export function Header() {
       </nav>
 
       {/* Search in mobile */}
-      <div className="relative md:hidden">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-        <input
-          type="text"
-          placeholder="Search..."
-          className="pl-10 w-full h-10 border rounded-md text-gray-700 border-gray-300 focus:ring-2 focus:ring-[#3d000c] focus:outline-none"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          onFocus={() => setSearchOpen(true)} // 👈 opens overlay in mobile
-        />
-        {searchOpen && (
-          <div
-            className="relative top-[26%] inset-0 bg-white z-[9999] flex flex-col p-6 overflow-y-auto"
-            ref={overlayRef}
-          >
-            <button
-              className="self-end p-2 text-gray-500 hover:text-gray-800"
-              onClick={() => setSearchOpen(false)}
-            >
-              <X className="h-6 w-6" />
-            </button>
-
-            {/* Circular Suggestions - filtered products */}
-            <div className="mt-8 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-6 max-w-6xl mx-auto">
-              {filteredProducts.map((product, i) => (
-                <div
-                  key={product._id ?? i}
-                  className="flex flex-col items-center text-center cursor-pointer"
-                  onClick={() => {
-                    console.log("hello");
-                    router.push(`/product/${product._id}`);
-                  }}
-                >
-                  <Image
-                    src={product.pImages[0] || "/placeholder.svg"}
-                    alt={product.pName}
-                    className="w-20 h-20 object-cover rounded-full border shadow-sm hover:scale-105 transition"
-                    width={80}
-                    height={80}
-                  />
-                  <p className="mt-2 text-sm font-medium text-gray-700">
-                    {product.pName}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
     </header>
   );
 }

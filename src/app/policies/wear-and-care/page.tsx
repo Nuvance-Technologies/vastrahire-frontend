@@ -46,7 +46,7 @@ export default function WearAndCarePolicyPage() {
                         The VASTRAHIRE Wear & Care Policy
                     </h1>
                     <p className="mt-3 text-neutral-600">
-                        As the CEO of VASTRAHIRE, I want to assure you that our commitment extends far beyond providing beautiful
+                        I want to assure you that our commitment extends far beyond providing beautiful
                         products. We are dedicated to ensuring every item in our collection is treated with the utmost care, from the
                         moment it leaves our hands until it is safely returned.
                     </p>
