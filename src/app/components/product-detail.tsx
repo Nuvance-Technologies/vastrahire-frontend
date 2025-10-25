@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useMemo, use } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Star,
   Heart,
@@ -333,7 +334,7 @@ export function ProductDetail({ product }: { product: ProductI }) {
     const toDate = new Date(to);
     const diffTime = toDate.getTime() - fromDate.getTime();
     let diffDays = Math.max(Math.ceil(diffTime / (1000 * 60 * 60 * 24)), 1);
-diffDays += 1;
+    diffDays += 1;
     return diffDays * (product.pPrice || 0) * (quantity || 1);
   }
 
@@ -344,6 +345,13 @@ diffDays += 1;
     L: { bust: "38\"", waist: "30\"", hips: "40\"" },
     XL: { bust: "40\"", waist: "32\"", hips: "42\"" },
   };
+
+  const nextImage = () =>
+    setSelectedImage((prev) => (prev + 1) % product.pImages.length);
+  const prevImage = () =>
+    setSelectedImage(
+      (prev) => (prev - 1 + product.pImages.length) % product.pImages.length
+    );
 
   return (
     <>
@@ -360,22 +368,49 @@ diffDays += 1;
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          <div className="space-y-4">
-            <div className="aspect-[4/5] overflow-hidden rounded-lg border border-gray-200">
-              <Image
-                src={product.pImages[selectedImage] || "/placeholder.svg"}
-                alt={product.pName}
-                className="w-full h-full object-cover"
-                width={400}
-                height={500}
-              />
+          <div className="space-y-4 w-full mx-auto">
+            {/* Main Image (Carousel) */}
+            <div className="relative aspect-[8/9] overflow-hidden rounded-lg border border-gray-200">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={selectedImage}
+                  initial={{ opacity: 0, x: 50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -50 }}
+                  transition={{ duration: 0.4 }}
+                  className="absolute inset-0"
+                >
+                  <Image
+                    src={product.pImages[selectedImage] || "/placeholder.svg"}
+                    alt={product.pName}
+                    fill
+                    className="object-contain"
+                  />
+                </motion.div>
+              </AnimatePresence>
+
+              {/* Navigation Buttons */}
+              <button
+                onClick={prevImage}
+                className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow"
+              >
+                ‹
+              </button>
+              <button
+                onClick={nextImage}
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow"
+              >
+                ›
+              </button>
             </div>
-            <div className="grid grid-cols-4 gap-2">
-              {product.pImages.map((image, index) => (
+
+            {/* Thumbnails */}
+            <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+              {product.pImages.map((image: string, index: number) => (
                 <button
                   key={index}
                   onClick={() => setSelectedImage(index)}
-                  className={`aspect-square overflow-hidden rounded-md border-2 ${selectedImage === index
+                  className={`flex-shrink-0 w-20 h-20 overflow-hidden rounded-md border-2 ${selectedImage === index
                     ? "border-indigo-500"
                     : "border-gray-200"
                     }`}
@@ -383,9 +418,9 @@ diffDays += 1;
                   <Image
                     src={image || "/placeholder.svg"}
                     alt={`${product.pName} ${index + 1}`}
-                    className="w-full h-full object-cover"
-                    width={100}
-                    height={100}
+                    width={80}
+                    height={80}
+                    className="object-cover w-full h-full"
                   />
                 </button>
               ))}
