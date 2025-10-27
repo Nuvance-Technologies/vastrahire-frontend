@@ -325,6 +325,27 @@ export default function LenderDashboard() {
     }
   };
 
+  const handleReceived = async (productId: string) => {
+    toast.success("Received clicked please wait while we process...");
+    const res = await axios.patch('/api/product/updateQuantity',{
+      productId,
+      quantity: 1 // Increment quantity by 1
+    });
+    if(res.status === 200){
+      toast.success("Product quantity updated successfully!");
+      fetchProducts(); // Refresh product list to show updated quantity
+    }
+    else if(res.status === 404){
+      toast.error("Product not found!");
+    }
+    else if(res.status === 400){
+      toast.error("Please provide productId and quantity");
+    }
+    else{
+      toast.error("Failed to update product quantity. Please try again.");
+    }
+  }
+
   useEffect(() => {
     if (session?.user?.id) {
       fetchProducts();
@@ -657,7 +678,7 @@ export default function LenderDashboard() {
                     )}
                   </div>
                   <div className="flex gap-2">
-                    <button className="p-2 border rounded hover:bg-gray-100 text-sm" >
+                    <button className="p-2 border rounded hover:bg-gray-100 text-sm" onClick={() => handleReceived(p._id)}>
                       Recieved
                     </button>
                     <Link href={`/product/${p._id}/edit`} className="p-2 border rounded hover:bg-gray-100"

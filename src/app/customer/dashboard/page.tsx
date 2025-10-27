@@ -24,6 +24,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { formatDate } from "@/util/formatDate";
 import { set } from "mongoose";
+import { pre } from "framer-motion/client";
 
 type Tier = "Golden" | "Platinum" | "Diamond";
 type TierOrNone = Tier | "none";
@@ -216,6 +217,29 @@ export default function CustomerDashboard() {
       console.error("error: ", error);
     }
   };
+
+  const handleReturn = async () => {
+    console.log("Initiating return for rental: ", selectedRental?.productID.availability);
+    try{
+      const res =  await axios.post(`/api/send-return-mail`, {
+        userEmail: session?.user?.email,
+        productName: selectedRental?.productID.pName
+      });
+      if(res.status === 200){
+        toast.success("Return process initiated. Please check your email for confirmation.");
+        setSelectedRental(selectedRental?.productID.availability === "active" ? null : selectedRental);
+        fetchUserRentals();
+      }
+      else{
+        toast.error("Failed to return the product early. Please try again or contact our team.");
+      }
+    }
+    catch(error){
+      toast.error("Failed to return the product early. Please try again.");
+      console.error("Error returning the product early: ", error);
+    }
+
+  }
 
   // const rentalHistory = [
   //   {
@@ -475,7 +499,7 @@ export default function CustomerDashboard() {
                       </p>
                     </div>
                     {selectedRental.productID.availability === "active" && (
-                      <button className="w-full py-3 rounded-xl bg-[#3d000c] text-white font-semibold shadow-md hover:bg-red-700 transition-all duration-300">
+                      <button className="w-full py-3 rounded-xl bg-[#3d000c] text-white font-semibold shadow-md hover:bg-red-700 transition-all duration-300" onClick={() => handleReturn()}>
                         Return Early
                       </button>
                     )}
