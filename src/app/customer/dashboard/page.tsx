@@ -24,7 +24,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { formatDate } from "@/util/formatDate";
 import { set } from "mongoose";
-import { pre } from "framer-motion/client";
+import { div, pre } from "framer-motion/client";
 
 type Tier = "Golden" | "Platinum" | "Diamond";
 type TierOrNone = Tier | "none";
@@ -220,21 +220,21 @@ export default function CustomerDashboard() {
 
   const handleReturn = async () => {
     console.log("Initiating return for rental: ", selectedRental?.productID.availability);
-    try{
-      const res =  await axios.post(`/api/send-return-mail`, {
+    try {
+      const res = await axios.post(`/api/send-return-mail`, {
         userEmail: session?.user?.email,
         productName: selectedRental?.productID.pName
       });
-      if(res.status === 200){
+      if (res.status === 200) {
         toast.success("Return process initiated. Please check your email for confirmation.");
         setSelectedRental(selectedRental?.productID.availability === "active" ? null : selectedRental);
         fetchUserRentals();
       }
-      else{
+      else {
         toast.error("Failed to return the product early. Please try again or contact our team.");
       }
     }
-    catch(error){
+    catch (error) {
       toast.error("Failed to return the product early. Please try again.");
       console.error("Error returning the product early: ", error);
     }
@@ -353,39 +353,39 @@ export default function CustomerDashboard() {
               </Link>
             )}
 
-                {/* Profile Card */}
-                <div className="bg-[#3d000c8e] text-[#ffecd1] p-6 rounded-xl sticky top-4">
-                  <div className="flex flex-col items-center gap-3 mb-6">
-                    <div className="h-20 w-20 rounded-full bg-[#ffecd1] flex items-center justify-center text-3xl font-bold text-[#3d000c]">
-                      {session?.user?.name?.firstname?.charAt(0).toUpperCase()}
-                    </div>
-                    <div className="text-center">
-                      <h3 className="text-lg font-semibold">
-                        {session?.user?.name?.firstname}{" "}
-                        {session?.user?.name?.lastname}
-                      </h3>
-                    </div>
-                  </div>
-                  <DashboardNav userType="customer" />
+            {/* Profile Card */}
+            <div className="bg-[#3d000c8e] text-[#ffecd1] p-6 rounded-xl sticky top-4">
+              <div className="flex flex-col items-center gap-3 mb-6">
+                <div className="h-20 w-20 rounded-full bg-[#ffecd1] flex items-center justify-center text-3xl font-bold text-[#3d000c]">
+                  {session?.user?.name?.firstname?.charAt(0).toUpperCase()}
+                </div>
+                <div className="text-center">
+                  <h3 className="text-lg font-semibold">
+                    {session?.user?.name?.firstname}{" "}
+                    {session?.user?.name?.lastname}
+                  </h3>
                 </div>
               </div>
+              <DashboardNav userType="customer" />
+            </div>
+          </div>
 
           {/* Main Content */}
-            <div className="lg:col-span-2 space-y-6">
-              <div className="bg-white rounded-xl shadow p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">
-                      Recent Rentals
-                    </h3>
-                    <p className="text-gray-500 text-sm">
-                      Your rental history and current bookings
-                    </p>
-                  </div>
-                  <button className="px-3 py-1 text-gray-700 border rounded-md text-sm hover:bg-gray-100 flex items-center gap-1">
-                    <History className="h-4 w-4" /> View All
-                  </button>
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-white rounded-xl shadow p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Recent Rentals
+                  </h3>
+                  <p className="text-gray-500 text-sm">
+                    Your rental history and current bookings
+                  </p>
                 </div>
+                <button className="px-3 py-1 text-gray-700 border rounded-md text-sm hover:bg-gray-100 flex items-center gap-1">
+                  <History className="h-4 w-4" /> View All
+                </button>
+              </div>
 
               <div className="space-y-4">
                 {rentalHistory.map((rental) => (
@@ -412,11 +412,10 @@ export default function CustomerDashboard() {
                           {rental.productID.pName}
                         </h4>
                         <span
-                          className={`px-2 py-1 rounded text-xs ${
-                            rental.productID.availability === "active"
+                          className={`px-2 py-1 rounded text-xs ${rental.productID.availability === "active"
                               ? "bg-blue-600 text-white"
                               : "bg-gray-200 text-gray-700"
-                          }`}
+                            }`}
                         >
                           {rental.productID.availability}
                         </span>
@@ -426,8 +425,8 @@ export default function CustomerDashboard() {
                         {rental.productID.ownerID.companyName
                           ? rental.productID.ownerID.companyName
                           : rental.productID.ownerID.name.firstname +
-                            " " +
-                            rental.productID.ownerID.name.lastname}
+                          " " +
+                          rental.productID.ownerID.name.lastname}
                       </p>
                       <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
                         <span className="flex items-center gap-1">
@@ -481,8 +480,8 @@ export default function CustomerDashboard() {
                         {selectedRental.productID.ownerID.companyName
                           ? selectedRental.productID.ownerID.companyName
                           : selectedRental.productID.ownerID.name.firstname +
-                            " " +
-                            selectedRental.productID.ownerID.name.lastname}
+                          " " +
+                          selectedRental.productID.ownerID.name.lastname}
                       </p>
                       <p className="flex justify-between">
                         <span className="font-medium text-gray-600">
@@ -499,173 +498,178 @@ export default function CustomerDashboard() {
                       </p>
                     </div>
                     {selectedRental.productID.availability === "active" && (
-                      <button className="w-full py-3 rounded-xl bg-[#3d000c] text-white font-semibold shadow-md hover:bg-red-700 transition-all duration-300" onClick={() => handleReturn()}>
-                        Return Early
-                      </button>
+                      <div className="flex gap-3 mt-6">
+                        <button className="w-full py-3 rounded-xl bg-[#3d000c] text-white font-semibold shadow-md hover:bg-red-700 transition-all duration-300" onClick={() => handleReturn()}>
+                          Return Early
+                        </button>
+                        <button className="w-full py-3 rounded-xl bg-[#ffecd0] text-[#3d000c] font-bold shadow-md hover:bg-[#f7ddb6] transition-all duration-300" onClick={() => handleReturn()}>
+                          Cancel order
+                        </button>
+                      </div>
                     )}
                   </div>
                 </div>
               )}
             </div>
 
-              {/* Personal Details */}
-              <div className="bg-white rounded-xl shadow p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">
-                      Personal Details
-                    </h3>
-                    <p className="text-gray-500 text-sm">
-                      Your profile information and preferences
-                    </p>
-                  </div>
-                  <button
-                    className="px-4 py-2 rounded-md bg-[#3d000c] text-white hover:bg-[#710017] flex items-center gap-1"
-                    onClick={() => setIsEditingProfile(true)}
-                  >
-                    <Edit className="h-4 w-4" /> Edit Profile
-                  </button>
+            {/* Personal Details */}
+            <div className="bg-white rounded-xl shadow p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Personal Details
+                  </h3>
+                  <p className="text-gray-500 text-sm">
+                    Your profile information and preferences
+                  </p>
                 </div>
-                <form onSubmit={handleProfileSave}>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-4">
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">
-                          First Name
-                        </label>
-                        {isEditingProfile ? (
-                          <input
-                            id="firstName"
-                            value={userProfile.firstName}
-                            onChange={(e) =>
-                              setUserProfile({
-                                ...userProfile,
-                                firstName: e.target.value,
-                              })
-                            }
-                            className="h-12 w-full px-3 text-gray-700 rounded-md border-2 border-gray-300 bg-white focus:border-[#3d000c] outline-none transition-colors"
-                          />
-                        ) : (
-                          <p className="text-gray-900 font-medium">
-                            {userProfile.firstName}
-                          </p>
-                        )}
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">
-                          Phone Number
-                        </label>
-                        {isEditingProfile ? (
-                          <input
-                            id="phoneNumber"
-                            value={userProfile.phoneNumber}
-                            onChange={(e) =>
-                              setUserProfile({
-                                ...userProfile,
-                                phoneNumber: e.target.value,
-                              })
-                            }
-                            className="h-12 w-full px-3 text-gray-700 rounded-md border-2 border-gray-300 bg-white focus:border-[#3d000c] outline-none transition-colors"
-                          />
-                        ) : (
-                          <p className="text-gray-900 font-medium">
-                            {userProfile.phoneNumber}
-                          </p>
-                        )}
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">
-                          Address
-                        </label>
-                        {isEditingProfile ? (
-                          <input
-                            id="address"
-                            value={userProfile.address}
-                            onChange={(e) =>
-                              setUserProfile({
-                                ...userProfile,
-                                address: e.target.value,
-                              })
-                            }
-                            className="h-12 w-full px-3 text-gray-700 rounded-md border-2 border-gray-300 bg-white focus:border-[#3d000c] outline-none transition-colors"
-                          />
-                        ) : (
-                          <p className="text-gray-900 font-medium">
-                            {userProfile.address}
-                          </p>
-                        )}
-                      </div>
+                <button
+                  className="px-4 py-2 rounded-md bg-[#3d000c] text-white hover:bg-[#710017] flex items-center gap-1"
+                  onClick={() => setIsEditingProfile(true)}
+                >
+                  <Edit className="h-4 w-4" /> Edit Profile
+                </button>
+              </div>
+              <form onSubmit={handleProfileSave}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium text-gray-500">
+                        First Name
+                      </label>
+                      {isEditingProfile ? (
+                        <input
+                          id="firstName"
+                          value={userProfile.firstName}
+                          onChange={(e) =>
+                            setUserProfile({
+                              ...userProfile,
+                              firstName: e.target.value,
+                            })
+                          }
+                          className="h-12 w-full px-3 text-gray-700 rounded-md border-2 border-gray-300 bg-white focus:border-[#3d000c] outline-none transition-colors"
+                        />
+                      ) : (
+                        <p className="text-gray-900 font-medium">
+                          {userProfile.firstName}
+                        </p>
+                      )}
                     </div>
-                    <div className="space-y-4">
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">
-                          Last Name
-                        </label>
-                        {isEditingProfile ? (
-                          <input
-                            id="lastName"
-                            value={userProfile.lastName}
-                            onChange={(e) =>
-                              setUserProfile({
-                                ...userProfile,
-                                lastName: e.target.value,
-                              })
-                            }
-                            className="h-12 w-full px-3 text-gray-700 rounded-md border-2 border-gray-300 bg-white focus:border-[#3d000c] outline-none transition-colors"
-                          />
-                        ) : (
-                          <p className="text-gray-900 font-medium">
-                            {userProfile.lastName}
-                          </p>
-                        )}
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">
-                          Email Address
-                        </label>
-                        {isEditingProfile ? (
-                          <input
-                            id="email"
-                            value={userProfile.email}
-                            onChange={(e) =>
-                              setUserProfile({
-                                ...userProfile,
-                                email: e.target.value,
-                              })
-                            }
-                            className="h-12 w-full px-3 text-gray-700 rounded-md border-2 border-gray-300 bg-white focus:border-[#3d000c] outline-none transition-colors"
-                          />
-                        ) : (
-                          <p className="text-gray-900 font-medium">
-                            {userProfile.email}
-                          </p>
-                        )}
-                      </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-500">
+                        Phone Number
+                      </label>
+                      {isEditingProfile ? (
+                        <input
+                          id="phoneNumber"
+                          value={userProfile.phoneNumber}
+                          onChange={(e) =>
+                            setUserProfile({
+                              ...userProfile,
+                              phoneNumber: e.target.value,
+                            })
+                          }
+                          className="h-12 w-full px-3 text-gray-700 rounded-md border-2 border-gray-300 bg-white focus:border-[#3d000c] outline-none transition-colors"
+                        />
+                      ) : (
+                        <p className="text-gray-900 font-medium">
+                          {userProfile.phoneNumber}
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-500">
+                        Address
+                      </label>
+                      {isEditingProfile ? (
+                        <input
+                          id="address"
+                          value={userProfile.address}
+                          onChange={(e) =>
+                            setUserProfile({
+                              ...userProfile,
+                              address: e.target.value,
+                            })
+                          }
+                          className="h-12 w-full px-3 text-gray-700 rounded-md border-2 border-gray-300 bg-white focus:border-[#3d000c] outline-none transition-colors"
+                        />
+                      ) : (
+                        <p className="text-gray-900 font-medium">
+                          {userProfile.address}
+                        </p>
+                      )}
                     </div>
                   </div>
-
-                  <hr className="my-6" />
-                  {isEditingProfile && (
-                    <div className="flex gap-3">
-                      <button
-                        type="submit"
-                        className="px-4 py-2 rounded-md bg-[#3d000c] text-white hover:bg-[#710017]"
-                      >
-                        Save Changes
-                      </button>
-                      <button
-                        className="px-4 py-2 rounded-md border text-[#3d000c] hover:bg-gray-100"
-                        onClick={() => setIsEditingProfile(false)}
-                      >
-                        Cancel
-                      </button>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium text-gray-500">
+                        Last Name
+                      </label>
+                      {isEditingProfile ? (
+                        <input
+                          id="lastName"
+                          value={userProfile.lastName}
+                          onChange={(e) =>
+                            setUserProfile({
+                              ...userProfile,
+                              lastName: e.target.value,
+                            })
+                          }
+                          className="h-12 w-full px-3 text-gray-700 rounded-md border-2 border-gray-300 bg-white focus:border-[#3d000c] outline-none transition-colors"
+                        />
+                      ) : (
+                        <p className="text-gray-900 font-medium">
+                          {userProfile.lastName}
+                        </p>
+                      )}
                     </div>
-                  )}
-                </form>
-              </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-500">
+                        Email Address
+                      </label>
+                      {isEditingProfile ? (
+                        <input
+                          id="email"
+                          value={userProfile.email}
+                          onChange={(e) =>
+                            setUserProfile({
+                              ...userProfile,
+                              email: e.target.value,
+                            })
+                          }
+                          className="h-12 w-full px-3 text-gray-700 rounded-md border-2 border-gray-300 bg-white focus:border-[#3d000c] outline-none transition-colors"
+                        />
+                      ) : (
+                        <p className="text-gray-900 font-medium">
+                          {userProfile.email}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <hr className="my-6" />
+                {isEditingProfile && (
+                  <div className="flex gap-3">
+                    <button
+                      type="submit"
+                      className="px-4 py-2 rounded-md bg-[#3d000c] text-white hover:bg-[#710017]"
+                    >
+                      Save Changes
+                    </button>
+                    <button
+                      className="px-4 py-2 rounded-md border text-[#3d000c] hover:bg-gray-100"
+                      onClick={() => setIsEditingProfile(false)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                )}
+              </form>
             </div>
           </div>
         </div>
       </div>
-      );
+    </div>
+  );
 }

@@ -208,14 +208,14 @@ export function Header() {
               </button>
             </div>
 
-            <div className="relative">
+            {/* <div className="relative">
               <Link
                 href="/customer/signup"
                 className="flex items-center px-3 py-2 bg-[#3d000c] text-white rounded-md hover:bg-[#87001b] gap-1"
               >
                 <button>Sign Up</button>
               </Link>
-            </div>
+            </div> */}
             <div className="relative" ref={signupRef}>
               <button
                 onClick={() => {
@@ -314,12 +314,12 @@ export function Header() {
                       Login
                     </Link>
                     <div className="border-t border-gray-200 my-1"></div>
-                    <Link
+                    {/* <Link
                       href="/customer/signup"
                       className="drop-down block px-4 py-2 text-gray-500 hover:bg-gray-100"
                     >
                       Signup as a Customer
-                    </Link>
+                    </Link> */}
                     <Link
                       href="/lender/signup/shop"
                       className="drop-down block px-4 py-2 text-gray-500 hover:bg-gray-100"
