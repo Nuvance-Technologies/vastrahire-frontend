@@ -219,11 +219,12 @@ export default function CustomerDashboard() {
   };
 
   const handleReturn = async () => {
-    console.log("Initiating return for rental: ", selectedRental?.productID.availability);
+    toast.success("Initiating return process...");
     try {
       const res = await axios.post(`/api/send-return-mail`, {
         userEmail: session?.user?.email,
-        productName: selectedRental?.productID.pName
+        productName: selectedRental?.productID.pName,
+        productID: selectedRental?.productID._id,
       });
       if (res.status === 200) {
         toast.success("Return process initiated. Please check your email for confirmation.");
@@ -239,6 +240,24 @@ export default function CustomerDashboard() {
       console.error("Error returning the product early: ", error);
     }
 
+  }
+
+  const handleCancellation = async () => {
+    toast.success("Initiating cancellation process...");
+     try {
+      const res = await axios.post(`/api/send-cancellation-mail`, {
+        userEmail: session?.user?.email,
+        productName: selectedRental?.productID.pName,
+        productID: selectedRental?.productID._id,
+      });
+      if (res.status === 200) {
+        toast.success("Cancellation process initiated. Please check your email for confirmation.");
+        setSelectedRental(null);
+        fetchUserRentals();
+      }
+    } catch (error) {
+      console.error("Error cancelling the order: ", error);
+    }
   }
 
   // const rentalHistory = [
@@ -502,7 +521,7 @@ export default function CustomerDashboard() {
                         <button className="w-full py-3 rounded-xl bg-[#3d000c] text-white font-semibold shadow-md hover:bg-red-700 transition-all duration-300" onClick={() => handleReturn()}>
                           Return Early
                         </button>
-                        <button className="w-full py-3 rounded-xl bg-[#ffecd0] text-[#3d000c] font-bold shadow-md hover:bg-[#f7ddb6] transition-all duration-300" onClick={() => handleReturn()}>
+                        <button className="w-full py-3 rounded-xl bg-[#ffecd0] text-[#3d000c] font-bold shadow-md hover:bg-[#f7ddb6] transition-all duration-300" onClick={() => handleCancellation()}>
                           Cancel order
                         </button>
                       </div>
