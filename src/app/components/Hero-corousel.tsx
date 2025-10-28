@@ -80,7 +80,7 @@ export function HeroCarousel() {
               <Image
                 src={slide.image || "/placeholder.svg"}
                 alt={slide.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
                 width={384}
                 height={384}
               />
