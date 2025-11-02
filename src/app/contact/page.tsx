@@ -138,7 +138,7 @@ export default function ContactPage() {
                 <textarea id="message" name="message" placeholder="Tell us what you need help with..." required className="mt-1.5 w-full rounded-md border border-gray-300 px-3 py-2 text-sm min-h-[120px]" />
                 <p className="mt-2 text-xs text-gray-500">
                   By submitting, you agree to our{" "}
-                      <Link href="/terms-and-conditions" className="underline hover:text-[#690216]">Terms and Conditions</Link>. We’ll never share your information.
+                      <Link href="/policies/terms-and-conditions" className="underline hover:text-[#690216]">Terms and Conditions</Link>. We’ll never share your information.
                 </p>
               </div>
 
