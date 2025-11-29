@@ -3,6 +3,7 @@ import nodemailer from "nodemailer";
 import { NextResponse } from "next/server";
 import Product from "@/lib/models/product.model";
 import User from "@/lib/models/user.model";
+import { getMaxListeners } from "events";
 
 export async function POST(req: Request) {
     await connectToDB();
@@ -21,8 +22,8 @@ export async function POST(req: Request) {
     const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
-            user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASS,
+            user: "vastrahires@gmail.com",
+            pass: "sfib pljj csza bhxn",
         },
     });
     // Email content
